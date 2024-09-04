@@ -1,0 +1,38 @@
+diff --git a/core/src/main/java/org/apache/struts2/components/UIBean.java b/core/src/main/java/org/apache/struts2/components/UIBean.java
+index ef4f561da9..dafe87bddb 100644
+--- a/core/src/main/java/org/apache/struts2/components/UIBean.java
++++ b/core/src/main/java/org/apache/struts2/components/UIBean.java
+@@ -831,7 +831,7 @@ public void evaluateParams() {
+     protected String escape(String name) {
+         // escape any possible values that can make the ID painful to work with in JavaScript
+         if (name != null) {
+-            return name.replaceAll("[\\.\\[\\]]", "_");
++            return name.replaceAll("[\\/\\.\\[\\]]", "_");
+         } else {
+             return "";
+         }
+diff --git a/core/src/test/java/org/apache/struts2/components/UIBeanTest.java b/core/src/test/java/org/apache/struts2/components/UIBeanTest.java
+index 94c1047890..c968c09266 100644
+--- a/core/src/test/java/org/apache/struts2/components/UIBeanTest.java
++++ b/core/src/test/java/org/apache/struts2/components/UIBeanTest.java
+@@ -85,6 +85,20 @@ public void testPopulateComponentHtmlId2() throws Exception {
+         assertEquals("formId_txtFldName", txtFld.getParameters().get("id"));
+     }
+ 
++    public void testEscapeId() throws Exception {
++        ValueStack stack = ActionContext.getContext().getValueStack();
++        MockHttpServletRequest req = new MockHttpServletRequest();
++        MockHttpServletResponse res = new MockHttpServletResponse();
++
++        Form form = new Form(stack, req, res);
++        form.getParameters().put("id", "formId");
++
++        TextField txtFld = new TextField(stack, req, res);
++        txtFld.setName("foo/bar");
++        txtFld.populateComponentHtmlId(form);
++        assertEquals("formId_foo_bar", txtFld.getParameters().get("id"));
++    }
++
+     public void testGetThemeFromForm() throws Exception {
+         ValueStack stack = ActionContext.getContext().getValueStack();
+         MockHttpServletRequest req = new MockHttpServletRequest();

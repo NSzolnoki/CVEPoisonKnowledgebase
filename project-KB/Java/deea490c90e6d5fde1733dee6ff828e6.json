@@ -1,0 +1,20 @@
+{
+    "original_source": {
+        "database(url)": "https://github.com/SAP/project-kb",
+        "software_system(CPE)": [],
+        "fix_commit": "https://github.com/ESAPI/esapi-java-legacy/commit/b03591e53823c3d6a7792b030bb4cbfa6b6916d8",
+        "version_end_excluding": {},
+        "path": {
+            "file_path": "src/main/java/org/owasp/esapi/reference/crypto/JavaEncryptor.java"
+        }
+    },
+    "programming_language": "JAVA",
+    "licences": {
+        "database": "Apache",
+        "affected_repository": "Other"
+    },
+    "related_vulnerability_entry": {
+        "CVE": [],
+        "CWE": []
+    }
+}

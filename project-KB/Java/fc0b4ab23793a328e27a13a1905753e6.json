@@ -1,0 +1,20 @@
+{
+    "original_source": {
+        "database(url)": "https://github.com/SAP/project-kb",
+        "software_system(CPE)": [],
+        "fix_commit": "https://github.com/apache/olingo-odata4/commit/356cdbd3d8b95b2aa7bbc7b3114516c3c2eb30ce",
+        "version_end_excluding": {},
+        "path": {
+            "file_path": "lib/client-core/src/test/java/org/apache/olingo/client/core/communication/request/AsyncRequestWrapperTest.java"
+        }
+    },
+    "programming_language": "JAVA",
+    "licences": {
+        "database": "Apache",
+        "affected_repository": "Apache License 2.0"
+    },
+    "related_vulnerability_entry": {
+        "CVE": [],
+        "CWE": []
+    }
+}

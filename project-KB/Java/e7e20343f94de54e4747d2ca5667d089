@@ -1,0 +1,87 @@
+diff --git a/airsonic-main/pom.xml b/airsonic-main/pom.xml
+index 2ae241d10..3c2be6e05 100755
+--- a/airsonic-main/pom.xml
++++ b/airsonic-main/pom.xml
+@@ -9,7 +9,7 @@
+     <parent>
+         <groupId>org.airsonic.player</groupId>
+         <artifactId>airsonic</artifactId>
+-        <version>10.2.0-RELEASE</version>
++        <version>10.3.0-SNAPSHOT</version>
+     </parent>
+ 
+     <properties>
+diff --git a/airsonic-sonos-api/pom.xml b/airsonic-sonos-api/pom.xml
+index cacdb9be3..47f15f02c 100644
+--- a/airsonic-sonos-api/pom.xml
++++ b/airsonic-sonos-api/pom.xml
+@@ -8,7 +8,7 @@
+     <parent>
+         <groupId>org.airsonic.player</groupId>
+         <artifactId>airsonic</artifactId>
+-        <version>10.2.0-RELEASE</version>
++        <version>10.3.0-SNAPSHOT</version>
+     </parent>
+ 
+     <build>
+diff --git a/install/docker/pom.xml b/install/docker/pom.xml
+index c0cf6ea6d..c9967de7a 100644
+--- a/install/docker/pom.xml
++++ b/install/docker/pom.xml
+@@ -5,7 +5,7 @@
+     <parent>
+         <relativePath>../../pom.xml</relativePath>
+         <artifactId>airsonic</artifactId>
+-        <version>10.2.0-RELEASE</version>
++        <version>10.3.0-SNAPSHOT</version>
+         <groupId>org.airsonic.player</groupId>
+     </parent>
+     <packaging>pom</packaging>
+@@ -16,7 +16,7 @@
+         <dependency>
+             <groupId>org.airsonic.player</groupId>
+             <artifactId>airsonic-main</artifactId>
+-            <version>10.2.0-RELEASE</version>
++            <version>10.3.0-SNAPSHOT</version>
+             <type>war</type>
+         </dependency>
+     </dependencies>
+diff --git a/integration-test/pom.xml b/integration-test/pom.xml
+index 5c3977fe6..2798f874b 100644
+--- a/integration-test/pom.xml
++++ b/integration-test/pom.xml
+@@ -8,7 +8,7 @@
+     <parent>
+         <groupId>org.airsonic.player</groupId>
+         <artifactId>airsonic</artifactId>
+-        <version>10.2.0-RELEASE</version>
++        <version>10.3.0-SNAPSHOT</version>
+     </parent>
+ 
+     <properties>
+diff --git a/pom.xml b/pom.xml
+index 377a48127..4abba92a6 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -4,7 +4,7 @@
+     <modelVersion>4.0.0</modelVersion>
+     <groupId>org.airsonic.player</groupId>
+     <artifactId>airsonic</artifactId>
+-    <version>10.2.0-RELEASE</version>
++    <version>10.3.0-SNAPSHOT</version>
+     <name>Airsonic</name>
+     <packaging>pom</packaging>
+     <organization>
+diff --git a/subsonic-rest-api/pom.xml b/subsonic-rest-api/pom.xml
+index 156a51c69..03d29c969 100644
+--- a/subsonic-rest-api/pom.xml
++++ b/subsonic-rest-api/pom.xml
+@@ -8,7 +8,7 @@
+     <parent>
+         <groupId>org.airsonic.player</groupId>
+         <artifactId>airsonic</artifactId>
+-        <version>10.2.0-RELEASE</version>
++        <version>10.3.0-SNAPSHOT</version>
+     </parent>
+ 
+     <build>

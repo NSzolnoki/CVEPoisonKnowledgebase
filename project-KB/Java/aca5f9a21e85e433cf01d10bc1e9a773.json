@@ -1,0 +1,28 @@
+{
+    "original_source": {
+        "database(url)": "https://github.com/SAP/project-kb",
+        "software_system(CPE)": [
+            "cpe:2.3:a:oracle:mysql_connectors:*:*:*:*:*:*:*:*"
+        ],
+        "fix_commit": "https://github.com/mysql/mysql-connector-j/commit/aeba57264966b0fd329cdb8170ba772fd8fd4de2",
+        "version_end_excluding": {
+            "oracle:mysql_connectors": "unknown"
+        },
+        "path": {
+            "file_path": "src/com/mysql/jdbc/ExportControlled.java"
+        }
+    },
+    "programming_language": "JAVA",
+    "licences": {
+        "database": "Apache",
+        "affected_repository": "Other"
+    },
+    "related_vulnerability_entry": {
+        "CVE": [
+            "CVE-2017-3586"
+        ],
+        "CWE": [
+            "NVD-CWE-noinfo"
+        ]
+    }
+}

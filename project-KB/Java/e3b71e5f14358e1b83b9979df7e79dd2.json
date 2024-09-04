@@ -1,0 +1,20 @@
+{
+    "original_source": {
+        "database(url)": "https://github.com/SAP/project-kb",
+        "software_system(CPE)": [],
+        "fix_commit": "https://github.com/undertow-io/undertow/commit/be69bddcf5af1d98714fc316220a3aae4bebb3ec",
+        "version_end_excluding": {},
+        "path": {
+            "file_path": "core/src/main/java/io/undertow/server/HttpServerExchange.java"
+        }
+    },
+    "programming_language": "JAVA",
+    "licences": {
+        "database": "Apache",
+        "affected_repository": "Apache License 2.0"
+    },
+    "related_vulnerability_entry": {
+        "CVE": [],
+        "CWE": []
+    }
+}

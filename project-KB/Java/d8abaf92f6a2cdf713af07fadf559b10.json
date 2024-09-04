@@ -1,0 +1,20 @@
+{
+    "original_source": {
+        "database(url)": "https://github.com/SAP/project-kb",
+        "software_system(CPE)": [],
+        "fix_commit": "https://github.com/eclipse/milo/commit/d9d89aaba7b8ae1374a64abf93e4a44c8f53c116",
+        "version_end_excluding": {},
+        "path": {
+            "file_path": "opc-ua-sdk/sdk-client/src/main/java/org/eclipse/milo/opcua/sdk/client/api/identity/X509IdentityProvider.java"
+        }
+    },
+    "programming_language": "JAVA",
+    "licences": {
+        "database": "Apache",
+        "affected_repository": "Eclipse Public License 2.0"
+    },
+    "related_vulnerability_entry": {
+        "CVE": [],
+        "CWE": []
+    }
+}

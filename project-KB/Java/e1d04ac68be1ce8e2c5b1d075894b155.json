@@ -1,0 +1,20 @@
+{
+    "original_source": {
+        "database(url)": "https://github.com/SAP/project-kb",
+        "software_system(CPE)": [],
+        "fix_commit": "https://github.com/dropwizard/dropwizard/commit/74e211514db951a67b0e9ff75b0102704d4b2049",
+        "version_end_excluding": {},
+        "path": {
+            "file_path": "dropwizard-validation/src/test/java/io/dropwizard/validation/SelfValidationTest.java"
+        }
+    },
+    "programming_language": "JAVA",
+    "licences": {
+        "database": "Apache",
+        "affected_repository": "Apache License 2.0"
+    },
+    "related_vulnerability_entry": {
+        "CVE": [],
+        "CWE": []
+    }
+}

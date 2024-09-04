@@ -1,0 +1,29 @@
+{
+    "original_source": {
+        "database(url)": "https://github.com/SAP/project-kb",
+        "software_system(CPE)": [
+            "cpe:2.3:a:eclipse:vert.x:*:*:*:*:*:*:*:*",
+            "cpe:2.3:o:microsoft:windows:-:*:*:*:*:*:*:*"
+        ],
+        "fix_commit": "https://github.com/vert-x3/vertx-web/commit/57a65dce6f4c5aa5e3ce7288685e7f3447eb8f3b",
+        "version_end_excluding": {
+            "eclipse:vert.x": "unknown"
+        },
+        "path": {
+            "file_path": "vertx-web/src/test/java/io/vertx/ext/web/handler/StaticHandlerTest.java"
+        }
+    },
+    "programming_language": "JAVA",
+    "licences": {
+        "database": "Apache",
+        "affected_repository": "Apache License 2.0"
+    },
+    "related_vulnerability_entry": {
+        "CVE": [
+            "CVE-2018-12542"
+        ],
+        "CWE": [
+            "CWE-22"
+        ]
+    }
+}

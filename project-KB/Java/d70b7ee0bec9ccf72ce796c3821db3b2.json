@@ -1,0 +1,20 @@
+{
+    "original_source": {
+        "database(url)": "https://github.com/SAP/project-kb",
+        "software_system(CPE)": [],
+        "fix_commit": "https://github.com/netty/netty/commit/129c17aaa4ac5c611519ef480c35a12e8282b807",
+        "version_end_excluding": {},
+        "path": {
+            "file_path": "src/main/java/org/jboss/netty/handler/ssl/SslHandler.java"
+        }
+    },
+    "programming_language": "JAVA",
+    "licences": {
+        "database": "Apache",
+        "affected_repository": "Apache License 2.0"
+    },
+    "related_vulnerability_entry": {
+        "CVE": [],
+        "CWE": []
+    }
+}

@@ -1,0 +1,57 @@
+diff --git a/apollo-dto/pom.xml b/apollo-dto/pom.xml
+index 2a7679534..253f4e532 100644
+--- a/apollo-dto/pom.xml
++++ b/apollo-dto/pom.xml
+@@ -105,13 +105,12 @@
+         <version>1.7</version>
+         <executions>
+           <execution>
+-            <phase>generate-resources</phase>
++            <phase>process-classes</phase>
+             <configuration>
+               <tasks>
+-                <taskdef name="schemagen" classname="com.sun.tools.jxc.SchemaGenTask">
+-                  <classpath refid="maven.compile.classpath" />
+-                </taskdef>
++                <taskdef name="schemagen" classname="com.sun.tools.jxc.SchemaGenTask"/>
+                 <mkdir dir="${project.build.directory}/schema/org/apache/activemq/apollo/dto" />
++                <echo message="Generating XSD to: ${project.build.directory}/schema/org/apache/activemq/apollo/dto"/>
+                 <schemagen srcdir="${basedir}/.." destdir="${project.build.directory}/schema/org/apache/activemq/apollo/dto" includeantruntime="false">
+                   <schema namespace="http://activemq.apache.org/schema/activemq/apollo" file="apollo.xsd" />
+                   <classpath refid="maven.compile.classpath" />
+@@ -127,6 +126,9 @@
+                 <replace token="&lt;/xs:sequence&gt;" value="&lt;/xs:choice&gt;&lt;/xs:choice&gt;" dir="${basedir}/target/schema/org/apache/activemq/apollo/dto">
+                   <include name="**/*.xsd" />
+                 </replace>
++                <copy todir="${project.build.directory}/classes">
++                  <fileset dir="${project.build.directory}/schema"/>
++                </copy>
+               </tasks>
+             </configuration>
+             <goals>
+@@ -147,7 +149,7 @@
+            </dependency>
+            <dependency>
+               <groupId>com.sun.xml.bind</groupId>
+-              <artifactId>jaxb-xjc</artifactId>
++              <artifactId>jaxb-jxc</artifactId>
+               <version>${jaxb-version}</version>
+            </dependency>
+         </dependencies>      
+diff --git a/pom.xml b/pom.xml
+index 5eeeb17e2..877a2fade 100755
+--- a/pom.xml
++++ b/pom.xml
+@@ -84,9 +84,9 @@
+     <slf4j-version>1.6.1</slf4j-version>
+     <mqtt-client-version>1.9</mqtt-client-version>
+ 
+-    <jaxb-api-version>2.1</jaxb-api-version>
+-    <jaxb-version>2.1.6</jaxb-version>
+-    <xjc-version>2.1.10.1</xjc-version>
++    <jaxb-api-version>2.2.7</jaxb-api-version>
++    <jaxb-version>2.2.7</jaxb-version>
++    <xjc-version>2.2.7</xjc-version>
+     <stax-api-version>1.0.1</stax-api-version>
+     <stax-version>1.2.0</stax-version>
+ 

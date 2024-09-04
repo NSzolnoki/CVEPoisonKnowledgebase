@@ -1,0 +1,78 @@
+diff --git a/tapestry-core/src/main/java/org/apache/tapestry5/internal/beaneditor/PrimitiveFieldConstraintGenerator.java b/tapestry-core/src/main/java/org/apache/tapestry5/internal/beaneditor/PrimitiveFieldConstraintGenerator.java
+index 7dcc77c072..440b6a42c1 100644
+--- a/tapestry-core/src/main/java/org/apache/tapestry5/internal/beaneditor/PrimitiveFieldConstraintGenerator.java
++++ b/tapestry-core/src/main/java/org/apache/tapestry5/internal/beaneditor/PrimitiveFieldConstraintGenerator.java
+@@ -27,9 +27,10 @@ public class PrimitiveFieldConstraintGenerator implements ValidationConstraintGe
+ {
+     private final List<String> REQUIRED = Arrays.asList("required");
+ 
+-    public List<String> buildConstraints(Class propertyType, AnnotationProvider annotationProvider)
++    @Override
++    public List<String> buildConstraints(Class<?> propertyType, AnnotationProvider annotationProvider)
+     {
+-        return propertyType.isPrimitive() ? REQUIRED : null;
++        return propertyType.isPrimitive() && !"boolean".equals(propertyType.getName()) ? REQUIRED : null;
+     }
+ 
+ }
+diff --git a/tapestry-core/src/main/java/org/apache/tapestry5/services/ValidationConstraintGenerator.java b/tapestry-core/src/main/java/org/apache/tapestry5/services/ValidationConstraintGenerator.java
+index c9472b3b8b..55d55a48e6 100644
+--- a/tapestry-core/src/main/java/org/apache/tapestry5/services/ValidationConstraintGenerator.java
++++ b/tapestry-core/src/main/java/org/apache/tapestry5/services/ValidationConstraintGenerator.java
+@@ -42,5 +42,5 @@ public interface ValidationConstraintGenerator
+      * @return a list of constraints
+      * @see FieldValidatorSource
+      */
+-    List<String> buildConstraints(Class propertyType, AnnotationProvider annotationProvider);
++    List<String> buildConstraints(Class<?> propertyType, AnnotationProvider annotationProvider);
+ }
+diff --git a/tapestry-core/src/test/app3/Html5Support.tml b/tapestry-core/src/test/app3/Html5Support.tml
+index 5776c368b4..2841de89dc 100644
+--- a/tapestry-core/src/test/app3/Html5Support.tml
++++ b/tapestry-core/src/test/app3/Html5Support.tml
+@@ -12,6 +12,9 @@
+ 			<input t:type="TextField" t:id="maxNumber" t:validate="max=10" t:mixins="FormGroup"/>
+ 			<input t:type="TextField" t:id="minMaxNumber" t:validate="min=2,max=4" t:mixins="FormGroup"/>
+ 			<input t:type="TextField" t:id="regexp" t:validate="regexp=[0-9]{2}" t:mixins="FormGroup"/>
++			<input t:type="CheckBox" t:id="bool" t:mixins="FormGroup"/>
++			<input t:type="CheckBox" t:id="mustBeCheckedBoolean" t:validate="checked" t:mixins="FormGroup"/>
++			<input t:type="CheckBox" t:id="requiredBoolean" t:validate="required" t:mixins="FormGroup"/>
+ 			<input type="submit"/>
+ 		</form>
+     </body>
+diff --git a/tapestry-core/src/test/java/org/apache/tapestry5/integration/app3/AdditionalIntegrationTests.java b/tapestry-core/src/test/java/org/apache/tapestry5/integration/app3/AdditionalIntegrationTests.java
+index 2b8a7e26e2..8c755fe31c 100644
+--- a/tapestry-core/src/test/java/org/apache/tapestry5/integration/app3/AdditionalIntegrationTests.java
++++ b/tapestry-core/src/test/java/org/apache/tapestry5/integration/app3/AdditionalIntegrationTests.java
+@@ -122,7 +122,12 @@ public void html5_support_enabled() throws Exception
+         assertEquals("number", getAttribute("minMaxNumber@type"));
+         assertEquals("2", getAttribute("minMaxNumber@min"));
+         assertEquals("4", getAttribute("minMaxNumber@max"));
+-        
++
++        assertEquals(getAttribute("bool@required"), null);
++
++        assertEquals(getAttribute("mustBeCheckedBoolean@required"), "required");
++
++        assertEquals(getAttribute("requiredBoolean@required"), "required");
+     }
+ 
+ }
+diff --git a/tapestry-core/src/test/java/org/apache/tapestry5/integration/app3/pages/Html5Support.java b/tapestry-core/src/test/java/org/apache/tapestry5/integration/app3/pages/Html5Support.java
+index 2ee9029210..ee4c083fa3 100644
+--- a/tapestry-core/src/test/java/org/apache/tapestry5/integration/app3/pages/Html5Support.java
++++ b/tapestry-core/src/test/java/org/apache/tapestry5/integration/app3/pages/Html5Support.java
+@@ -40,4 +40,13 @@ public class Html5Support
+     @Property
+     private String regexp;
+ 
++    @Property
++    private boolean bool;
++
++    @Property
++    private boolean mustBeCheckedBoolean;
++
++    @Property
++    private boolean requiredBoolean;
++
+ }

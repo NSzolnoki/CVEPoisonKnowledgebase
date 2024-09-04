@@ -1,0 +1,20 @@
+{
+    "original_source": {
+        "database(url)": "https://github.com/SAP/project-kb",
+        "software_system(CPE)": [],
+        "fix_commit": "https://github.com/TooTallNate/Java-WebSocket/commit/455d09e8ff5d4f5ed6e2fcfb5e5af23d396a464e",
+        "version_end_excluding": {},
+        "path": {
+            "file_path": "src/main/java/org/java_websocket/client/WebSocketClient.java"
+        }
+    },
+    "programming_language": "JAVA",
+    "licences": {
+        "database": "Apache",
+        "affected_repository": "MIT License"
+    },
+    "related_vulnerability_entry": {
+        "CVE": [],
+        "CWE": []
+    }
+}

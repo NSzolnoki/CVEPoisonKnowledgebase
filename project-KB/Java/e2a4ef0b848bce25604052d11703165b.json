@@ -1,0 +1,27 @@
+{
+    "original_source": {
+        "database(url)": "https://github.com/SAP/project-kb",
+        "software_system(CPE)": [
+            "cpe:2.3:a:apache:solr:*:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:solr:*:*:*:*:*:*:*:*"
+        ],
+        "fix_commit": "https://github.com/apache/lucene-solr/commit/7239a57a51ea0f4d05dd330ce5e15e4f72f72747",
+        "version_end_excluding": {
+            "apache:solr": "unknown"
+        },
+        "path": {
+            "file_path": "solr/core/src/java/org/apache/solr/handler/DocumentAnalysisRequestHandler.java"
+        }
+    },
+    "programming_language": "JAVA",
+    "licences": {
+        "database": "Apache",
+        "affected_repository": "Apache License 2.0"
+    },
+    "related_vulnerability_entry": {
+        "CVE": [
+            "CVE-2013-6408"
+        ],
+        "CWE": []
+    }
+}

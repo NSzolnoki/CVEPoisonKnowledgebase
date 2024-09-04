@@ -1,0 +1,260 @@
+diff --git a/extensions-core/azure-extensions/pom.xml b/extensions-core/azure-extensions/pom.xml
+index 7fbf8fbaef4b..acb5bb9e7cda 100644
+--- a/extensions-core/azure-extensions/pom.xml
++++ b/extensions-core/azure-extensions/pom.xml
+@@ -190,7 +190,7 @@
+                                 <limit>
+                                     <counter>BRANCH</counter>
+                                     <value>COVEREDRATIO</value>
+-                                    <minimum>0.89</minimum>
++                                    <minimum>0.88</minimum>
+                                 </limit>
+                                 <limit>
+                                     <counter>COMPLEXITY</counter>
+diff --git a/extensions-core/azure-extensions/src/main/java/org/apache/druid/storage/azure/AzureDataSegmentConfig.java b/extensions-core/azure-extensions/src/main/java/org/apache/druid/storage/azure/AzureDataSegmentConfig.java
+index e84658caf8ad..1272e24dd411 100644
+--- a/extensions-core/azure-extensions/src/main/java/org/apache/druid/storage/azure/AzureDataSegmentConfig.java
++++ b/extensions-core/azure-extensions/src/main/java/org/apache/druid/storage/azure/AzureDataSegmentConfig.java
+@@ -21,19 +21,15 @@
+ 
+ import com.fasterxml.jackson.annotation.JsonProperty;
+ 
+-import javax.validation.constraints.NotNull;
+-
+ /**
+  * Stores the configuration for segments written to Azure deep storage
+  */
+ public class AzureDataSegmentConfig
+ {
+   @JsonProperty
+-  @NotNull
+   private String container;
+ 
+   @JsonProperty
+-  @NotNull
+   private String prefix = "";
+ 
+   public void setContainer(String container)
+diff --git a/extensions-core/azure-extensions/src/main/java/org/apache/druid/storage/azure/AzureDataSegmentKiller.java b/extensions-core/azure-extensions/src/main/java/org/apache/druid/storage/azure/AzureDataSegmentKiller.java
+index e4cfc3592170..bdfdb9937479 100644
+--- a/extensions-core/azure-extensions/src/main/java/org/apache/druid/storage/azure/AzureDataSegmentKiller.java
++++ b/extensions-core/azure-extensions/src/main/java/org/apache/druid/storage/azure/AzureDataSegmentKiller.java
+@@ -22,6 +22,7 @@
+ import com.google.common.base.Predicates;
+ import com.google.inject.Inject;
+ import com.microsoft.azure.storage.StorageException;
++import org.apache.druid.java.util.common.ISE;
+ import org.apache.druid.java.util.common.MapUtils;
+ import org.apache.druid.java.util.common.logger.Logger;
+ import org.apache.druid.segment.loading.DataSegmentKiller;
+@@ -88,6 +89,10 @@ public void kill(DataSegment segment) throws SegmentLoadingException
+   @Override
+   public void killAll() throws IOException
+   {
++    if (segmentConfig.getContainer() == null || segmentConfig.getPrefix() == null) {
++      throw new ISE(
++          "Cannot delete all segment files since Azure Deep Storage since druid.azure.container and druid.azure.prefix are not both set.");
++    }
+     log.info(
+         "Deleting all segment files from Azure storage location [bucket: '%s' prefix: '%s']",
+         segmentConfig.getContainer(),
+@@ -109,5 +114,4 @@ public void killAll() throws IOException
+       throw new IOException(e);
+     }
+   }
+-
+ }
+diff --git a/extensions-core/azure-extensions/src/test/java/org/apache/druid/storage/azure/AzureDataSegmentKillerTest.java b/extensions-core/azure-extensions/src/test/java/org/apache/druid/storage/azure/AzureDataSegmentKillerTest.java
+index fc78b2d3a6b3..e031015168d8 100644
+--- a/extensions-core/azure-extensions/src/test/java/org/apache/druid/storage/azure/AzureDataSegmentKillerTest.java
++++ b/extensions-core/azure-extensions/src/test/java/org/apache/druid/storage/azure/AzureDataSegmentKillerTest.java
+@@ -23,6 +23,7 @@
+ import com.google.common.collect.ImmutableMap;
+ import com.microsoft.azure.storage.StorageException;
+ import com.microsoft.azure.storage.StorageExtendedErrorInformation;
++import org.apache.druid.java.util.common.ISE;
+ import org.apache.druid.java.util.common.Intervals;
+ import org.apache.druid.java.util.common.StringUtils;
+ import org.apache.druid.segment.loading.SegmentLoadingException;
+@@ -148,6 +149,33 @@ public void test_kill_URISyntaxException_throwsException()
+     verifyAll();
+   }
+ 
++  @Test
++  public void test_killAll_segmentConfigWithNullContainerAndPrefix_throwsISEException() throws Exception
++  {
++    EasyMock.expect(segmentConfig.getContainer()).andReturn(null).atLeastOnce();
++    EasyMock.expect(segmentConfig.getPrefix()).andReturn(null).anyTimes();
++
++    boolean thrownISEException = false;
++
++    try {
++      AzureDataSegmentKiller killer = new AzureDataSegmentKiller(
++          segmentConfig,
++          inputDataConfig,
++          accountConfig,
++          azureStorage,
++          azureCloudBlobIterableFactory
++      );
++      EasyMock.replay(segmentConfig, inputDataConfig, accountConfig, azureStorage, azureCloudBlobIterableFactory);
++      killer.killAll();
++    }
++    catch (ISE e) {
++      thrownISEException = true;
++    }
++
++    Assert.assertTrue(thrownISEException);
++    EasyMock.verify(segmentConfig, inputDataConfig, accountConfig, azureStorage, azureCloudBlobIterableFactory);
++  }
++
+   @Test
+   public void test_killAll_noException_deletesAllSegments() throws Exception
+   {
+diff --git a/extensions-core/google-extensions/src/main/java/org/apache/druid/storage/google/GoogleAccountConfig.java b/extensions-core/google-extensions/src/main/java/org/apache/druid/storage/google/GoogleAccountConfig.java
+index e551f65cfec2..b444cfae5393 100644
+--- a/extensions-core/google-extensions/src/main/java/org/apache/druid/storage/google/GoogleAccountConfig.java
++++ b/extensions-core/google-extensions/src/main/java/org/apache/druid/storage/google/GoogleAccountConfig.java
+@@ -21,12 +21,9 @@
+ 
+ import com.fasterxml.jackson.annotation.JsonProperty;
+ 
+-import javax.validation.constraints.NotNull;
+-
+ public class GoogleAccountConfig
+ {
+   @JsonProperty
+-  @NotNull
+   private String bucket;
+ 
+   @JsonProperty
+diff --git a/extensions-core/google-extensions/src/main/java/org/apache/druid/storage/google/GoogleDataSegmentKiller.java b/extensions-core/google-extensions/src/main/java/org/apache/druid/storage/google/GoogleDataSegmentKiller.java
+index 1c50f52e7b73..c0dc4c8ea33b 100644
+--- a/extensions-core/google-extensions/src/main/java/org/apache/druid/storage/google/GoogleDataSegmentKiller.java
++++ b/extensions-core/google-extensions/src/main/java/org/apache/druid/storage/google/GoogleDataSegmentKiller.java
+@@ -22,6 +22,7 @@
+ import com.google.api.client.http.HttpResponseException;
+ import com.google.common.base.Predicates;
+ import com.google.inject.Inject;
++import org.apache.druid.java.util.common.ISE;
+ import org.apache.druid.java.util.common.MapUtils;
+ import org.apache.druid.java.util.common.RE;
+ import org.apache.druid.java.util.common.RetryUtils;
+@@ -104,6 +105,10 @@ private void deleteIfPresent(String bucket, String path) throws IOException
+   @Override
+   public void killAll() throws IOException
+   {
++    if (accountConfig.getBucket() == null || accountConfig.getPrefix() == null) {
++      throw new ISE(
++          "Cannot delete all segment files from Google Deep Storage since druid.google.bucket and druid.google.prefix are not both set.");
++    }
+     LOG.info(
+         "Deleting all segment files from gs location [bucket: '%s' prefix: '%s']",
+         accountConfig.getBucket(),
+diff --git a/extensions-core/google-extensions/src/test/java/org/apache/druid/storage/google/GoogleDataSegmentKillerTest.java b/extensions-core/google-extensions/src/test/java/org/apache/druid/storage/google/GoogleDataSegmentKillerTest.java
+index 82cda77a0182..97a0e61dce3f 100644
+--- a/extensions-core/google-extensions/src/test/java/org/apache/druid/storage/google/GoogleDataSegmentKillerTest.java
++++ b/extensions-core/google-extensions/src/test/java/org/apache/druid/storage/google/GoogleDataSegmentKillerTest.java
+@@ -28,6 +28,7 @@
+ import com.google.api.services.storage.model.StorageObject;
+ import com.google.common.collect.ImmutableList;
+ import com.google.common.collect.ImmutableMap;
++import org.apache.druid.java.util.common.ISE;
+ import org.apache.druid.java.util.common.Intervals;
+ import org.apache.druid.java.util.common.StringUtils;
+ import org.apache.druid.segment.loading.DataSegmentKiller;
+@@ -142,6 +143,29 @@ public void killRetryWithErrorTest() throws SegmentLoadingException, IOException
+     verifyAll();
+   }
+ 
++  @Test
++  public void test_killAll_accountConfigWithNullBucketAndPrefix_throwsISEException() throws IOException
++  {
++
++    EasyMock.expect(accountConfig.getBucket()).andReturn(null).atLeastOnce();
++    EasyMock.expect(accountConfig.getPrefix()).andReturn(null).anyTimes();
++
++    boolean thrownISEException = false;
++
++    try {
++      GoogleDataSegmentKiller killer = new GoogleDataSegmentKiller(storage, accountConfig, inputDataConfig);
++      EasyMock.replay(storage, inputDataConfig, accountConfig);
++
++      killer.killAll();
++    }
++    catch (ISE e) {
++      thrownISEException = true;
++    }
++
++    Assert.assertTrue(thrownISEException);
++    EasyMock.verify(accountConfig, inputDataConfig, storage);
++  }
++
+   @Test
+   public void test_killAll_noException_deletesAllTaskLogs() throws IOException
+   {
+diff --git a/extensions-core/s3-extensions/src/main/java/org/apache/druid/storage/s3/S3DataSegmentKiller.java b/extensions-core/s3-extensions/src/main/java/org/apache/druid/storage/s3/S3DataSegmentKiller.java
+index cffc3d36399f..8a24dc74c696 100644
+--- a/extensions-core/s3-extensions/src/main/java/org/apache/druid/storage/s3/S3DataSegmentKiller.java
++++ b/extensions-core/s3-extensions/src/main/java/org/apache/druid/storage/s3/S3DataSegmentKiller.java
+@@ -22,6 +22,7 @@
+ import com.amazonaws.AmazonServiceException;
+ import com.google.common.base.Predicates;
+ import com.google.inject.Inject;
++import org.apache.druid.java.util.common.ISE;
+ import org.apache.druid.java.util.common.MapUtils;
+ import org.apache.druid.java.util.common.logger.Logger;
+ import org.apache.druid.segment.loading.DataSegmentKiller;
+@@ -82,6 +83,10 @@ public void kill(DataSegment segment) throws SegmentLoadingException
+   @Override
+   public void killAll() throws IOException
+   {
++    if (segmentPusherConfig.getBucket() == null || segmentPusherConfig.getBaseKey() == null) {
++      throw new ISE(
++          "Cannot delete all segment from S3 Deep Storage since druid.storage.bucket and druid.storage.baseKey are not both set.");
++    }
+     log.info("Deleting all segment files from s3 location [bucket: '%s' prefix: '%s']",
+              segmentPusherConfig.getBucket(), segmentPusherConfig.getBaseKey()
+     );
+diff --git a/extensions-core/s3-extensions/src/test/java/org/apache/druid/storage/s3/S3DataSegmentKillerTest.java b/extensions-core/s3-extensions/src/test/java/org/apache/druid/storage/s3/S3DataSegmentKillerTest.java
+index 6260d3a25d26..2e029fe587e4 100644
+--- a/extensions-core/s3-extensions/src/test/java/org/apache/druid/storage/s3/S3DataSegmentKillerTest.java
++++ b/extensions-core/s3-extensions/src/test/java/org/apache/druid/storage/s3/S3DataSegmentKillerTest.java
+@@ -24,6 +24,7 @@
+ import com.amazonaws.services.s3.model.S3ObjectSummary;
+ import com.google.common.collect.ImmutableList;
+ import com.google.common.collect.ImmutableMap;
++import org.apache.druid.java.util.common.ISE;
+ import org.apache.druid.java.util.common.StringUtils;
+ import org.easymock.EasyMock;
+ import org.easymock.EasyMockRunner;
+@@ -59,6 +60,30 @@ public class S3DataSegmentKillerTest extends EasyMockSupport
+ 
+   private S3DataSegmentKiller segmentKiller;
+ 
++  @Test
++  public void test_killAll_accountConfigWithNullBucketAndBaseKey_throwsISEException() throws IOException
++  {
++    EasyMock.expect(segmentPusherConfig.getBucket()).andReturn(null);
++    EasyMock.expectLastCall().atLeastOnce();
++    EasyMock.expect(segmentPusherConfig.getBaseKey()).andReturn(null);
++    EasyMock.expectLastCall().anyTimes();
++
++    boolean thrownISEException = false;
++
++    try {
++
++      EasyMock.replay(s3Client, segmentPusherConfig, inputDataConfig);
++
++      segmentKiller = new S3DataSegmentKiller(s3Client, segmentPusherConfig, inputDataConfig);
++      segmentKiller.killAll();
++    }
++    catch (ISE e) {
++      thrownISEException = true;
++    }
++    Assert.assertTrue(thrownISEException);
++    EasyMock.verify(s3Client, segmentPusherConfig, inputDataConfig);
++  }
++
+   @Test
+   public void test_killAll_noException_deletesAllSegments() throws IOException
+   {

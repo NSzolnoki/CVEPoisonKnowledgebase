@@ -1,0 +1,20 @@
+{
+    "original_source": {
+        "database(url)": "https://github.com/SAP/project-kb",
+        "software_system(CPE)": [],
+        "fix_commit": "https://github.com/cloudfoundry/uaa/commit/17fc5709ab9f2213bca36c1a82b1f900f6f9b05f",
+        "version_end_excluding": {},
+        "path": {
+            "file_path": "uaa/src/test/java/org/cloudfoundry/identity/uaa/mock/zones/IdentityZoneEndpointDocs.java"
+        }
+    },
+    "programming_language": "JAVA",
+    "licences": {
+        "database": "Apache",
+        "affected_repository": "Apache License 2.0"
+    },
+    "related_vulnerability_entry": {
+        "CVE": [],
+        "CWE": []
+    }
+}

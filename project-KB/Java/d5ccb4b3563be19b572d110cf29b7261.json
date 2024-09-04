@@ -1,0 +1,20 @@
+{
+    "original_source": {
+        "database(url)": "https://github.com/SAP/project-kb",
+        "software_system(CPE)": [],
+        "fix_commit": "https://github.com/apache/kylin/commit/ae63d708bd4e865475b3ddd8cd2d4c084f4e29d3",
+        "version_end_excluding": {},
+        "path": {
+            "file_path": "server-base/src/main/java/org/apache/kylin/rest/service/CubeService.java"
+        }
+    },
+    "programming_language": "JAVA",
+    "licences": {
+        "database": "Apache",
+        "affected_repository": "Apache License 2.0"
+    },
+    "related_vulnerability_entry": {
+        "CVE": [],
+        "CWE": []
+    }
+}

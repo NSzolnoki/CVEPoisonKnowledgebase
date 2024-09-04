@@ -1,0 +1,20 @@
+{
+    "original_source": {
+        "database(url)": "https://github.com/SAP/project-kb",
+        "software_system(CPE)": [],
+        "fix_commit": "https://github.com/spring-projects/spring-amqp/commit/b898ca7ce9d9e326151ed276f1cd87fa17aa2d12",
+        "version_end_excluding": {},
+        "path": {
+            "file_path": "spring-amqp/src/main/java/org/springframework/amqp/support/converter/WhiteListDeserializingMessageConverter.java"
+        }
+    },
+    "programming_language": "JAVA",
+    "licences": {
+        "database": "Apache",
+        "affected_repository": "Apache License 2.0"
+    },
+    "related_vulnerability_entry": {
+        "CVE": [],
+        "CWE": []
+    }
+}

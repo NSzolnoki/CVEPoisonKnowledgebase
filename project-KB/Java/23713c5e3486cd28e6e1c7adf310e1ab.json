@@ -1,0 +1,30 @@
+{
+    "original_source": {
+        "database(url)": "https://github.com/SAP/project-kb",
+        "software_system(CPE)": [
+            "cpe:2.3:a:pivotal_software:spring_data_rest:*:*:*:*:*:*:*:*",
+            "cpe:2.3:a:pivotal_software:spring_data_commons:*:*:*:*:*:*:*:*",
+            "cpe:2.3:a:xmlbeam:xmlbeam:*:*:*:*:*:*:*:*"
+        ],
+        "fix_commit": "https://github.com/SvenEwald/xmlbeam/commit/f8e943f44961c14cf1316deb56280f7878702ee1",
+        "version_end_excluding": {
+            "pivotal_software:spring_data_commons": "unknown"
+        },
+        "path": {
+            "file_path": "src/main/java/org/xmlbeam/config/DefaultXMLFactoriesConfig.java"
+        }
+    },
+    "programming_language": "JAVA",
+    "licences": {
+        "database": "Apache",
+        "affected_repository": "Apache License 2.0"
+    },
+    "related_vulnerability_entry": {
+        "CVE": [
+            "CVE-2018-1259"
+        ],
+        "CWE": [
+            "CWE-611"
+        ]
+    }
+}

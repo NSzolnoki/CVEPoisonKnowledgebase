@@ -1,0 +1,27 @@
+{
+    "original_source": {
+        "database(url)": "https://github.com/SAP/project-kb",
+        "software_system(CPE)": [
+            "cpe:2.3:a:apache:cassandra:*:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:cassandra:*:*:*:*:*:*:*:*"
+        ],
+        "fix_commit": "https://github.com/apache/cassandra/commit/d28f769fc6dae2ddbc150723a4069c765fc80c08",
+        "version_end_excluding": {
+            "apache:cassandra": "2.1.22"
+        },
+        "path": {
+            "file_path": "src/java/org/apache/cassandra/service/CassandraDaemon.java"
+        }
+    },
+    "programming_language": "JAVA",
+    "licences": {
+        "database": "Apache",
+        "affected_repository": "Apache License 2.0"
+    },
+    "related_vulnerability_entry": {
+        "CVE": [
+            "CVE-2020-13946"
+        ],
+        "CWE": []
+    }
+}

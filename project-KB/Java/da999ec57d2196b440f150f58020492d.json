@@ -1,0 +1,20 @@
+{
+    "original_source": {
+        "database(url)": "https://github.com/SAP/project-kb",
+        "software_system(CPE)": [],
+        "fix_commit": "https://github.com/FasterXML/jackson-databind/commit/f031f27a31625d07922bdd090664c69544200a5d",
+        "version_end_excluding": {},
+        "path": {
+            "file_path": "src/main/java/com/fasterxml/jackson/databind/deser/BeanDeserializerFactory.java"
+        }
+    },
+    "programming_language": "JAVA",
+    "licences": {
+        "database": "Apache",
+        "affected_repository": "Apache License 2.0"
+    },
+    "related_vulnerability_entry": {
+        "CVE": [],
+        "CWE": []
+    }
+}

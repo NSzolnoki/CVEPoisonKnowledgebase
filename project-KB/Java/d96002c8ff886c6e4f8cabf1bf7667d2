@@ -1,0 +1,51 @@
+diff --git a/java/org/apache/coyote/http2/Stream.java b/java/org/apache/coyote/http2/Stream.java
+index 058ab57de09c..31ae34ee9ad6 100644
+--- a/java/org/apache/coyote/http2/Stream.java
++++ b/java/org/apache/coyote/http2/Stream.java
+@@ -218,7 +218,12 @@ private synchronized int reserveWindowSize(int reservation, boolean block) throw
+             }
+             try {
+                 if (block) {
+-                    wait(handler.getProtocol().getStreamWriteTimeout());
++                    long writeTimeout = handler.getProtocol().getStreamWriteTimeout();
++                    if (writeTimeout < 0) {
++                        wait();
++                    } else {
++                        wait(writeTimeout);
++                    }
+                     windowSize = getWindowSize();
+                     if (windowSize == 0) {
+                         String msg = sm.getString("stream.writeTimeout");
+@@ -987,7 +992,12 @@ public int doRead(ByteChunk chunk) throws IOException {
+                             log.debug(sm.getString("stream.inputBuffer.empty"));
+                         }
+ 
+-                        inBuffer.wait(handler.getProtocol().getStreamReadTimeout());
++                        long readTimeout = handler.getProtocol().getStreamReadTimeout();
++                        if (readTimeout < 0) {
++                            inBuffer.wait();
++                        } else {
++                            inBuffer.wait(readTimeout);
++                        }
+ 
+                         if (resetReceived) {
+                             throw new IOException(sm.getString("stream.inputBuffer.reset"));
+@@ -1055,11 +1065,15 @@ public int doRead(ApplicationBufferHandler applicationBufferHandler) throws IOEx
+                             log.debug(sm.getString("stream.inputBuffer.empty"));
+                         }
+ 
+-                        inBuffer.wait(handler.getProtocol().getStreamReadTimeout());
++                        long readTimeout = handler.getProtocol().getStreamReadTimeout();
++                        if (readTimeout < 0) {
++                            inBuffer.wait();
++                        } else {
++                            inBuffer.wait(readTimeout);
++                        }
+ 
+                         if (resetReceived) {
+-                            // TODO: i18n
+-                            throw new IOException("HTTP/2 Stream reset");
++                            throw new IOException(sm.getString("stream.inputBuffer.reset"));
+                         }
+ 
+                         if (inBuffer.position() == 0) {

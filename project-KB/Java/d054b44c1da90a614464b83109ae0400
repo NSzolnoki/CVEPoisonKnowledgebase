@@ -1,0 +1,14 @@
+diff --git a/systests/tests/src/test/java/org/apache/cxf/fediz/integrationtests/AbstractTests.java b/systests/tests/src/test/java/org/apache/cxf/fediz/integrationtests/AbstractTests.java
+index 8daaa14a8..9104d645a 100644
+--- a/systests/tests/src/test/java/org/apache/cxf/fediz/integrationtests/AbstractTests.java
++++ b/systests/tests/src/test/java/org/apache/cxf/fediz/integrationtests/AbstractTests.java
+@@ -798,7 +798,8 @@ public void testCSRFAttack() throws Exception {
+             // expected
+             Assert.assertTrue(ex.getMessage().contains("401 Unauthorized")
+                               || ex.getMessage().contains("401 Authentication Failed")
+-                              || ex.getMessage().contains("403 Forbidden"));
++                              || ex.getMessage().contains("403 Forbidden")
++                              || ex.getMessage().contains("408 Request Timeout"));
+         }
+         
+         // webClient.close();

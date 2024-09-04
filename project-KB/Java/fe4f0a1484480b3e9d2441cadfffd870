@@ -1,0 +1,157 @@
+diff --git a/ChangeLog b/ChangeLog
+index 7d490cd650..16a19c7f5c 100644
+--- a/ChangeLog
++++ b/ChangeLog
+@@ -1,3 +1,9 @@
++2019-04-22  Dirk Frederickx (brushed AT apache DOT org)
++
++       * 2.11.0-M4-git-04
++
++       * [JSPWIKI-1107] uploading attachments with illegal filename causes XSS vulnerability
++
+ 2019-04-05  Dirk Frederickx (brushed AT apache DOT org)
+ 
+        * 2.11.0-M4-git-03
+diff --git a/jspwiki-main/src/main/java/org/apache/wiki/Release.java b/jspwiki-main/src/main/java/org/apache/wiki/Release.java
+index 7e4d610583..46d971ffc4 100644
+--- a/jspwiki-main/src/main/java/org/apache/wiki/Release.java
++++ b/jspwiki-main/src/main/java/org/apache/wiki/Release.java
+@@ -72,7 +72,7 @@ public final class Release {
+      *  <p>
+      *  If the build identifier is empty, it is not added.
+      */
+-    public static final String     BUILD         = "03";
++    public static final String     BUILD         = "04";
+ 
+     /**
+      *  This is the generic version string you should use when printing out the version.  It is of
+diff --git a/jspwiki-main/src/main/java/org/apache/wiki/tags/LinkToTag.java b/jspwiki-main/src/main/java/org/apache/wiki/tags/LinkToTag.java
+index be25444d00..37a2cbdcf1 100644
+--- a/jspwiki-main/src/main/java/org/apache/wiki/tags/LinkToTag.java
++++ b/jspwiki-main/src/main/java/org/apache/wiki/tags/LinkToTag.java
+@@ -1,4 +1,4 @@
+-/* 
++/*
+     Licensed to the Apache Software Foundation (ASF) under one
+     or more contributor license agreements.  See the NOTICE file
+     distributed with this work for additional information
+@@ -14,7 +14,7 @@ Licensed to the Apache Software Foundation (ASF) under one
+     "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+     KIND, either express or implied.  See the License for the
+     specific language governing permissions and limitations
+-    under the License.  
++    under the License.
+  */
+ package org.apache.wiki.tags;
+ 
+@@ -45,11 +45,11 @@ public class LinkToTag
+     extends WikiLinkTag
+ {
+     private static final long serialVersionUID = 0L;
+-    
++
+     private String m_version = null;
+     public String m_title = "";
+     public String m_accesskey = "";
+-    
++
+     public void initTag()
+     {
+         super.initTag();
+@@ -76,7 +76,7 @@ public void setAccesskey( String access )
+         m_accesskey = access;
+     }
+ 
+-    
++
+     public int doWikiStartTag()
+         throws IOException
+     {
+@@ -105,7 +105,7 @@ public int doWikiStartTag()
+ 
+         if( isattachment )
+         {
+-            url = m_wikiContext.getURL(WikiContext.ATTACH,pageName,
++            url = m_wikiContext.getURL(WikiContext.ATTACH, pageName,
+                                        (getVersion() != null) ? "version="+getVersion() : null );
+             linkclass = "attachment";
+         }
+@@ -123,7 +123,7 @@ public int doWikiStartTag()
+         switch( m_format )
+         {
+           case ANCHOR:
+-            out.print("<a class=\""+linkclass+"\" href=\""+url+"\" accesskey=\"" 
++            out.print("<a class=\""+linkclass+"\" href=\""+url+"\" accesskey=\""
+                           + m_accesskey + "\" title=\"" + m_title + "\">");
+             break;
+           case URL:
+diff --git a/jspwiki-war/src/main/scripts/dialog/Dialog.Selection.js b/jspwiki-war/src/main/scripts/dialog/Dialog.Selection.js
+index ac4a89a6f8..3001f87b6b 100644
+--- a/jspwiki-war/src/main/scripts/dialog/Dialog.Selection.js
++++ b/jspwiki-war/src/main/scripts/dialog/Dialog.Selection.js
+@@ -95,7 +95,15 @@ Dialog.Selection = new Class({
+         if( typeOf(content) == "string" ){ content = content.split("|"); }
+ 
+         //convert [array] into {object} with name:value pairs
+-        if( typeOf(content) == "array" ){ content = content.associate(content); }
++        if( typeOf(content) == "array" ){
++
++            //value should be html escaped !!
++            content = content.reduce( function(accu, item){
++                accu[item] = item.escapeHtml();
++                return accu;
++            }, {});
++
++        }
+ 
+         //convert {object} in DOM elements (ul/li collection)
+         if( typeOf(content) == "object" ){
+diff --git a/jspwiki-war/src/main/scripts/moo-extend/String.Extend.js b/jspwiki-war/src/main/scripts/moo-extend/String.Extend.js
+index a990bdd4d0..f7b7b594a2 100644
+--- a/jspwiki-war/src/main/scripts/moo-extend/String.Extend.js
++++ b/jspwiki-war/src/main/scripts/moo-extend/String.Extend.js
+@@ -44,6 +44,16 @@ String.implement({
+         });
+     },
+ 
++    /*
++    Function: escapeHtml
++    */
++    escapeHtml: function(){
++    	return this.replace(/[<>'"&]/g, function(s) {
++    	    return {'<':'&lt;','>':'&gt;',"'":'&apos;','"':'&quot;','&':'&amp;'}[s];
++	    	//return '&#' + s.charCodeAt(0) + ';';
++	    });
++    },
++
+     /*
+     Function: deCamelize
+         Convert camelCase string to space-separated set of words.
+diff --git a/jspwiki-war/src/main/webapp/templates/default/AttachmentTab.jsp b/jspwiki-war/src/main/webapp/templates/default/AttachmentTab.jsp
+index 42ebfd14cb..97da8108b5 100644
+--- a/jspwiki-war/src/main/webapp/templates/default/AttachmentTab.jsp
++++ b/jspwiki-war/src/main/webapp/templates/default/AttachmentTab.jsp
+@@ -121,7 +121,9 @@
+       <c:set var="parts" value="${fn:split(att.fileName, '.')}" />
+       <c:set var="type" value="${ fn:length(parts)>1 ? parts[fn:length(parts)-1] : ''}" />
+ 
+-      <td class="attach-name" title="${att.fileName}"><wiki:LinkTo>${att.fileName}</wiki:LinkTo></td>
++      <td class="attach-name" title="${att.fileName}">
++        <wiki:LinkTo>${fn:escapeXml(att.fileName)}</wiki:LinkTo>
++      </td>
+ 
+       <td><wiki:PageVersion /></td>
+ 
+diff --git a/jspwiki-war/src/main/webapp/templates/default/InfoContent.jsp b/jspwiki-war/src/main/webapp/templates/default/InfoContent.jsp
+index 5edc695c18..ffa3f2e8ce 100644
+--- a/jspwiki-war/src/main/webapp/templates/default/InfoContent.jsp
++++ b/jspwiki-war/src/main/webapp/templates/default/InfoContent.jsp
+@@ -340,7 +340,7 @@
+     <wiki:HistoryIterator id="att"><%-- <wiki:AttachmentsIterator id="att"> --%>
+     <tr>
+ 
+-      <td class="attach-name"><wiki:LinkTo version="${att.version}">${att.fileName}</wiki:LinkTo></td>
++      <td class="attach-name"><wiki:LinkTo version="${att.version}">${fn:escapeXml((att.fileName)}</wiki:LinkTo></td>
+ 
+       <td><wiki:PageVersion /></td>
+ 

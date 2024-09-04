@@ -1,0 +1,20 @@
+{
+    "original_source": {
+        "database(url)": "https://github.com/SAP/project-kb",
+        "software_system(CPE)": [],
+        "fix_commit": "https://github.com/apache/tomcat/commit/702bf15bea292915684d931526d95d4990b2e73d",
+        "version_end_excluding": {},
+        "path": {
+            "file_path": "test/org/apache/coyote/http11/TestInternalInputBuffer.java"
+        }
+    },
+    "programming_language": "JAVA",
+    "licences": {
+        "database": "Apache",
+        "affected_repository": "Apache License 2.0"
+    },
+    "related_vulnerability_entry": {
+        "CVE": [],
+        "CWE": []
+    }
+}

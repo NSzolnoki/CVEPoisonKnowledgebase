@@ -1,0 +1,20 @@
+{
+    "original_source": {
+        "database(url)": "https://github.com/SAP/project-kb",
+        "software_system(CPE)": [],
+        "fix_commit": "https://github.com/spring-projects/spring-framework/commit/1e42464c223d3c17ef4823faec416ff8d6db3030",
+        "version_end_excluding": {},
+        "path": {
+            "file_path": "spring-oxm/src/main/java/org/springframework/oxm/support/AbstractMarshaller.java"
+        }
+    },
+    "programming_language": "JAVA",
+    "licences": {
+        "database": "Apache",
+        "affected_repository": "Apache License 2.0"
+    },
+    "related_vulnerability_entry": {
+        "CVE": [],
+        "CWE": []
+    }
+}

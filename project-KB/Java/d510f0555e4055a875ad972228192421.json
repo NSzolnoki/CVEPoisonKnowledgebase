@@ -1,0 +1,20 @@
+{
+    "original_source": {
+        "database(url)": "https://github.com/SAP/project-kb",
+        "software_system(CPE)": [],
+        "fix_commit": "https://github.com/x-stream/xstream/commit/64533f1fe2ece82398a1478edc2d30478fb7cd11",
+        "version_end_excluding": {},
+        "path": {
+            "file_path": "xstream/src/java/com/thoughtworks/xstream/XStream.java"
+        }
+    },
+    "programming_language": "JAVA",
+    "licences": {
+        "database": "Apache",
+        "affected_repository": "Other"
+    },
+    "related_vulnerability_entry": {
+        "CVE": [],
+        "CWE": []
+    }
+}

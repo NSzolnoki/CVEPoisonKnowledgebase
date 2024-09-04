@@ -1,0 +1,20 @@
+{
+    "original_source": {
+        "database(url)": "https://github.com/SAP/project-kb",
+        "software_system(CPE)": [],
+        "fix_commit": "https://github.com/itext/itext7/commit/03c809e0a3bf70308f7b37c9920c4bebaca913f2",
+        "version_end_excluding": {},
+        "path": {
+            "file_path": "forms/src/main/java/com/itextpdf/forms/xfa/XfaForm.java"
+        }
+    },
+    "programming_language": "JAVA",
+    "licences": {
+        "database": "Apache",
+        "affected_repository": "Other"
+    },
+    "related_vulnerability_entry": {
+        "CVE": [],
+        "CWE": []
+    }
+}

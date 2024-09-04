@@ -1,0 +1,20 @@
+{
+    "original_source": {
+        "database(url)": "https://github.com/SAP/project-kb",
+        "software_system(CPE)": [],
+        "fix_commit": "https://github.com/x-stream/xstream/commit/9d70fd5e0520d4c857fb0842f2f1d3a3ac2ae5a0",
+        "version_end_excluding": {},
+        "path": {
+            "file_path": "xstream/src/java/com/thoughtworks/xstream/security/PrimitiveTypePermission.java"
+        }
+    },
+    "programming_language": "JAVA",
+    "licences": {
+        "database": "Apache",
+        "affected_repository": "Other"
+    },
+    "related_vulnerability_entry": {
+        "CVE": [],
+        "CWE": []
+    }
+}

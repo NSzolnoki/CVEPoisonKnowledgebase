@@ -1,0 +1,28 @@
+{
+    "original_source": {
+        "database(url)": "https://github.com/SAP/project-kb",
+        "software_system(CPE)": [
+            "cpe:2.3:a:squareup:retrofit:*:*:*:*:*:*:*:*"
+        ],
+        "fix_commit": "https://github.com/square/retrofit/commit/b9a7f6ad72073ddd40254c0058710e87a073047d",
+        "version_end_excluding": {
+            "squareup:retrofit": "2.5.0"
+        },
+        "path": {
+            "file_path": "retrofit/src/test/java/retrofit2/RequestFactoryTest.java"
+        }
+    },
+    "programming_language": "JAVA",
+    "licences": {
+        "database": "Apache",
+        "affected_repository": "Apache License 2.0"
+    },
+    "related_vulnerability_entry": {
+        "CVE": [
+            "CVE-2018-1000850"
+        ],
+        "CWE": [
+            "CWE-22"
+        ]
+    }
+}

@@ -1,0 +1,334 @@
+diff --git a/tls/src/main/java/org/bouncycastle/jsse/provider/ProvSSLContextSpi.java b/tls/src/main/java/org/bouncycastle/jsse/provider/ProvSSLContextSpi.java
+index afc9c63148..241f82e76b 100644
+--- a/tls/src/main/java/org/bouncycastle/jsse/provider/ProvSSLContextSpi.java
++++ b/tls/src/main/java/org/bouncycastle/jsse/provider/ProvSSLContextSpi.java
+@@ -329,9 +329,30 @@ private static String[] getKeysArray(Map<String, ?> m)
+         return getArray(m.keySet());
+     }
+ 
+-    static CipherSuiteInfo getCipherSuiteInfo(String cipherSuite)
++    static CipherSuiteInfo getCipherSuiteInfo(String cipherSuiteName)
+     {
+-        return SUPPORTED_CIPHERSUITE_MAP.get(cipherSuite);
++        return SUPPORTED_CIPHERSUITE_MAP.get(cipherSuiteName);
++    }
++
++    static String getCipherSuiteName(int cipherSuite)
++    {
++        // TODO[jsse] Place into "understood" cipher suite map
++        if (CipherSuite.TLS_NULL_WITH_NULL_NULL == cipherSuite)
++        {
++            return "TLS_NULL_WITH_NULL_NULL";
++        }
++        if (TlsUtils.isValidUint16(cipherSuite))
++        {
++            // TODO[jsse] Add CipherSuiteInfo index by 'int'
++            for (CipherSuiteInfo cipherSuiteInfo : SUPPORTED_CIPHERSUITE_MAP.values())
++            {
++                if (cipherSuiteInfo.getCipherSuite() == cipherSuite)
++                {
++                    return cipherSuiteInfo.getName();
++                }
++            }
++        }
++        return null;
+     }
+ 
+     static KeyManager[] getDefaultKeyManagers() throws Exception
+@@ -350,6 +371,21 @@ static TrustManager[] getDefaultTrustManagers() throws Exception
+         return tmf.getTrustManagers();
+     }
+ 
++    static String getProtocolVersionName(ProtocolVersion protocolVersion)
++    {
++        if (null != protocolVersion)
++        {
++            for (Map.Entry<String, ProtocolVersion> entry : SUPPORTED_PROTOCOLS.entrySet())
++            {
++                if (entry.getValue().equals(protocolVersion))
++                {
++                    return entry.getKey();
++                }
++            }
++        }
++        return "NONE";
++    }
++
+     protected final boolean isInFipsMode;
+     protected final TlsCryptoProvider cryptoProvider;
+     protected final String[] defaultProtocolsClient;
+@@ -382,27 +418,6 @@ ProvSSLSessionContext createSSLSessionContext()
+         return new ProvSSLSessionContext(this, crypto);
+     }
+ 
+-    String getCipherSuiteString(int suite)
+-    {
+-        // TODO[jsse] Place into "understood" cipher suite map
+-        if (CipherSuite.TLS_NULL_WITH_NULL_NULL == suite)
+-        {
+-            return "TLS_NULL_WITH_NULL_NULL";
+-        }
+-
+-        if (TlsUtils.isValidUint16(suite))
+-        {
+-            for (Map.Entry<String, CipherSuiteInfo> entry : supportedCipherSuites.entrySet())
+-            {
+-                if (entry.getValue().getCipherSuite() == suite)
+-                {
+-                    return entry.getKey();
+-                }
+-            }
+-        }
+-        return null;
+-    }
+-
+     String[] getDefaultCipherSuites()
+     {
+         return defaultCipherSuites.clone();
+@@ -428,21 +443,6 @@ String[] getDefaultProtocolsServer()
+         return defaultProtocolsServer;
+     }
+ 
+-    String getProtocolString(ProtocolVersion v)
+-    {
+-        if (v != null)
+-        {
+-            for (Map.Entry<String, ProtocolVersion> entry : SUPPORTED_PROTOCOLS.entrySet())
+-            {
+-                if (v.equals(entry.getValue()))
+-                {
+-                    return entry.getKey();
+-                }
+-            }
+-        }
+-        return null;
+-    }
+-
+     int[] getActiveCipherSuites(TlsCrypto crypto, ProvSSLParameters sslParameters,
+         ProtocolVersion[] activeProtocolVersions)
+     {
+@@ -583,8 +583,8 @@ void updateDefaultProtocols(ProvSSLParameters sslParameters, boolean isServer)
+     void validateNegotiatedCipherSuite(int cipherSuite)
+     {
+         // NOTE: The redundancy among these various checks is intentional
+-        String cs = getCipherSuiteString(cipherSuite);
+-        if (cs == null
++        String cs = getCipherSuiteName(cipherSuite);
++        if (null == cs
+             || !supportedCipherSuites.containsKey(cs)
+             || (isInFipsMode && !FipsUtils.isFipsCipherSuite(cs)))
+         {
+diff --git a/tls/src/main/java/org/bouncycastle/jsse/provider/ProvSSLSessionBase.java b/tls/src/main/java/org/bouncycastle/jsse/provider/ProvSSLSessionBase.java
+index e57e05a208..e29e9cdaed 100644
+--- a/tls/src/main/java/org/bouncycastle/jsse/provider/ProvSSLSessionBase.java
++++ b/tls/src/main/java/org/bouncycastle/jsse/provider/ProvSSLSessionBase.java
+@@ -19,6 +19,7 @@
+ import org.bouncycastle.tls.ProtocolVersion;
+ import org.bouncycastle.tls.RecordFormat;
+ import org.bouncycastle.tls.TlsUtils;
++import org.bouncycastle.tls.crypto.TlsCrypto;
+ import org.bouncycastle.util.Arrays;
+ 
+ abstract class ProvSSLSessionBase
+@@ -26,7 +27,8 @@ abstract class ProvSSLSessionBase
+ {
+     protected final Map<String, Object> valueMap = Collections.synchronizedMap(new HashMap<String, Object>());
+ 
+-    protected final ProvSSLSessionContext sslSessionContext;
++    protected ProvSSLSessionContext sslSessionContext;
++    protected final TlsCrypto tlsCrypto;
+     protected final String peerHost;
+     protected final int peerPort;
+     protected final long creationTime;
+@@ -38,6 +40,7 @@ abstract class ProvSSLSessionBase
+     ProvSSLSessionBase(ProvSSLSessionContext sslSessionContext, String peerHost, int peerPort)
+     {
+         this.sslSessionContext = sslSessionContext;
++        this.tlsCrypto = (null == sslSessionContext) ? null : sslSessionContext.getCrypto();
+         this.peerHost = peerHost;
+         this.peerPort = peerPort;
+         this.creationTime = System.currentTimeMillis();
+@@ -92,7 +95,7 @@ public int getApplicationBufferSize()
+ 
+     public String getCipherSuite()
+     {
+-        return sslSessionContext.getSSLContext().getCipherSuiteString(getCipherSuiteTLS());
++        return ProvSSLContextSpi.getCipherSuiteName(getCipherSuiteTLS());
+     }
+ 
+     public long getCreationTime()
+@@ -113,10 +116,13 @@ public long getLastAccessedTime()
+ 
+     public Certificate[] getLocalCertificates()
+     {
+-        X509Certificate[] chain = JsseUtils.getX509CertificateChain(sslSessionContext.getCrypto(), getLocalCertificateTLS());
+-        if (null != chain && chain.length > 0)
++        if (null != tlsCrypto)
+         {
+-            return chain;
++            X509Certificate[] chain = JsseUtils.getX509CertificateChain(tlsCrypto, getLocalCertificateTLS());
++            if (null != chain && chain.length > 0)
++            {
++                return chain;
++            }
+         }
+ 
+         return null;
+@@ -124,7 +130,12 @@ public Certificate[] getLocalCertificates()
+ 
+     public Principal getLocalPrincipal()
+     {
+-        return JsseUtils.getSubject(sslSessionContext.getCrypto(), getLocalCertificateTLS());
++        if (null != tlsCrypto)
++        {
++            return JsseUtils.getSubject(tlsCrypto, getLocalCertificateTLS());
++        }
++
++        return null;
+     }
+ 
+     public int getPacketBufferSize()
+@@ -167,10 +178,13 @@ public javax.security.cert.X509Certificate[] getPeerCertificateChain() throws SS
+ 
+     public Certificate[] getPeerCertificates() throws SSLPeerUnverifiedException
+     {
+-        X509Certificate[] chain = JsseUtils.getX509CertificateChain(sslSessionContext.getCrypto(), getPeerCertificateTLS());
+-        if (null != chain && chain.length > 0)
++        if (null != tlsCrypto)
+         {
+-            return chain;
++            X509Certificate[] chain = JsseUtils.getX509CertificateChain(tlsCrypto, getPeerCertificateTLS());
++            if (null != chain && chain.length > 0)
++            {
++                return chain;
++            }
+         }
+ 
+         throw new SSLPeerUnverifiedException("No peer identity established");
+@@ -178,10 +192,13 @@ public Certificate[] getPeerCertificates() throws SSLPeerUnverifiedException
+ 
+     public Principal getPeerPrincipal() throws SSLPeerUnverifiedException
+     {
+-        X500Principal principal = JsseUtils.getSubject(sslSessionContext.getCrypto(), getPeerCertificateTLS());
+-        if (null != principal)
++        if (null != tlsCrypto)
+         {
+-            return principal;
++            X500Principal principal = JsseUtils.getSubject(tlsCrypto, getPeerCertificateTLS());
++            if (null != principal)
++            {
++                return principal;
++            }
+         }
+ 
+         throw new SSLPeerUnverifiedException("No peer identity established");
+@@ -199,7 +216,7 @@ public int getPeerPort()
+ 
+     public String getProtocol()
+     {
+-        return sslSessionContext.getSSLContext().getProtocolString(getProtocolTLS());
++        return ProvSSLContextSpi.getProtocolVersionName(getProtocolTLS());
+     }
+ 
+     public SSLSessionContext getSessionContext()
+@@ -232,14 +249,20 @@ public int hashCode()
+         return Arrays.hashCode(getIDArray());
+     }
+ 
+-    public void invalidate()
++    public synchronized void invalidate()
+     {
+-        sslSessionContext.removeSession(getIDArray());
++        // NOTE: The NULL_SESSION never actually gets invalidated (consistent with SunJSSE)
+ 
+-        this.invalidated = true;
++        if (null != sslSessionContext)
++        {
++            sslSessionContext.removeSession(getIDArray());
++
++            this.sslSessionContext = null;
++            this.invalidated = true;
++        }
+     }
+ 
+-    public boolean isValid()
++    public synchronized boolean isValid()
+     {
+         byte[] sessionID = getIDArray();
+ 
+diff --git a/tls/src/main/java/org/bouncycastle/jsse/provider/ProvTlsClient.java b/tls/src/main/java/org/bouncycastle/jsse/provider/ProvTlsClient.java
+index 335d979c1e..5363b836d8 100644
+--- a/tls/src/main/java/org/bouncycastle/jsse/provider/ProvTlsClient.java
++++ b/tls/src/main/java/org/bouncycastle/jsse/provider/ProvTlsClient.java
+@@ -360,7 +360,8 @@ public void notifySecureRenegotiation(boolean secureRenegotiation) throws IOExce
+     {
+         if (!secureRenegotiation)
+         {
+-            boolean allowLegacyHelloMessages = PropertyUtils.getBooleanSystemProperty("sun.security.ssl.allowLegacyHelloMessages", true);
++            boolean allowLegacyHelloMessages = PropertyUtils.getBooleanSystemProperty(
++                "sun.security.ssl.allowLegacyHelloMessages", true);
+             if (!allowLegacyHelloMessages)
+             {
+                 /*
+@@ -377,7 +378,9 @@ public void notifySelectedCipherSuite(int selectedCipherSuite)
+     {
+         manager.getContext().validateNegotiatedCipherSuite(selectedCipherSuite);
+ 
+-        LOG.fine("Client notified of selected cipher suite: " + manager.getContext().getCipherSuiteString(selectedCipherSuite));
++        String selectedCipherSuiteName = ProvSSLContextSpi.getCipherSuiteName(selectedCipherSuite);
++
++        LOG.fine("Client notified of selected cipher suite: " + selectedCipherSuiteName);
+ 
+         super.notifySelectedCipherSuite(selectedCipherSuite);
+     }
+@@ -385,9 +388,9 @@ public void notifySelectedCipherSuite(int selectedCipherSuite)
+     @Override
+     public void notifyServerVersion(ProtocolVersion serverVersion) throws IOException
+     {
+-        String protocolString = manager.getContext().getProtocolString(serverVersion);
++        String serverVersionName = ProvSSLContextSpi.getProtocolVersionName(serverVersion);
+ 
+-        LOG.fine("Client notified of selected protocol version: " + protocolString);
++        LOG.fine("Client notified of selected protocol version: " + serverVersionName);
+ 
+         super.notifyServerVersion(serverVersion);
+     }
+diff --git a/tls/src/main/java/org/bouncycastle/jsse/provider/ProvTlsServer.java b/tls/src/main/java/org/bouncycastle/jsse/provider/ProvTlsServer.java
+index ddd918e1e1..b3879eba36 100644
+--- a/tls/src/main/java/org/bouncycastle/jsse/provider/ProvTlsServer.java
++++ b/tls/src/main/java/org/bouncycastle/jsse/provider/ProvTlsServer.java
+@@ -124,8 +124,8 @@ protected boolean selectCipherSuite(int cipherSuite) throws IOException
+     {
+         if (!selectCredentials(cipherSuite))
+         {
+-            LOG.finer("Server found no credentials for cipher suite: "
+-                + manager.getContext().getCipherSuiteString(cipherSuite));
++            String cipherSuiteName = ProvSSLContextSpi.getCipherSuiteName(cipherSuite);
++            LOG.finer("Server found no credentials for cipher suite: " + cipherSuiteName);
+             return false;
+         }
+ 
+@@ -289,8 +289,9 @@ public int getSelectedCipherSuite() throws IOException
+         keyManagerMissCache = new HashSet<String>();
+ 
+         int selectedCipherSuite = super.getSelectedCipherSuite();
++        String selectedCipherSuiteName = ProvSSLContextSpi.getCipherSuiteName(selectedCipherSuite);
+ 
+-        LOG.fine("Server selected cipher suite: " + manager.getContext().getCipherSuiteString(selectedCipherSuite));
++        LOG.fine("Server selected cipher suite: " + selectedCipherSuiteName);
+ 
+         keyManagerMissCache = null;
+ 
+@@ -377,10 +378,9 @@ public void notifyAlertReceived(short alertLevel, short alertDescription)
+     public ProtocolVersion getServerVersion() throws IOException
+     {
+         ProtocolVersion serverVersion = super.getServerVersion();
++        String serverVersionName = ProvSSLContextSpi.getProtocolVersionName(serverVersion);
+ 
+-        String protocolString = manager.getContext().getProtocolString(serverVersion);
+-
+-        LOG.fine("Server selected protocol version: " + protocolString);
++        LOG.fine("Server selected protocol version: " + serverVersionName);
+ 
+         return serverVersion;
+     }

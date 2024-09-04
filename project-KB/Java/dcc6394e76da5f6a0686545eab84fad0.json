@@ -1,0 +1,27 @@
+{
+    "original_source": {
+        "database(url)": "https://github.com/SAP/project-kb",
+        "software_system(CPE)": [
+            "cpe:2.3:a:eclipse:jetty:*:*:*:*:*:*:*:*",
+            "cpe:2.3:a:eclipse:jetty:*:*:*:*:*:*:*:*"
+        ],
+        "fix_commit": "https://github.com/eclipse/jetty.project/commit/a0b8321ef452dddff9bc6c14e3ac0108239bfa2c",
+        "version_end_excluding": {
+            "eclipse:jetty": "unknown"
+        },
+        "path": {
+            "file_path": "jetty-server/src/test/java/org/eclipse/jetty/server/session/FileSessionManagerTest.java"
+        }
+    },
+    "programming_language": "JAVA",
+    "licences": {
+        "database": "Apache",
+        "affected_repository": "Other"
+    },
+    "related_vulnerability_entry": {
+        "CVE": [
+            "CVE-2018-12538"
+        ],
+        "CWE": []
+    }
+}

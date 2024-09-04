@@ -1,0 +1,19 @@
+diff --git a/src/main/java/org/owasp/esapi/Encoder.java b/src/main/java/org/owasp/esapi/Encoder.java
+index 168fb32ca..8a0ccd94e 100644
+--- a/src/main/java/org/owasp/esapi/Encoder.java
++++ b/src/main/java/org/owasp/esapi/Encoder.java
+@@ -294,11 +294,11 @@ public interface Encoder {
+      * as input – even if the user input is encoded.
+      * 
+      * For example:
+-     * 
++     * <pre>
+      *  <script>
+-     *  window.setInterval('<%= EVEN IF YOU ENCODE UNTRUSTED DATA YOU ARE XSSED HERE %>');
++     *     window.setInterval('<%= EVEN IF YOU ENCODE UNTRUSTED DATA YOU ARE XSSED HERE %>');
+      *  </script>
+-     * 
++     * </pre>
+      * @param input 
+      *          the text to encode for JavaScript
+      * 

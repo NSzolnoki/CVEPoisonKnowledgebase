@@ -1,0 +1,27 @@
+{
+    "original_source": {
+        "database(url)": "https://github.com/SAP/project-kb",
+        "software_system(CPE)": [
+            "cpe:2.3:a:apache:camel:*:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:camel:*:*:*:*:*:*:*:*"
+        ],
+        "fix_commit": "https://github.com/apache/camel/commit/6b979d07fd4be6ac913368f2abeae690d3325d37",
+        "version_end_excluding": {
+            "apache:camel": "unknown"
+        },
+        "path": {
+            "file_path": "components/camel-snakeyaml/src/main/java/org/apache/camel/component/snakeyaml/SnakeYAMLDataFormat.java"
+        }
+    },
+    "programming_language": "JAVA",
+    "licences": {
+        "database": "Apache",
+        "affected_repository": "Apache License 2.0"
+    },
+    "related_vulnerability_entry": {
+        "CVE": [
+            "CVE-2017-3159"
+        ],
+        "CWE": []
+    }
+}

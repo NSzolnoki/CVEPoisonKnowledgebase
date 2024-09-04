@@ -1,0 +1,20 @@
+{
+    "original_source": {
+        "database(url)": "https://github.com/SAP/project-kb",
+        "software_system(CPE)": [],
+        "fix_commit": "https://github.com/spring-projects/spring-webflow/commit/ec300fc0dc39dbc78d6292a2a3a82f2f5197fc03",
+        "version_end_excluding": {},
+        "path": {
+            "file_path": "spring-webflow/src/main/java/org/springframework/webflow/mvc/view/AbstractMvcView.java"
+        }
+    },
+    "programming_language": "JAVA",
+    "licences": {
+        "database": "Apache",
+        "affected_repository": "Apache License 2.0"
+    },
+    "related_vulnerability_entry": {
+        "CVE": [],
+        "CWE": []
+    }
+}

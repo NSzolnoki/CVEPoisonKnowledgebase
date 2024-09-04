@@ -1,0 +1,31 @@
+diff --git a/pom.xml b/pom.xml
+index 96e729e56ce..3438822d815 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -1015,7 +1015,7 @@
+     <repository>
+       <id>central</id>
+       <name>Central Repository</name>
+-      <url>http://repo.maven.apache.org/maven2</url>
++      <url>https://repo.maven.apache.org/maven2</url>
+       <layout>default</layout>
+       <snapshots>
+         <enabled>false</enabled>
+@@ -1024,7 +1024,7 @@
+ 
+     <repository>
+       <id>conjars</id>
+-      <url>http://conjars.org/repo/</url>
++      <url>https://conjars.org/repo/</url>
+     </repository>
+ 
+     <repository>
+@@ -1040,7 +1040,7 @@
+     <repository>
+       <id>kyligence</id>
+       <name>Kyligence Repository</name>
+-      <url>http://repository.kyligence.io/repository/maven-public/
++      <url>https://repository.kyligence.io/repository/maven-public/
+       </url>
+       <releases>
+         <enabled>true</enabled>

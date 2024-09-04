@@ -1,0 +1,53 @@
+diff --git a/.gitignore b/.gitignore
+index 5e5e631f1a..001b31bf71 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -4,4 +4,6 @@ target
+ .project
+ nb-configuration.xml
+ **/*.iml
+-.idea
+\ No newline at end of file
++.idea
++.metadata
++.checkstyle
+\ No newline at end of file
+diff --git a/ChangeLog b/ChangeLog
+index f0d003d42c..f71aff639c 100644
+--- a/ChangeLog
++++ b/ChangeLog
+@@ -1,3 +1,7 @@
++2019-03-19  Juan Pablo Santos (juanpablo AT apache DOT org)
++
++       * JSPWIKI-1094: mvn eclipse:eclipse fails, patch provided by Christian Fröhler, thanks! (no version bump)
++
+ 2019-03-17  Dirk Frederickx (brushed AT apache DOT org)
+ 
+        * 2.11.0-M3-git-03
+@@ -9,7 +13,7 @@
+        * 2.11.0-M3-git-02
+ 
+        * Adding Drag & Drop capabilities to the standard JSPWiki editor:
+-         links automatically are converted to [descriptiol|url] format
++         links automatically are converted to [description|url] format
+          other content (text, tables, etc...) will be converted to wiki-markup.
+ 
+ 
+diff --git a/pom.xml b/pom.xml
+index 47464a5451..089b6a6b7d 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -403,11 +403,11 @@
+             <additionalConfig>
+               <file>
+                 <name>.checkstyle</name>
+-                <location>./jspwiki-war/src/main/config/dev/jspwiki-checkstyle.xml</location>
++                <location>${maven.multiModuleProjectDirectory}/jspwiki-war/src/main/config/dev/jspwiki-checkstyle.xml</location>
+               </file>
+               <file>
+                 <name>.settings/org.eclipse.jdt.core.prefs</name>
+-                <location>./jspwiki-war/src/main/config/dev/jspwiki-eclipse-codestyle.xml</location>
++                <location>${maven.multiModuleProjectDirectory}/jspwiki-war/src/main/config/dev/jspwiki-eclipse-codestyle.xml</location>
+               </file>
+             </additionalConfig>
+             <additionalProjectnatures>

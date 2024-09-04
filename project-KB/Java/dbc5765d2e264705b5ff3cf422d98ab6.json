@@ -1,0 +1,20 @@
+{
+    "original_source": {
+        "database(url)": "https://github.com/SAP/project-kb",
+        "software_system(CPE)": [],
+        "fix_commit": "https://github.com/apache/zookeeper/commit/a2a09ce21d9745ad686b612555fb97d1adafc57b",
+        "version_end_excluding": {},
+        "path": {
+            "file_path": "zookeeper-server/src/main/java/org/apache/zookeeper/server/FinalRequestProcessor.java"
+        }
+    },
+    "programming_language": "JAVA",
+    "licences": {
+        "database": "Apache",
+        "affected_repository": "Apache License 2.0"
+    },
+    "related_vulnerability_entry": {
+        "CVE": [],
+        "CWE": []
+    }
+}

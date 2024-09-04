@@ -1,0 +1,27 @@
+{
+    "original_source": {
+        "database(url)": "https://github.com/SAP/project-kb",
+        "software_system(CPE)": [
+            "cpe:2.3:a:apache:tika:*:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:tika:*:*:*:*:*:*:*:*"
+        ],
+        "fix_commit": "https://github.com/apache/tika/commit/5d983aad0b68a228f180686a4135ed8c7cd589f1",
+        "version_end_excluding": {
+            "apache:tika": "1.18"
+        },
+        "path": {
+            "file_path": "tika-parsers/src/main/java/org/apache/tika/parser/chm/accessor/ChmDirectoryListingSet.java"
+        }
+    },
+    "programming_language": "JAVA",
+    "licences": {
+        "database": "Apache",
+        "affected_repository": "Apache License 2.0"
+    },
+    "related_vulnerability_entry": {
+        "CVE": [
+            "CVE-2018-1335"
+        ],
+        "CWE": []
+    }
+}

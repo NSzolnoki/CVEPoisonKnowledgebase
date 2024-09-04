@@ -1,0 +1,2942 @@
+diff --git a/client/java-armeria-legacy/src/main/java/com/linecorp/centraldogma/client/armeria/legacy/LegacyCentralDogma.java b/client/java-armeria-legacy/src/main/java/com/linecorp/centraldogma/client/armeria/legacy/LegacyCentralDogma.java
+index f2f9ee24f9..d2f55be86e 100644
+--- a/client/java-armeria-legacy/src/main/java/com/linecorp/centraldogma/client/armeria/legacy/LegacyCentralDogma.java
++++ b/client/java-armeria-legacy/src/main/java/com/linecorp/centraldogma/client/armeria/legacy/LegacyCentralDogma.java
+@@ -116,6 +116,14 @@ public CompletableFuture<Void> removeProject(String projectName) {
+         });
+     }
+ 
++    @Override
++    public CompletableFuture<Void> purgeProject(String projectName) {
++        return run(callback -> {
++            validateProjectName(projectName);
++            client.purgeProject(projectName, callback);
++        });
++    }
++
+     @Override
+     public CompletableFuture<Void> unremoveProject(String projectName) {
+         return run(callback -> {
+@@ -151,6 +159,14 @@ public CompletableFuture<Void> removeRepository(String projectName, String repos
+         });
+     }
+ 
++    @Override
++    public CompletableFuture<Void> purgeRepository(String projectName, String repositoryName) {
++        return run(callback -> {
++            validateProjectAndRepositoryName(projectName, repositoryName);
++            client.purgeRepository(projectName, repositoryName, callback);
++        });
++    }
++
+     @Override
+     public CompletableFuture<Void> unremoveRepository(String projectName, String repositoryName) {
+         return run(callback -> {
+diff --git a/client/java-armeria-legacy/src/test/java/com/linecorp/centraldogma/client/armeria/legacy/LegacyCentralDogmaTest.java b/client/java-armeria-legacy/src/test/java/com/linecorp/centraldogma/client/armeria/legacy/LegacyCentralDogmaTest.java
+index 2ac7a1fc7b..6cbe1a8396 100644
+--- a/client/java-armeria-legacy/src/test/java/com/linecorp/centraldogma/client/armeria/legacy/LegacyCentralDogmaTest.java
++++ b/client/java-armeria-legacy/src/test/java/com/linecorp/centraldogma/client/armeria/legacy/LegacyCentralDogmaTest.java
+@@ -110,6 +110,17 @@ public void removeProject() throws Exception {
+         verify(iface).removeProject(eq("project"), any());
+     }
+ 
++    @Test
++    public void purgeProject() throws Exception {
++        doAnswer(invocation -> {
++            final AsyncMethodCallback<Void> callback = invocation.getArgument(1);
++            callback.onComplete(null);
++            return null;
++        }).when(iface).purgeProject(any(), any());
++        assertThat(client.purgeProject("project").get()).isNull();
++        verify(iface).purgeProject(eq("project"), any());
++    }
++
+     @Test
+     public void unremoveProject() throws Exception {
+         doAnswer(invocation -> {
+@@ -165,6 +176,17 @@ public void removeRepository() throws Exception {
+         verify(iface).removeRepository(eq("project"), eq("repo"), any());
+     }
+ 
++    @Test
++    public void purgeRepository() throws Exception {
++        doAnswer(invocation -> {
++            final AsyncMethodCallback<Void> callback = invocation.getArgument(2);
++            callback.onComplete(null);
++            return null;
++        }).when(iface).purgeRepository(anyString(), anyString(), any());
++        assertThat(client.purgeRepository("project", "repo").get()).isNull();
++        verify(iface).purgeRepository(eq("project"), eq("repo"), any());
++    }
++
+     @Test
+     public void unremoveRepository() throws Exception {
+         doAnswer(invocation -> {
+diff --git a/client/java-armeria/src/main/java/com/linecorp/centraldogma/client/armeria/ArmeriaCentralDogma.java b/client/java-armeria/src/main/java/com/linecorp/centraldogma/client/armeria/ArmeriaCentralDogma.java
+index 45206faf74..543670d499 100644
+--- a/client/java-armeria/src/main/java/com/linecorp/centraldogma/client/armeria/ArmeriaCentralDogma.java
++++ b/client/java-armeria/src/main/java/com/linecorp/centraldogma/client/armeria/ArmeriaCentralDogma.java
+@@ -24,6 +24,7 @@
+ import static com.linecorp.centraldogma.internal.Util.unsafeCast;
+ import static com.linecorp.centraldogma.internal.Util.validatePathPattern;
+ import static com.linecorp.centraldogma.internal.api.v1.HttpApiV1Constants.PROJECTS_PREFIX;
++import static com.linecorp.centraldogma.internal.api.v1.HttpApiV1Constants.REMOVED;
+ import static com.linecorp.centraldogma.internal.api.v1.HttpApiV1Constants.REPOS;
+ import static com.spotify.futures.CompletableFutures.exceptionallyCompletedFuture;
+ import static java.util.Objects.requireNonNull;
+@@ -181,6 +182,19 @@ private static Void removeProject(AggregatedHttpResponse res) {
+         return handleErrorResponse(res);
+     }
+ 
++    @Override
++    public CompletableFuture<Void> purgeProject(String projectName) {
++        try {
++            validateProjectName(projectName);
++            return client.execute(
++                    headers(HttpMethod.DELETE, pathBuilder(projectName).append(REMOVED).toString()))
++                         .aggregate()
++                         .thenApply(ArmeriaCentralDogma::handlePurgeResult);
++        } catch (Exception e) {
++            return exceptionallyCompletedFuture(e);
++        }
++    }
++
+     @Override
+     public CompletableFuture<Void> unremoveProject(String projectName) {
+         try {
+@@ -263,6 +277,28 @@ private static Void removeRepository(AggregatedHttpResponse res) {
+         return handleErrorResponse(res);
+     }
+ 
++    @Override
++    public CompletableFuture<Void> purgeRepository(String projectName, String repositoryName) {
++        try {
++            validateProjectAndRepositoryName(projectName, repositoryName);
++            return client.execute(headers(HttpMethod.DELETE,
++                                          pathBuilder(projectName, repositoryName).append(REMOVED).toString()))
++                         .aggregate()
++                         .thenApply(ArmeriaCentralDogma::handlePurgeResult);
++        } catch (Exception e) {
++            return exceptionallyCompletedFuture(e);
++        }
++    }
++
++    private static Void handlePurgeResult(AggregatedHttpResponse res) {
++        switch (res.status().code()) {
++            case 200:
++            case 204:
++                return null;
++        }
++        return handleErrorResponse(res);
++    }
++
+     @Override
+     public CompletableFuture<Void> unremoveRepository(String projectName, String repositoryName) {
+         try {
+diff --git a/client/java/src/main/java/com/linecorp/centraldogma/client/CentralDogma.java b/client/java/src/main/java/com/linecorp/centraldogma/client/CentralDogma.java
+index 8d964d9cf1..a83832dfd6 100644
+--- a/client/java/src/main/java/com/linecorp/centraldogma/client/CentralDogma.java
++++ b/client/java/src/main/java/com/linecorp/centraldogma/client/CentralDogma.java
+@@ -55,6 +55,11 @@ public interface CentralDogma {
+      */
+     CompletableFuture<Void> removeProject(String projectName);
+ 
++    /**
++     * Purges a project that was removed before.
++     */
++    CompletableFuture<Void> purgeProject(String projectName);
++
+     /**
+      * Unremoves a project.
+      */
+@@ -85,6 +90,11 @@ public interface CentralDogma {
+      */
+     CompletableFuture<Void> removeRepository(String projectName, String repositoryName);
+ 
++    /**
++     * Purges a repository that was removed before.
++     */
++    CompletableFuture<Void> purgeRepository(String projectName, String repositoryName);
++
+     /**
+      * Unremoves a repository.
+      */
+diff --git a/common-legacy/src/main/thrift/CentralDogma.thrift b/common-legacy/src/main/thrift/CentralDogma.thrift
+index 041236e8a1..dc47f46773 100644
+--- a/common-legacy/src/main/thrift/CentralDogma.thrift
++++ b/common-legacy/src/main/thrift/CentralDogma.thrift
+@@ -258,6 +258,11 @@ service CentralDogmaService {
+      */
+     void removeProject(1: string name) throws (1: CentralDogmaException e),
+ 
++    /**
++     * Purges a project.
++     */
++    void purgeProject(1: string name) throws (1: CentralDogmaException e),
++
+     /**
+      * Unremoves a project.
+      */
+@@ -283,6 +288,11 @@ service CentralDogmaService {
+      */
+     void removeRepository(1: string projectName, 2: string repositoryName) throws (1: CentralDogmaException e),
+ 
++    /**
++     * Purges a repository.
++     */
++    void purgeRepository(1: string projectName, 2: string repositoryName) throws (1: CentralDogmaException e),
++
+     /**
+      * Unremoves a repository.
+      */
+diff --git a/common/src/main/java/com/linecorp/centraldogma/internal/api/v1/HttpApiV1Constants.java b/common/src/main/java/com/linecorp/centraldogma/internal/api/v1/HttpApiV1Constants.java
+index cdf43b8522..78c2e5c4be 100644
+--- a/common/src/main/java/com/linecorp/centraldogma/internal/api/v1/HttpApiV1Constants.java
++++ b/common/src/main/java/com/linecorp/centraldogma/internal/api/v1/HttpApiV1Constants.java
+@@ -42,5 +42,7 @@ public final class HttpApiV1Constants {
+ 
+     public static final String METRICS_PATH = "/monitor/metrics";
+ 
++    public static final String REMOVED = "/removed";
++
+     private HttpApiV1Constants() {}
+ }
+diff --git a/dist/src/conf/dogma.json b/dist/src/conf/dogma.json
+index ae3a50a8f7..09117cac29 100644
+--- a/dist/src/conf/dogma.json
++++ b/dist/src/conf/dogma.json
+@@ -20,6 +20,7 @@
+   "idleTimeoutMillis": null,
+   "maxFrameLength": null,
+   "numRepositoryWorkers": 16,
++  "maxRemovedRepositoryAgeMillis": null,
+   "repositoryCacheSpec": "maximumWeight=134217728,expireAfterAccess=5m",
+   "gracefulShutdownTimeout": {
+     "quietPeriodMillis": 1000,
+diff --git a/it/src/test/java/com/linecorp/centraldogma/it/ProjectManagementTest.java b/it/src/test/java/com/linecorp/centraldogma/it/ProjectManagementTest.java
+index 51e4ed9dcf..d22b34e84f 100644
+--- a/it/src/test/java/com/linecorp/centraldogma/it/ProjectManagementTest.java
++++ b/it/src/test/java/com/linecorp/centraldogma/it/ProjectManagementTest.java
+@@ -89,4 +89,14 @@ public void testListRemovedProjects() throws Exception {
+         final Set<String> names = client().listRemovedProjects().join();
+         assertThat(names).containsExactly(rule.removedProject());
+     }
++
++    @Test
++    public void testPurgeProject() throws Exception {
++        client().purgeProject(rule.removedProject()).join();
++        final Set<String> names = client().listRemovedProjects().join();
++        assertThat(names).doesNotContain(rule.removedProject());
++        // revert the purged project
++        client().createProject(rule.removedProject()).join();
++        client().removeProject(rule.removedProject()).join();
++    }
+ }
+diff --git a/it/src/test/java/com/linecorp/centraldogma/it/RepositoryManagementTest.java b/it/src/test/java/com/linecorp/centraldogma/it/RepositoryManagementTest.java
+index 3a14c6e85f..6cd9d903af 100644
+--- a/it/src/test/java/com/linecorp/centraldogma/it/RepositoryManagementTest.java
++++ b/it/src/test/java/com/linecorp/centraldogma/it/RepositoryManagementTest.java
+@@ -80,6 +80,21 @@ public void testRemoveRepositoryFailures() throws Exception {
+                 .isInstanceOf(CompletionException.class).hasCauseInstanceOf(RepositoryNotFoundException.class);
+     }
+ 
++    @Test
++    public void testPurgeRepository() {
++        try {
++            client().purgeRepository(rule.project(), rule.removedRepo()).join();
++            final Map<String, RepositoryInfo> repos = client().listRepositories(rule.project()).join();
++            assertThat(repos).doesNotContainKeys(rule.removedRepo());
++            final Set<String> removedRepos = client().listRemovedRepositories(rule.project()).join();
++            assertThat(removedRepos).doesNotContain(rule.removedRepo());
++        } finally {
++            // Revert a removed project.
++            client().createRepository(rule.project(), rule.removedRepo()).join();
++            client().removeRepository(rule.project(), rule.removedRepo()).join();
++        }
++    }
++
+     @Test
+     public void testListRepositories() throws Exception {
+         final Map<String, RepositoryInfo> repos = client().listRepositories(rule.project()).join();
+diff --git a/server/src/main/java/com/linecorp/centraldogma/server/CentralDogma.java b/server/src/main/java/com/linecorp/centraldogma/server/CentralDogma.java
+index bccc30002d..3a9ec6c7d6 100644
+--- a/server/src/main/java/com/linecorp/centraldogma/server/CentralDogma.java
++++ b/server/src/main/java/com/linecorp/centraldogma/server/CentralDogma.java
+@@ -42,12 +42,15 @@
+ import java.util.concurrent.CompletionStage;
+ import java.util.concurrent.Executor;
+ import java.util.concurrent.ExecutorService;
++import java.util.concurrent.Executors;
+ import java.util.concurrent.ForkJoinPool;
+ import java.util.concurrent.LinkedTransferQueue;
++import java.util.concurrent.ScheduledExecutorService;
+ import java.util.concurrent.ThreadPoolExecutor;
+ import java.util.concurrent.TimeUnit;
+ import java.util.concurrent.TimeoutException;
+ import java.util.concurrent.atomic.AtomicInteger;
++import java.util.function.BiFunction;
+ import java.util.function.Consumer;
+ import java.util.function.Function;
+ 
+@@ -199,6 +202,8 @@ public static CentralDogma forConfig(File configFile) throws IOException {
+     @Nullable
+     private ExecutorService repositoryWorker;
+     @Nullable
++    private ScheduledExecutorService purgeWorker;
++    @Nullable
+     private CommandExecutor executor;
+     @Nullable
+     private PrometheusMeterRegistry meterRegistry;
+@@ -311,6 +316,7 @@ public void close() {
+     private void doStart() throws Exception {
+         boolean success = false;
+         ExecutorService repositoryWorker = null;
++        ScheduledExecutorService purgeWorker = null;
+         ProjectManager pm = null;
+         CommandExecutor executor = null;
+         PrometheusMeterRegistry meterRegistry = null;
+@@ -330,8 +336,12 @@ private void doStart() throws Exception {
+ 
+             logger.info("Starting the project manager: {}", cfg.dataDir());
+ 
+-            pm = new DefaultProjectManager(cfg.dataDir(), repositoryWorker, meterRegistry,
+-                                           cfg.repositoryCacheSpec());
++            purgeWorker = Executors.newSingleThreadScheduledExecutor(
++                    new DefaultThreadFactory("purge-worker", true));
++
++            pm = new DefaultProjectManager(cfg.dataDir(), repositoryWorker, purgeWorker,
++                                           meterRegistry, cfg.repositoryCacheSpec());
++
+             logger.info("Started the project manager: {}", pm);
+ 
+             logger.info("Current settings:\n{}", cfg);
+@@ -339,8 +349,8 @@ private void doStart() throws Exception {
+             sessionManager = initializeSessionManager();
+ 
+             logger.info("Starting the command executor ..");
+-
+-            executor = startCommandExecutor(pm, repositoryWorker, meterRegistry, sessionManager);
++            executor = startCommandExecutor(pm, repositoryWorker, purgeWorker,
++                                            meterRegistry, sessionManager);
+             if (executor.isWritable()) {
+                 logger.info("Started the command executor.");
+ 
+@@ -358,24 +368,28 @@ private void doStart() throws Exception {
+         } finally {
+             if (success) {
+                 this.repositoryWorker = repositoryWorker;
++                this.purgeWorker = purgeWorker;
+                 this.pm = pm;
+                 this.executor = executor;
+                 this.meterRegistry = meterRegistry;
+                 this.server = server;
+                 this.sessionManager = sessionManager;
+             } else {
+-                doStop(server, executor, pm, repositoryWorker, sessionManager);
++                doStop(server, executor, pm, repositoryWorker, purgeWorker, sessionManager);
+             }
+         }
+     }
+ 
+     private CommandExecutor startCommandExecutor(
+-            ProjectManager pm, Executor repositoryWorker, MeterRegistry meterRegistry,
++            ProjectManager pm, Executor repositoryWorker,
++            ScheduledExecutorService purgeWorker, MeterRegistry meterRegistry,
+             @Nullable SessionManager sessionManager) {
++
+         final Consumer<CommandExecutor> onTakeLeadership = exec -> {
+             if (pluginsForLeaderOnly != null) {
+                 logger.info("Starting plugins on the leader replica ..");
+-                pluginsForLeaderOnly.start(cfg, pm, exec, meterRegistry).handle((unused, cause) -> {
++                pluginsForLeaderOnly
++                        .start(cfg, pm, exec, meterRegistry, purgeWorker).handle((unused, cause) -> {
+                     if (cause == null) {
+                         logger.info("Started plugins on the leader replica.");
+                     } else {
+@@ -389,7 +403,7 @@ private CommandExecutor startCommandExecutor(
+         final Consumer<CommandExecutor> onReleaseLeadership = exec -> {
+             if (pluginsForLeaderOnly != null) {
+                 logger.info("Stopping plugins on the leader replica ..");
+-                pluginsForLeaderOnly.stop(cfg, pm, exec, meterRegistry).handle((unused, cause) -> {
++                pluginsForLeaderOnly.stop(cfg, pm, exec, meterRegistry, purgeWorker).handle((unused, cause) -> {
+                     if (cause == null) {
+                         logger.info("Stopped plugins on the leader replica.");
+                     } else {
+@@ -788,6 +802,7 @@ private void doStop() {
+         final CommandExecutor executor = this.executor;
+         final ProjectManager pm = this.pm;
+         final ExecutorService repositoryWorker = this.repositoryWorker;
++        final ExecutorService purgeWorker = this.purgeWorker;
+         final SessionManager sessionManager = this.sessionManager;
+ 
+         this.server = null;
+@@ -801,7 +816,7 @@ private void doStop() {
+         }
+ 
+         logger.info("Stopping the Central Dogma ..");
+-        if (!doStop(server, executor, pm, repositoryWorker, sessionManager)) {
++        if (!doStop(server, executor, pm, repositoryWorker, purgeWorker, sessionManager)) {
+             logger.warn("Stopped the Central Dogma with failure.");
+         } else {
+             logger.info("Stopped the Central Dogma successfully.");
+@@ -810,7 +825,8 @@ private void doStop() {
+ 
+     private static boolean doStop(
+             @Nullable Server server, @Nullable CommandExecutor executor,
+-            @Nullable ProjectManager pm, @Nullable ExecutorService repositoryWorker,
++            @Nullable ProjectManager pm,
++            @Nullable ExecutorService repositoryWorker, @Nullable ExecutorService purgeWorker,
+             @Nullable SessionManager sessionManager) {
+ 
+         boolean success = true;
+@@ -847,28 +863,37 @@ private static boolean doStop(
+             logger.warn("Failed to stop the command executor:", t);
+         }
+ 
+-        try {
+-            if (repositoryWorker != null && !repositoryWorker.isTerminated()) {
+-                logger.info("Stopping the repository worker ..");
+-                boolean interruptLater = false;
+-                while (!repositoryWorker.isTerminated()) {
+-                    repositoryWorker.shutdownNow();
+-                    try {
+-                        repositoryWorker.awaitTermination(1, TimeUnit.SECONDS);
+-                    } catch (InterruptedException e) {
+-                        // Interrupt later.
+-                        interruptLater = true;
++        final BiFunction<ExecutorService, String, Boolean> stopWorker = (worker, name) -> {
++            try {
++                if (worker != null && !worker.isTerminated()) {
++                    logger.info("Stopping the {} worker ..", name);
++                    boolean interruptLater = false;
++                    while (!worker.isTerminated()) {
++                        worker.shutdownNow();
++                        try {
++                            worker.awaitTermination(1, TimeUnit.SECONDS);
++                        } catch (InterruptedException e) {
++                            // Interrupt later.
++                            interruptLater = true;
++                        }
+                     }
+-                }
+-                logger.info("Stopped the repository worker.");
++                    logger.info("Stopped the {} worker.", name);
+ 
+-                if (interruptLater) {
+-                    Thread.currentThread().interrupt();
++                    if (interruptLater) {
++                        Thread.currentThread().interrupt();
++                    }
+                 }
++                return true;
++            } catch (Throwable t) {
++                logger.warn("Failed to stop the " + name + " worker:", t);
++                return false;
+             }
+-        } catch (Throwable t) {
++        };
++        if (!stopWorker.apply(repositoryWorker, "repository")) {
++            success = false;
++        }
++        if (!stopWorker.apply(purgeWorker, "purge")) {
+             success = false;
+-            logger.warn("Failed to stop the repository worker:", t);
+         }
+ 
+         try {
+@@ -905,7 +930,7 @@ protected CompletionStage<Void> doStart(@Nullable Void unused) throws Exception
+                         final CommandExecutor executor = CentralDogma.this.executor;
+                         final MeterRegistry meterRegistry = CentralDogma.this.meterRegistry;
+                         if (pm != null && executor != null && meterRegistry != null) {
+-                            pluginsForAllReplicas.start(cfg, pm, executor, meterRegistry).join();
++                            pluginsForAllReplicas.start(cfg, pm, executor, meterRegistry, purgeWorker).join();
+                         }
+                     }
+                 } catch (Exception e) {
+@@ -922,7 +947,7 @@ protected CompletionStage<Void> doStop(@Nullable Void unused) throws Exception {
+                     final CommandExecutor executor = CentralDogma.this.executor;
+                     final MeterRegistry meterRegistry = CentralDogma.this.meterRegistry;
+                     if (pm != null && executor != null && meterRegistry != null) {
+-                        pluginsForAllReplicas.stop(cfg, pm, executor, meterRegistry).join();
++                        pluginsForAllReplicas.stop(cfg, pm, executor, meterRegistry, purgeWorker).join();
+                     }
+                 }
+                 CentralDogma.this.doStop();
+diff --git a/server/src/main/java/com/linecorp/centraldogma/server/CentralDogmaBuilder.java b/server/src/main/java/com/linecorp/centraldogma/server/CentralDogmaBuilder.java
+index 5081548f62..20fcaee6cc 100644
+--- a/server/src/main/java/com/linecorp/centraldogma/server/CentralDogmaBuilder.java
++++ b/server/src/main/java/com/linecorp/centraldogma/server/CentralDogmaBuilder.java
+@@ -70,6 +70,7 @@ public final class CentralDogmaBuilder {
+     static final int DEFAULT_NUM_MIRRORING_THREADS = 16;
+     static final int DEFAULT_MAX_NUM_FILES_PER_MIRROR = 8192;
+     static final long DEFAULT_MAX_NUM_BYTES_PER_MIRROR = 32 * 1048576; // 32 MiB
++    static final long DEFAULT_MAX_REMOVED_REPOSITORY_AGE_MILLIS = 604_800_000;  // 7 days
+ 
+     static final String DEFAULT_REPOSITORY_CACHE_SPEC =
+             "maximumWeight=134217728," + // Cache up to apx. 128-megachars.
+@@ -91,6 +92,8 @@ public final class CentralDogmaBuilder {
+     // Central Dogma properties
+     private final File dataDir;
+     private int numRepositoryWorkers = DEFAULT_NUM_REPOSITORY_WORKERS;
++    private long maxRemovedRepositoryAgeMillis = DEFAULT_MAX_REMOVED_REPOSITORY_AGE_MILLIS;
++
+     @Nullable
+     private String repositoryCacheSpec = DEFAULT_REPOSITORY_CACHE_SPEC;
+     private boolean webAppEnabled = true;
+@@ -295,6 +298,28 @@ public CentralDogmaBuilder numRepositoryWorkers(int numRepositoryWorkers) {
+         return this;
+     }
+ 
++    /**
++     * Sets the maximum allowed age of removed projects and repositories before they are purged.
++     * Set {@code 0} to disable automatic purge.
++     * If unspecified, the default of {@value #DEFAULT_MAX_REMOVED_REPOSITORY_AGE_MILLIS} milliseconds is used.
++     */
++    public CentralDogmaBuilder maxRemovedRepositoryAge(Duration maxRemovedRepositoryAge) {
++        maxRemovedRepositoryAgeMillis(
++                requireNonNull(maxRemovedRepositoryAge, "maxRemovedRepositoryAge").toMillis());
++        return this;
++    }
++
++    /**
++     * Sets the maximum allowed age, in milliseconds of removed projects and repositories
++     * before they are purged.
++     * Set {@code 0} to disable automatic purge.
++     * If unspecified, the default of {@value #DEFAULT_MAX_REMOVED_REPOSITORY_AGE_MILLIS} milliseconds is used.
++     */
++    public CentralDogmaBuilder maxRemovedRepositoryAgeMillis(long maxRemovedRepositoryAgeMillis) {
++        this.maxRemovedRepositoryAgeMillis = maxRemovedRepositoryAgeMillis;
++        return this;
++    }
++
+     /**
+      * Sets the cache specification which determines the capacity and behavior of the cache for the return
+      * values of methods in {@link Repository} of the server. See {@link CaffeineSpec} for the syntax
+@@ -508,7 +533,8 @@ private CentralDogmaConfig buildConfig() {
+         return new CentralDogmaConfig(dataDir, ports, tls, trustedProxyAddresses, clientAddressSources,
+                                       numWorkers, maxNumConnections,
+                                       requestTimeoutMillis, idleTimeoutMillis, maxFrameLength,
+-                                      numRepositoryWorkers, repositoryCacheSpec, gracefulShutdownTimeout,
++                                      numRepositoryWorkers, repositoryCacheSpec,
++                                      maxRemovedRepositoryAgeMillis, gracefulShutdownTimeout,
+                                       webAppEnabled, webAppTitle, mirroringEnabled, numMirroringThreads,
+                                       maxNumFilesPerMirror, maxNumBytesPerMirror, replicationConfig,
+                                       null, accessLogFormat, authCfg);
+diff --git a/server/src/main/java/com/linecorp/centraldogma/server/CentralDogmaConfig.java b/server/src/main/java/com/linecorp/centraldogma/server/CentralDogmaConfig.java
+index ad10617417..a6d3b120d0 100644
+--- a/server/src/main/java/com/linecorp/centraldogma/server/CentralDogmaConfig.java
++++ b/server/src/main/java/com/linecorp/centraldogma/server/CentralDogmaConfig.java
+@@ -25,6 +25,7 @@
+ import static com.linecorp.armeria.server.ClientAddressSource.ofProxyProtocol;
+ import static com.linecorp.centraldogma.server.CentralDogmaBuilder.DEFAULT_MAX_NUM_BYTES_PER_MIRROR;
+ import static com.linecorp.centraldogma.server.CentralDogmaBuilder.DEFAULT_MAX_NUM_FILES_PER_MIRROR;
++import static com.linecorp.centraldogma.server.CentralDogmaBuilder.DEFAULT_MAX_REMOVED_REPOSITORY_AGE_MILLIS;
+ import static com.linecorp.centraldogma.server.CentralDogmaBuilder.DEFAULT_NUM_MIRRORING_THREADS;
+ import static com.linecorp.centraldogma.server.CentralDogmaBuilder.DEFAULT_NUM_REPOSITORY_WORKERS;
+ import static com.linecorp.centraldogma.server.CentralDogmaBuilder.DEFAULT_REPOSITORY_CACHE_SPEC;
+@@ -96,6 +97,7 @@ public final class CentralDogmaConfig {
+ 
+     // Repository
+     private final Integer numRepositoryWorkers;
++    private final long maxRemovedRepositoryAgeMillis;
+ 
+     // Cache
+     private final String repositoryCacheSpec;
+@@ -144,8 +146,8 @@ public final class CentralDogmaConfig {
+             @JsonProperty("maxFrameLength") @Nullable Integer maxFrameLength,
+             @JsonProperty("numRepositoryWorkers") @Nullable Integer numRepositoryWorkers,
+             @JsonProperty("repositoryCacheSpec") @Nullable String repositoryCacheSpec,
+-            @JsonProperty("gracefulShutdownTimeout") @Nullable
+-                    GracefulShutdownTimeout gracefulShutdownTimeout,
++            @JsonProperty("maxRemovedRepositoryAgeMillis") @Nullable Long maxRemovedRepositoryAgeMillis,
++            @JsonProperty("gracefulShutdownTimeout") @Nullable GracefulShutdownTimeout gracefulShutdownTimeout,
+             @JsonProperty("webAppEnabled") @Nullable Boolean webAppEnabled,
+             @JsonProperty("webAppTitle") @Nullable String webAppTitle,
+             @JsonProperty("mirroringEnabled") @Nullable Boolean mirroringEnabled,
+@@ -173,8 +175,13 @@ public final class CentralDogmaConfig {
+         this.numRepositoryWorkers = firstNonNull(numRepositoryWorkers, DEFAULT_NUM_REPOSITORY_WORKERS);
+         checkArgument(this.numRepositoryWorkers > 0,
+                       "numRepositoryWorkers: %s (expected: > 0)", this.numRepositoryWorkers);
++        this.maxRemovedRepositoryAgeMillis = firstNonNull(maxRemovedRepositoryAgeMillis,
++                                                          DEFAULT_MAX_REMOVED_REPOSITORY_AGE_MILLIS);
++        checkArgument(this.maxRemovedRepositoryAgeMillis >= 0,
++                      "maxRemovedRepositoryAgeMillis: %s (expected: >= 0)", this.maxRemovedRepositoryAgeMillis);
+         this.repositoryCacheSpec = validateCacheSpec(
+                 firstNonNull(repositoryCacheSpec, DEFAULT_REPOSITORY_CACHE_SPEC));
++
+         this.webAppEnabled = firstNonNull(webAppEnabled, true);
+         this.webAppTitle = webAppTitle;
+         this.mirroringEnabled = firstNonNull(mirroringEnabled, true);
+@@ -268,6 +275,11 @@ int numRepositoryWorkers() {
+         return numRepositoryWorkers;
+     }
+ 
++    @JsonProperty
++    public long maxRemovedRepositoryAgeMillis() {
++        return maxRemovedRepositoryAgeMillis;
++    }
++
+     /**
+      * Returns the {@code repositoryCacheSpec}.
+      *
+diff --git a/server/src/main/java/com/linecorp/centraldogma/server/PluginGroup.java b/server/src/main/java/com/linecorp/centraldogma/server/PluginGroup.java
+index fe9a0d41d6..4fc9842c88 100644
+--- a/server/src/main/java/com/linecorp/centraldogma/server/PluginGroup.java
++++ b/server/src/main/java/com/linecorp/centraldogma/server/PluginGroup.java
+@@ -25,6 +25,7 @@
+ import java.util.concurrent.CompletionStage;
+ import java.util.concurrent.Executor;
+ import java.util.concurrent.Executors;
++import java.util.concurrent.ScheduledExecutorService;
+ 
+ import javax.annotation.Nullable;
+ 
+@@ -122,8 +123,10 @@ <T extends Plugin> Optional<T> findFirstPlugin(Class<T> clazz) {
+      * Starts the {@link Plugin}s managed by this {@link PluginGroup}.
+      */
+     CompletableFuture<Void> start(CentralDogmaConfig config, ProjectManager projectManager,
+-                                  CommandExecutor commandExecutor, MeterRegistry meterRegistry) {
+-        final PluginContext context = new PluginContext(config, projectManager, commandExecutor, meterRegistry);
++                                  CommandExecutor commandExecutor, MeterRegistry meterRegistry,
++                                  ScheduledExecutorService purgeWorker) {
++        final PluginContext context = new PluginContext(config, projectManager, commandExecutor, meterRegistry,
++                                                        purgeWorker);
+         return startStop.start(context, context, true);
+     }
+ 
+@@ -131,8 +134,10 @@ CompletableFuture<Void> start(CentralDogmaConfig config, ProjectManager projectM
+      * Stops the {@link Plugin}s managed by this {@link PluginGroup}.
+      */
+     CompletableFuture<Void> stop(CentralDogmaConfig config, ProjectManager projectManager,
+-                                 CommandExecutor commandExecutor, MeterRegistry meterRegistry) {
+-        return startStop.stop(new PluginContext(config, projectManager, commandExecutor, meterRegistry));
++                                 CommandExecutor commandExecutor, MeterRegistry meterRegistry,
++                                 ScheduledExecutorService purgeWorker) {
++        return startStop.stop(
++                new PluginContext(config, projectManager, commandExecutor, meterRegistry, purgeWorker));
+     }
+ 
+     private class PluginGroupStartStop extends StartStopSupport<PluginContext, PluginContext, Void, Void> {
+diff --git a/server/src/main/java/com/linecorp/centraldogma/server/command/Command.java b/server/src/main/java/com/linecorp/centraldogma/server/command/Command.java
+index cb91c8938c..d4ebbed26c 100644
+--- a/server/src/main/java/com/linecorp/centraldogma/server/command/Command.java
++++ b/server/src/main/java/com/linecorp/centraldogma/server/command/Command.java
+@@ -42,9 +42,11 @@
+ @JsonSubTypes({
+         @Type(value = CreateProjectCommand.class, name = "CREATE_PROJECT"),
+         @Type(value = RemoveProjectCommand.class, name = "REMOVE_PROJECT"),
++        @Type(value = PurgeProjectCommand.class, name = "PURGE_PROJECT"),
+         @Type(value = UnremoveProjectCommand.class, name = "UNREMOVE_PROJECT"),
+         @Type(value = CreateRepositoryCommand.class, name = "CREATE_REPOSITORY"),
+         @Type(value = RemoveRepositoryCommand.class, name = "REMOVE_REPOSITORY"),
++        @Type(value = PurgeRepositoryCommand.class, name = "PURGE_REPOSITORY"),
+         @Type(value = UnremoveRepositoryCommand.class, name = "UNREMOVE_REPOSITORY"),
+         @Type(value = PushCommand.class, name = "PUSH"),
+         @Type(value = CreateSessionCommand.class, name = "CREATE_SESSIONS"),
+@@ -118,6 +120,29 @@ static Command<Void> unremoveProject(@Nullable Long timestamp, Author author, St
+         return new UnremoveProjectCommand(timestamp, author, name);
+     }
+ 
++    /**
++     * Returns a new {@link Command} which is used to purge a project that was removed before.
++     *
++     * @param author the author who is restoring the project
++     * @param name the name of the project which is supposed to be restored
++     */
++    static Command<Void> purgeProject(Author author, String name) {
++        requireNonNull(author, "author");
++        return new PurgeProjectCommand(null, author, name);
++    }
++
++    /**
++     * Returns a new {@link Command} which is used to purge a project that was removed before.
++     *
++     * @param timestamp the purging time of the project, in milliseconds
++     * @param author the author who is restoring the project
++     * @param name the name of the project which is supposed to be restored
++     */
++    static Command<Void> purgeProject(@Nullable Long timestamp, Author author, String name) {
++        requireNonNull(author, "author");
++        return new PurgeProjectCommand(timestamp, author, name);
++    }
++
+     /**
+      * Returns a new {@link Command} which is used to create a new repository.
+      *
+@@ -193,6 +218,33 @@ static Command<Void> unremoveRepository(@Nullable Long timestamp, Author author,
+         return new UnremoveRepositoryCommand(timestamp, author, projectName, repositoryName);
+     }
+ 
++    /**
++     * Returns a new {@link Command} which is used to purge a repository.
++     *
++     * @param author the author who is removing the repository
++     * @param projectName the name of the project
++     * @param repositoryName the name of the repository which is supposed to be purged
++     */
++    static Command<Void> purgeRepository(Author author,
++                                         String projectName, String repositoryName) {
++        requireNonNull(author, "author");
++        return new PurgeRepositoryCommand(null, author, projectName, repositoryName);
++    }
++
++    /**
++     * Returns a new {@link Command} which is used to purge a repository.
++     *
++     * @param timestamp the purging time of the repository, in milliseconds
++     * @param author the author who is removing the repository
++     * @param projectName the name of the project
++     * @param repositoryName the name of the repository which is supposed to be purged
++     */
++    static Command<Void> purgeRepository(@Nullable Long timestamp, Author author,
++                                          String projectName, String repositoryName) {
++        requireNonNull(author, "author");
++        return new PurgeRepositoryCommand(timestamp, author, projectName, repositoryName);
++    }
++
+     /**
+      * Returns a new {@link Command} which is used to push the changes.
+      *
+diff --git a/server/src/main/java/com/linecorp/centraldogma/server/command/CommandType.java b/server/src/main/java/com/linecorp/centraldogma/server/command/CommandType.java
+index 6a51cdb843..6b345c5340 100644
+--- a/server/src/main/java/com/linecorp/centraldogma/server/command/CommandType.java
++++ b/server/src/main/java/com/linecorp/centraldogma/server/command/CommandType.java
+@@ -34,7 +34,9 @@ public enum CommandType {
+     SAVE_PLUGIN(Void.class),
+     REMOVE_PLUGIN(Void.class),
+     CREATE_SESSION(Void.class),
+-    REMOVE_SESSION(Void.class);
++    REMOVE_SESSION(Void.class),
++    PURGE_PROJECT(Void.class),
++    PURGE_REPOSITORY(Void.class);
+ 
+     /**
+      * The type of an object which is returned as a result after executing the command.
+diff --git a/server/src/main/java/com/linecorp/centraldogma/server/command/PurgeProjectCommand.java b/server/src/main/java/com/linecorp/centraldogma/server/command/PurgeProjectCommand.java
+new file mode 100644
+index 0000000000..bbc8ebbf85
+--- /dev/null
++++ b/server/src/main/java/com/linecorp/centraldogma/server/command/PurgeProjectCommand.java
+@@ -0,0 +1,73 @@
++/*
++ * Copyright 2019 LINE Corporation
++ *
++ * LINE Corporation licenses this file to you under the Apache License,
++ * version 2.0 (the "License"); you may not use this file except in compliance
++ * with the License. You may obtain a copy of the License at:
++ *
++ *   https://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
++ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
++ * License for the specific language governing permissions and limitations
++ * under the License.
++ */
++
++package com.linecorp.centraldogma.server.command;
++
++import static java.util.Objects.requireNonNull;
++
++import javax.annotation.Nullable;
++
++import com.fasterxml.jackson.annotation.JsonCreator;
++import com.fasterxml.jackson.annotation.JsonProperty;
++import com.google.common.base.MoreObjects.ToStringHelper;
++
++import com.linecorp.centraldogma.common.Author;
++
++/**
++ * A {@link Command} which is used for purging a project that was removed before.
++ */
++public class PurgeProjectCommand extends RootCommand<Void> {
++
++    private final String projectName;
++
++    @JsonCreator
++    PurgeProjectCommand(@JsonProperty("timestamp") @Nullable Long timestamp,
++                        @JsonProperty("author") @Nullable Author author,
++                        @JsonProperty("projectName") String projectName) {
++        super(CommandType.PURGE_PROJECT, timestamp, author);
++        this.projectName = requireNonNull(projectName, "projectName");
++    }
++
++    @JsonProperty
++    public String projectName() {
++        return projectName;
++    }
++
++    @Override
++    public boolean equals(Object obj) {
++        if (this == obj) {
++            return true;
++        }
++        if (!(obj instanceof PurgeProjectCommand)) {
++            return false;
++        }
++
++        final PurgeProjectCommand that = (PurgeProjectCommand) obj;
++        return super.equals(obj) &&
++               projectName.equals(that.projectName);
++    }
++
++    @Override
++    public int hashCode() {
++        return projectName.hashCode() * 31 + super.hashCode();
++    }
++
++    @Override
++    ToStringHelper toStringHelper() {
++        return super.toStringHelper()
++                    .add("projectName", projectName);
++    }
++}
+diff --git a/server/src/main/java/com/linecorp/centraldogma/server/command/PurgeRepositoryCommand.java b/server/src/main/java/com/linecorp/centraldogma/server/command/PurgeRepositoryCommand.java
+new file mode 100644
+index 0000000000..ab1b819d27
+--- /dev/null
++++ b/server/src/main/java/com/linecorp/centraldogma/server/command/PurgeRepositoryCommand.java
+@@ -0,0 +1,75 @@
++/*
++ * Copyright 2019 LINE Corporation
++ *
++ * LINE Corporation licenses this file to you under the Apache License,
++ * version 2.0 (the "License"); you may not use this file except in compliance
++ * with the License. You may obtain a copy of the License at:
++ *
++ *   https://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
++ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
++ * License for the specific language governing permissions and limitations
++ * under the License.
++ */
++
++package com.linecorp.centraldogma.server.command;
++
++import static java.util.Objects.requireNonNull;
++
++import javax.annotation.Nullable;
++
++import com.fasterxml.jackson.annotation.JsonCreator;
++import com.fasterxml.jackson.annotation.JsonProperty;
++import com.google.common.base.MoreObjects.ToStringHelper;
++
++import com.linecorp.centraldogma.common.Author;
++
++/**
++ * A {@link Command} which is used for purging a repository that was removed before.
++ */
++public class PurgeRepositoryCommand extends ProjectCommand<Void> {
++
++    private final String repositoryName;
++
++    @JsonCreator
++    PurgeRepositoryCommand(@JsonProperty("timestamp") @Nullable Long timestamp,
++                           @JsonProperty("author") @Nullable Author author,
++                           @JsonProperty("projectName") String projectName,
++                           @JsonProperty("repositoryName") String repositoryName) {
++
++        super(CommandType.PURGE_REPOSITORY, timestamp, author, projectName);
++        this.repositoryName = requireNonNull(repositoryName, "repositoryName");
++    }
++
++    @JsonProperty
++    public String repositoryName() {
++        return repositoryName;
++    }
++
++    @Override
++    public boolean equals(Object obj) {
++        if (this == obj) {
++            return true;
++        }
++        if (!(obj instanceof PurgeRepositoryCommand)) {
++            return false;
++        }
++
++        final PurgeRepositoryCommand that = (PurgeRepositoryCommand) obj;
++        return super.equals(obj) &&
++               repositoryName.equals(that.repositoryName);
++    }
++
++    @Override
++    public int hashCode() {
++        return repositoryName.hashCode() * 31 + super.hashCode();
++    }
++
++    @Override
++    ToStringHelper toStringHelper() {
++        return super.toStringHelper()
++                    .add("repositoryName", repositoryName);
++    }
++}
+diff --git a/server/src/main/java/com/linecorp/centraldogma/server/command/StandaloneCommandExecutor.java b/server/src/main/java/com/linecorp/centraldogma/server/command/StandaloneCommandExecutor.java
+index 3f4bb9d8f1..395015830b 100644
+--- a/server/src/main/java/com/linecorp/centraldogma/server/command/StandaloneCommandExecutor.java
++++ b/server/src/main/java/com/linecorp/centraldogma/server/command/StandaloneCommandExecutor.java
+@@ -99,6 +99,10 @@ protected <T> CompletableFuture<T> doExecute(Command<T> command) throws Exceptio
+             return (CompletableFuture<T>) unremoveProject((UnremoveProjectCommand) command);
+         }
+ 
++        if (command instanceof PurgeProjectCommand) {
++            return (CompletableFuture<T>) purgeProject((PurgeProjectCommand) command);
++        }
++
+         if (command instanceof CreateRepositoryCommand) {
+             return (CompletableFuture<T>) createRepository((CreateRepositoryCommand) command);
+         }
+@@ -111,6 +115,10 @@ protected <T> CompletableFuture<T> doExecute(Command<T> command) throws Exceptio
+             return (CompletableFuture<T>) unremoveRepository((UnremoveRepositoryCommand) command);
+         }
+ 
++        if (command instanceof PurgeRepositoryCommand) {
++            return (CompletableFuture<T>) purgeRepository((PurgeRepositoryCommand) command);
++        }
++
+         if (command instanceof PushCommand) {
+             return (CompletableFuture<T>) push((PushCommand) command);
+         }
+@@ -149,6 +157,13 @@ private CompletableFuture<Void> unremoveProject(UnremoveProjectCommand c) {
+         }, repositoryWorker);
+     }
+ 
++    private CompletableFuture<Void> purgeProject(PurgeProjectCommand c) {
++        return CompletableFuture.supplyAsync(() -> {
++            projectManager.markForPurge(c.projectName());
++            return null;
++        }, repositoryWorker);
++    }
++
+     // Repository operations
+ 
+     private CompletableFuture<Void> createRepository(CreateRepositoryCommand c) {
+@@ -172,6 +187,13 @@ private CompletableFuture<Void> unremoveRepository(UnremoveRepositoryCommand c)
+         }, repositoryWorker);
+     }
+ 
++    private CompletableFuture<Void> purgeRepository(PurgeRepositoryCommand c) {
++        return CompletableFuture.supplyAsync(() -> {
++            projectManager.get(c.projectName()).repos().markForPurge(c.repositoryName());
++            return null;
++        }, repositoryWorker);
++    }
++
+     private CompletableFuture<Revision> push(PushCommand c) {
+         return repo(c).commit(c.baseRevision(), c.timestamp(),
+                               c.author(), c.summary(), c.detail(), c.markup(), c.changes());
+diff --git a/server/src/main/java/com/linecorp/centraldogma/server/internal/api/ProjectServiceV1.java b/server/src/main/java/com/linecorp/centraldogma/server/internal/api/ProjectServiceV1.java
+index 9ae2fea896..7281f1e132 100644
+--- a/server/src/main/java/com/linecorp/centraldogma/server/internal/api/ProjectServiceV1.java
++++ b/server/src/main/java/com/linecorp/centraldogma/server/internal/api/ProjectServiceV1.java
+@@ -75,7 +75,8 @@ public ProjectServiceV1(ProjectManager projectManager, CommandExecutor executor,
+     public CompletableFuture<List<ProjectDto>> listProjects(@Param("status") Optional<String> status) {
+         if (status.isPresent()) {
+             checkStatusArgument(status.get());
+-            return CompletableFuture.supplyAsync(() -> projectManager().listRemoved().stream()
++            return CompletableFuture.supplyAsync(() -> projectManager().listRemoved().keySet()
++                                                                       .stream()
+                                                                        .map(ProjectDto::new)
+                                                                        .collect(toImmutableList()));
+         }
+@@ -130,6 +131,18 @@ public CompletableFuture<Void> removeProject(Project project, Author author) {
+                   .handle(HttpApiUtil::throwUnsafelyIfNonNull);
+     }
+ 
++    /**
++     * DELETE /projects/{projectName}/removed
++     *
++     * <p>Purges a project that was removed before.
++     */
++    @Delete("/projects/{projectName}/removed")
++    @RequiresRole(roles = ProjectRole.OWNER)
++    public CompletableFuture<Void> purgeProject(@Param("projectName") String projectName, Author author) {
++        return execute(Command.purgeProject(author, projectName))
++                  .handle(HttpApiUtil::throwUnsafelyIfNonNull);
++    }
++
+     /**
+      * PATCH /projects/{projectName}
+      *
+diff --git a/server/src/main/java/com/linecorp/centraldogma/server/internal/api/RepositoryServiceV1.java b/server/src/main/java/com/linecorp/centraldogma/server/internal/api/RepositoryServiceV1.java
+index dc9cbaa157..af74a8b99c 100644
+--- a/server/src/main/java/com/linecorp/centraldogma/server/internal/api/RepositoryServiceV1.java
++++ b/server/src/main/java/com/linecorp/centraldogma/server/internal/api/RepositoryServiceV1.java
+@@ -86,7 +86,7 @@ public CompletableFuture<List<RepositoryDto>> listRepositories(ServiceRequestCon
+             final boolean hasOwnerRole = role == ProjectRole.OWNER;
+             if (status.isPresent()) {
+                 if (hasOwnerRole) {
+-                    return project.repos().listRemoved().stream().map(RepositoryDto::new)
++                    return project.repos().listRemoved().keySet().stream().map(RepositoryDto::new)
+                                   .collect(toImmutableList());
+                 }
+                 return HttpApiUtil.throwResponse(
+@@ -143,6 +143,20 @@ public CompletableFuture<Void> removeRepository(ServiceRequestContext ctx,
+                 .handle(HttpApiUtil::throwUnsafelyIfNonNull);
+     }
+ 
++    /**
++     * DELETE /projects/{projectName}/repos/{repoName}/removed
++     *
++     * <p>Purges a repository that was removed before.
++     */
++    @Delete("/projects/{projectName}/repos/{repoName}/removed")
++    @RequiresRole(roles = ProjectRole.OWNER)
++    public CompletableFuture<Void> purgeRepository(@Param("repoName") String repoName,
++                                                   Project project, Author author) {
++        return execute(Command.purgeRepository(author, project.name(), repoName))
++                .thenCompose(unused -> mds.purgeRepo(author, project.name(), repoName)
++                                          .handle(HttpApiUtil::throwUnsafelyIfNonNull));
++    }
++
+     /**
+      * PATCH /projects/{projectName}/repos/{repoName}
+      *
+diff --git a/server/src/main/java/com/linecorp/centraldogma/server/internal/storage/DirectoryBasedStorageManager.java b/server/src/main/java/com/linecorp/centraldogma/server/internal/storage/DirectoryBasedStorageManager.java
+index 4b2cf1d846..6def8a527c 100644
+--- a/server/src/main/java/com/linecorp/centraldogma/server/internal/storage/DirectoryBasedStorageManager.java
++++ b/server/src/main/java/com/linecorp/centraldogma/server/internal/storage/DirectoryBasedStorageManager.java
+@@ -21,14 +21,19 @@
+ 
+ import java.io.File;
+ import java.io.IOException;
++import java.nio.charset.StandardCharsets;
++import java.nio.file.FileAlreadyExistsException;
++import java.nio.file.Files;
++import java.time.Instant;
++import java.time.format.DateTimeFormatter;
+ import java.util.Arrays;
+ import java.util.Collections;
+ import java.util.LinkedHashMap;
+-import java.util.LinkedHashSet;
+ import java.util.Map;
+-import java.util.Set;
+ import java.util.concurrent.ConcurrentHashMap;
+ import java.util.concurrent.ConcurrentMap;
++import java.util.concurrent.Executor;
++import java.util.concurrent.ThreadLocalRandom;
+ import java.util.concurrent.atomic.AtomicBoolean;
+ import java.util.concurrent.atomic.AtomicReference;
+ import java.util.function.Supplier;
+@@ -39,6 +44,8 @@
+ import org.slf4j.Logger;
+ import org.slf4j.LoggerFactory;
+ 
++import com.google.common.collect.ImmutableMap;
++
+ import com.linecorp.centraldogma.common.Author;
+ import com.linecorp.centraldogma.common.CentralDogmaException;
+ import com.linecorp.centraldogma.internal.Util;
+@@ -57,15 +64,20 @@ public abstract class DirectoryBasedStorageManager<T> implements StorageManager<
+     private static final Pattern CHILD_NAME =
+             Pattern.compile("^[0-9A-Za-z](?:[-+_0-9A-Za-z.]*[0-9A-Za-z])?$");
+     private static final String SUFFIX_REMOVED = ".removed";
++    private static final String SUFFIX_PURGED = ".purged";
+ 
+     private final String childTypeName;
+     private final File rootDir;
++    private final StorageRemovalManager storageRemovalManager = new StorageRemovalManager();
+     private final ConcurrentMap<String, T> children = new ConcurrentHashMap<>();
+     private final AtomicReference<Supplier<CentralDogmaException>> closed = new AtomicReference<>();
++    private final Executor purgeWorker;
+     private boolean initialized;
+ 
+-    protected DirectoryBasedStorageManager(File rootDir, Class<? extends T> childType) {
++    protected DirectoryBasedStorageManager(File rootDir, Class<? extends T> childType,
++                                           Executor purgeWorker) {
+         requireNonNull(rootDir, "rootDir");
++        this.purgeWorker = requireNonNull(purgeWorker, "purgeWorker");
+ 
+         if (!rootDir.exists()) {
+             if (!rootDir.mkdirs()) {
+@@ -87,6 +99,10 @@ protected DirectoryBasedStorageManager(File rootDir, Class<? extends T> childTyp
+         childTypeName = Util.simpleTypeName(requireNonNull(childType, "childTypeName"), true);
+     }
+ 
++    protected Executor purgeWorker() {
++        return purgeWorker;
++    }
++
+     /**
+      * Initializes this {@link StorageManager} by loading all children.
+      */
+@@ -228,7 +244,7 @@ private T create0(Author author, String name, long creationTimeMillis) {
+                 try {
+                     Util.deleteFileTree(f);
+                 } catch (IOException e) {
+-                    logger.warn("Failed to delete a partially created project: {}", f);
++                    logger.warn("Failed to delete a partially created project: {}", f, e);
+                 }
+             }
+         }
+@@ -254,15 +270,15 @@ public Map<String, T> list() {
+     }
+ 
+     @Override
+-    public Set<String> listRemoved() {
++    public Map<String, Instant> listRemoved() {
+         ensureOpen();
+-        final Set<String> removed = new LinkedHashSet<>();
+         final File[] files = rootDir.listFiles();
+         if (files == null) {
+-            return Collections.emptySet();
++            return ImmutableMap.of();
+         }
+ 
+         Arrays.sort(files);
++        final ImmutableMap.Builder<String, Instant> builder = ImmutableMap.builder();
+ 
+         for (File f : files) {
+             if (!f.isDirectory()) {
+@@ -279,10 +295,10 @@ public Set<String> listRemoved() {
+                 continue;
+             }
+ 
+-            removed.add(name);
++            builder.put(name, storageRemovalManager.readRemoval(f));
+         }
+ 
+-        return Collections.unmodifiableSet(removed);
++        return builder.build();
+     }
+ 
+     @Override
+@@ -295,7 +311,9 @@ public void remove(String name) {
+ 
+         closeChild(name, child, () -> newStorageNotFoundException(name));
+ 
+-        if (!new File(rootDir, name).renameTo(new File(rootDir, name + SUFFIX_REMOVED))) {
++        final File file = new File(rootDir, name);
++        storageRemovalManager.mark(file);
++        if (!file.renameTo(new File(rootDir, name + SUFFIX_REMOVED))) {
+             throw new StorageException("failed to mark " + childTypeName + " as removed: " + name);
+         }
+     }
+@@ -315,6 +333,7 @@ public T unremove(String name) {
+         if (!removed.renameTo(unremoved)) {
+             throw new StorageException("failed to mark " + childTypeName + " as unremoved: " + name);
+         }
++        storageRemovalManager.unmark(unremoved);
+ 
+         final T unremovedChild = loadChild(unremoved);
+         if (unremovedChild == null) {
+@@ -323,6 +342,68 @@ public T unremove(String name) {
+         return unremovedChild;
+     }
+ 
++    @Override
++    public void markForPurge(String name) {
++        ensureOpen();
++        validateChildName(name);
++        File marked;
++        final File removed = new File(rootDir, name + SUFFIX_REMOVED);
++
++        final Supplier<File> newMarkedFile = () -> {
++            final String interfix = '.' + Long.toHexString(ThreadLocalRandom.current().nextLong());
++            return new File(rootDir, name + interfix + SUFFIX_PURGED);
++        };
++
++        synchronized (this) {
++            if (!removed.exists() || !removed.isDirectory()) {
++                throw newStorageNotFoundException(name + SUFFIX_REMOVED);
++            }
++
++            marked = newMarkedFile.get();
++            boolean moved = false;
++            while (!moved) {
++                try {
++                    Files.move(removed.toPath(), marked.toPath());
++                    moved = true;
++                } catch (FileAlreadyExistsException e) {
++                    marked = newMarkedFile.get();
++                } catch (IOException e) {
++                    throw new StorageException("failed to mark " + childTypeName + " for purge: " + removed, e);
++                }
++            }
++        }
++        final File purged = marked;
++        purgeWorker.execute(() -> deletePurgedFile(purged));
++    }
++
++    @Override
++    public void purgeMarked() {
++        ensureOpen();
++        final File[] files = rootDir.listFiles();
++        if (files == null) {
++            return;
++        }
++        for (File f : files) {
++            if (!f.isDirectory()) {
++                continue;
++            }
++            final String name = f.getName();
++            if (name.endsWith(SUFFIX_PURGED)) {
++                deletePurgedFile(f);
++            }
++        }
++    }
++
++    private void deletePurgedFile(File file) {
++        try {
++            logger.info("Deleting a purged {}: {} ..", childTypeName, file);
++            Util.deleteFileTree(file);
++            logger.info("Deleted a purged {}: {}.", childTypeName, file);
++        } catch (IOException e) {
++            logger.warn("Failed to delete a purged {}: {}", childTypeName, file, e);
++        }
++    }
++
+     @Override
+     public void ensureOpen() {
+         checkState(initialized, "not initialized yet");
+@@ -347,11 +428,51 @@ private static boolean isValidChildName(String name) {
+             return false;
+         }
+ 
+-        return !name.endsWith(SUFFIX_REMOVED);
++        return !name.endsWith(SUFFIX_REMOVED) && !name.endsWith(SUFFIX_PURGED);
+     }
+ 
+     @Override
+     public String toString() {
+         return Util.simpleTypeName(getClass()) + '(' + rootDir + ')';
+     }
++
++    private final class StorageRemovalManager {
++
++        private static final String REMOVAL_TIMESTAMP_NAME = "removal.timestamp";
++
++        void mark(File file) {
++            final File removal = new File(file, REMOVAL_TIMESTAMP_NAME);
++            final String timestamp = DateTimeFormatter.ISO_INSTANT.format(Instant.now());
++            try {
++                Files.write(removal.toPath(), timestamp.getBytes(StandardCharsets.UTF_8));
++            } catch (IOException e) {
++                throw new StorageException(
++                        "failed to write a removal timestamp for " + childTypeName + ": " + removal);
++            }
++        }
++
++        void unmark(File file) {
++            final File removal = new File(file, REMOVAL_TIMESTAMP_NAME);
++            if (removal.exists()) {
++                if (!removal.delete()) {
++                    logger.warn("Failed to delete a removal timestamp for {}: {}", childTypeName, removal);
++                }
++            }
++        }
++
++        Instant readRemoval(File file) {
++            final File removal = new File(file, REMOVAL_TIMESTAMP_NAME);
++            if (!removal.exists()) {
++                return Instant.ofEpochMilli(file.lastModified());
++            }
++            try {
++                final String timestamp = new String(Files.readAllBytes(removal.toPath()),
++                                                    StandardCharsets.UTF_8);
++                return Instant.from(DateTimeFormatter.ISO_INSTANT.parse(timestamp));
++            } catch (Exception e) {
++                logger.warn("Failed to read a removal timestamp for {}: {}", childTypeName, removal, e);
++                return Instant.ofEpochMilli(file.lastModified());
++            }
++        }
++    }
+ }
+diff --git a/server/src/main/java/com/linecorp/centraldogma/server/internal/storage/PurgeSchedulingService.java b/server/src/main/java/com/linecorp/centraldogma/server/internal/storage/PurgeSchedulingService.java
+new file mode 100644
+index 0000000000..5bd44c6681
+--- /dev/null
++++ b/server/src/main/java/com/linecorp/centraldogma/server/internal/storage/PurgeSchedulingService.java
+@@ -0,0 +1,216 @@
++/*
++ * Copyright 2019 LINE Corporation
++ *
++ * LINE Corporation licenses this file to you under the Apache License,
++ * version 2.0 (the "License"); you may not use this file except in compliance
++ * with the License. You may obtain a copy of the License at:
++ *
++ *   https://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
++ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
++ * License for the specific language governing permissions and limitations
++ * under the License.
++ */
++package com.linecorp.centraldogma.server.internal.storage;
++
++import static com.google.common.base.Preconditions.checkArgument;
++import static java.util.Objects.requireNonNull;
++
++import java.time.Duration;
++import java.time.Instant;
++import java.util.concurrent.ExecutorService;
++import java.util.concurrent.ScheduledExecutorService;
++import java.util.concurrent.TimeUnit;
++import java.util.function.Predicate;
++
++import javax.annotation.Nullable;
++
++import org.slf4j.Logger;
++import org.slf4j.LoggerFactory;
++
++import com.google.common.annotations.VisibleForTesting;
++import com.google.common.util.concurrent.FutureCallback;
++import com.google.common.util.concurrent.Futures;
++import com.google.common.util.concurrent.ListenableScheduledFuture;
++import com.google.common.util.concurrent.ListeningScheduledExecutorService;
++import com.google.common.util.concurrent.MoreExecutors;
++
++import com.linecorp.centraldogma.common.Author;
++import com.linecorp.centraldogma.server.command.Command;
++import com.linecorp.centraldogma.server.command.CommandExecutor;
++import com.linecorp.centraldogma.server.metadata.MetadataService;
++import com.linecorp.centraldogma.server.storage.project.ProjectManager;
++
++/**
++ * A service class for purging projects and repositories that were removed before.
++ */
++public class PurgeSchedulingService {
++
++    private static final Logger logger = LoggerFactory.getLogger(PurgeSchedulingService.class);
++
++    /**
++     * How often to run the storage purge schedules. i.e. every minute.
++     */
++    private static final Duration TICK = Duration.ofMinutes(1);
++
++    private final ProjectManager projectManager;
++    private final ScheduledExecutorService purgeWorker;
++    private final long maxRemovedRepositoryAgeMillis;
++    private final StoragePurgingScheduler storagePurgingScheduler = new StoragePurgingScheduler();
++
++    public PurgeSchedulingService(ProjectManager projectManager, ScheduledExecutorService purgeWorker,
++                                  long maxRemovedRepositoryAgeMillis) {
++        this.projectManager = requireNonNull(projectManager, "projectManager");
++        this.purgeWorker = requireNonNull(purgeWorker, "purgeWorker");
++        checkArgument(maxRemovedRepositoryAgeMillis >= 0,
++                      "maxRemovedRepositoryAgeMillis: %s (expected: >= 0)", maxRemovedRepositoryAgeMillis);
++        this.maxRemovedRepositoryAgeMillis = maxRemovedRepositoryAgeMillis;
++    }
++
++    public void start(CommandExecutor commandExecutor,
++                      MetadataService metadataService) {
++        if (isDisabled()) {
++            return;
++        }
++        requireNonNull(commandExecutor, "commandExecutor");
++        requireNonNull(metadataService, "metadataService");
++        cleanPurgedFiles();
++        storagePurgingScheduler.start(() -> {
++            try {
++                purgeProjectAndRepository(commandExecutor, metadataService);
++            } catch (Exception e) {
++                logger.warn("Unexpected purging service failure", e);
++            }
++        });
++    }
++
++    public boolean isStarted() {
++        return storagePurgingScheduler.isStarted();
++    }
++
++    public void stop() {
++        if (!isDisabled()) {
++            storagePurgingScheduler.stop();
++        }
++    }
++
++    private void cleanPurgedFiles() {
++        projectManager.purgeMarked();
++        projectManager.list().forEach((unused, project) -> project.repos().purgeMarked());
++    }
++
++    @VisibleForTesting
++    void purgeProjectAndRepository(CommandExecutor commandExecutor,
++                                   MetadataService metadataService) {
++        final long minAllowedTimestamp = System.currentTimeMillis() - maxRemovedRepositoryAgeMillis;
++        final Predicate<Instant> olderThanMinAllowed =
++                removedAt -> removedAt.toEpochMilli() < minAllowedTimestamp;
++
++        purgeProject(commandExecutor, olderThanMinAllowed);
++        purgeRepository(commandExecutor, metadataService, olderThanMinAllowed);
++    }
++
++    private void purgeProject(CommandExecutor commandExecutor,
++                              Predicate<Instant> olderThanMinAllowed) {
++        projectManager
++                .listRemoved()
++                .forEach((projectName, removal) -> {
++                    if (olderThanMinAllowed.test(removal)) {
++                        commandExecutor
++                                .execute(Command.purgeProject(Author.SYSTEM, projectName)).join();
++                    }
++                });
++    }
++
++    private void purgeRepository(CommandExecutor commandExecutor,
++                                 MetadataService metadataService,
++                                 Predicate<Instant> olderThanMinAllowed) {
++        projectManager
++                .list()
++                .forEach((unused, project) -> {
++                    project.repos().listRemoved()
++                           .forEach((repoName, removal) -> {
++                               if (olderThanMinAllowed.test(removal)) {
++                                   commandExecutor.execute(Command.purgeRepository(Author.SYSTEM,
++                                                                                   project.name(),
++                                                                                   repoName))
++                                                  .join();
++                                   metadataService.purgeRepo(Author.SYSTEM, project.name(), repoName).join();
++                               }
++                           });
++                });
++    }
++
++    private boolean isDisabled() {
++        return maxRemovedRepositoryAgeMillis == 0;
++    }
++
++    private final class StoragePurgingScheduler {
++
++        @Nullable
++        private volatile ListeningScheduledExecutorService scheduler;
++
++        public boolean isStarted() {
++            return scheduler != null;
++        }
++
++        public synchronized void start(Runnable task) {
++            if (isStarted()) {
++                return;
++            }
++            requireNonNull(task, "task");
++            final ListeningScheduledExecutorService scheduler = MoreExecutors.listeningDecorator(purgeWorker);
++            this.scheduler = scheduler;
++            @SuppressWarnings("UnstableApiUsage")
++            final ListenableScheduledFuture<?> future = scheduler.scheduleWithFixedDelay(
++                    task,
++                    TICK.getSeconds(), TICK.getSeconds(), TimeUnit.SECONDS);
++
++            Futures.addCallback(future, new FutureCallback<Object>() {
++                @Override
++                public void onSuccess(@Nullable Object result) {}
++
++                @Override
++                public void onFailure(Throwable cause) {
++                    logger.error("Storage purge scheduler stopped due to an unexpected exception:", cause);
++                }
++            }, purgeWorker);
++        }
++
++        public synchronized void stop() {
++            final ExecutorService scheduler = this.scheduler;
++
++            try {
++                final boolean interrupted = terminate(scheduler);
++                if (interrupted) {
++                    Thread.currentThread().interrupt();
++                }
++            } finally {
++                this.scheduler = null;
++            }
++        }
++
++        private boolean terminate(@Nullable ExecutorService executor) {
++            if (executor == null) {
++                return false;
++            }
++
++            boolean interrupted = false;
++            for (;;) {
++                executor.shutdownNow();
++                try {
++                    if (executor.awaitTermination(1, TimeUnit.MINUTES)) {
++                        break;
++                    }
++                } catch (InterruptedException e) {
++                    // Propagate later.
++                    interrupted = true;
++                }
++            }
++
++            return interrupted;
++        }
++    }
++}
+diff --git a/server/src/main/java/com/linecorp/centraldogma/server/internal/storage/PurgeSchedulingServicePlugin.java b/server/src/main/java/com/linecorp/centraldogma/server/internal/storage/PurgeSchedulingServicePlugin.java
+new file mode 100644
+index 0000000000..bb934de300
+--- /dev/null
++++ b/server/src/main/java/com/linecorp/centraldogma/server/internal/storage/PurgeSchedulingServicePlugin.java
+@@ -0,0 +1,88 @@
++/*
++ * Copyright 2019 LINE Corporation
++ *
++ * LINE Corporation licenses this file to you under the Apache License,
++ * version 2.0 (the "License"); you may not use this file except in compliance
++ * with the License. You may obtain a copy of the License at:
++ *
++ *   https://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
++ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
++ * License for the specific language governing permissions and limitations
++ * under the License.
++ */
++package com.linecorp.centraldogma.server.internal.storage;
++
++import static java.util.Objects.requireNonNull;
++
++import java.util.concurrent.CompletableFuture;
++import java.util.concurrent.CompletionStage;
++
++import javax.annotation.Nullable;
++
++import com.google.common.base.MoreObjects;
++
++import com.linecorp.centraldogma.server.CentralDogmaConfig;
++import com.linecorp.centraldogma.server.metadata.MetadataService;
++import com.linecorp.centraldogma.server.plugin.Plugin;
++import com.linecorp.centraldogma.server.plugin.PluginContext;
++import com.linecorp.centraldogma.server.plugin.PluginTarget;
++
++public final class PurgeSchedulingServicePlugin implements Plugin {
++
++    @Nullable
++    private volatile PurgeSchedulingService purgeSchedulingService;
++
++    @Override
++    public PluginTarget target() {
++        return PluginTarget.LEADER_ONLY;
++    }
++
++    @Override
++    public synchronized CompletionStage<Void> start(PluginContext context) {
++        requireNonNull(context, "context");
++
++        PurgeSchedulingService purgeSchedulingService = this.purgeSchedulingService;
++        if (purgeSchedulingService == null) {
++            final CentralDogmaConfig cfg = context.config();
++            purgeSchedulingService = new PurgeSchedulingService(context.projectManager(),
++                                                                context.purgeWorker(),
++                                                                cfg.maxRemovedRepositoryAgeMillis());
++            this.purgeSchedulingService = purgeSchedulingService;
++        }
++        final MetadataService metadataService = new MetadataService(context.projectManager(),
++                                                                    context.commandExecutor());
++        purgeSchedulingService.start(context.commandExecutor(), metadataService);
++        return CompletableFuture.completedFuture(null);
++    }
++
++    @Override
++    public synchronized CompletionStage<Void> stop(PluginContext context) {
++        final PurgeSchedulingService purgeSchedulingService = this.purgeSchedulingService;
++        if (purgeSchedulingService != null && purgeSchedulingService.isStarted()) {
++            purgeSchedulingService.stop();
++        }
++        return CompletableFuture.completedFuture(null);
++    }
++
++    @Override
++    public boolean isEnabled(CentralDogmaConfig config) {
++        return requireNonNull(config, "config").maxRemovedRepositoryAgeMillis() > 0;
++    }
++
++    @Nullable
++    public PurgeSchedulingService scheduledPurgingService() {
++        return purgeSchedulingService;
++    }
++
++    @Override
++    public String toString() {
++        return MoreObjects.toStringHelper(this)
++                          .omitNullValues()
++                          .add("target", target())
++                          .add("purgeSchedulingService", purgeSchedulingService)
++                          .toString();
++    }
++}
+diff --git a/server/src/main/java/com/linecorp/centraldogma/server/internal/storage/package-info.java b/server/src/main/java/com/linecorp/centraldogma/server/internal/storage/package-info.java
+new file mode 100644
+index 0000000000..a50c10ef87
+--- /dev/null
++++ b/server/src/main/java/com/linecorp/centraldogma/server/internal/storage/package-info.java
+@@ -0,0 +1,23 @@
++/*
++ * Copyright 2019 LINE Corporation
++ *
++ * LINE Corporation licenses this file to you under the Apache License,
++ * version 2.0 (the "License"); you may not use this file except in compliance
++ * with the License. You may obtain a copy of the License at:
++ *
++ *   https://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
++ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
++ * License for the specific language governing permissions and limitations
++ * under the License.
++ */
++
++/**
++ * Storage management for Central Dogma projects and repositories.
++ */
++@NonNullByDefault
++package com.linecorp.centraldogma.server.internal.storage;
++
++import com.linecorp.centraldogma.common.util.NonNullByDefault;
+diff --git a/server/src/main/java/com/linecorp/centraldogma/server/internal/storage/project/DefaultProject.java b/server/src/main/java/com/linecorp/centraldogma/server/internal/storage/project/DefaultProject.java
+index 24600a6c62..3bf6f94163 100644
+--- a/server/src/main/java/com/linecorp/centraldogma/server/internal/storage/project/DefaultProject.java
++++ b/server/src/main/java/com/linecorp/centraldogma/server/internal/storage/project/DefaultProject.java
+@@ -67,7 +67,8 @@ public class DefaultProject implements Project {
+     /**
+      * Opens an existing project.
+      */
+-    DefaultProject(File rootDir, Executor repositoryWorker, @Nullable RepositoryCache cache) {
++    DefaultProject(File rootDir, Executor repositoryWorker, Executor purgeWorker,
++                   @Nullable RepositoryCache cache) {
+         requireNonNull(rootDir, "rootDir");
+         requireNonNull(repositoryWorker, "repositoryWorker");
+ 
+@@ -76,7 +77,7 @@ public class DefaultProject implements Project {
+         }
+ 
+         name = rootDir.getName();
+-        repos = newRepoManager(rootDir, repositoryWorker, cache);
++        repos = newRepoManager(rootDir, repositoryWorker, purgeWorker, cache);
+ 
+         boolean success = false;
+         try {
+@@ -92,8 +93,8 @@ public class DefaultProject implements Project {
+     /**
+      * Creates a new project.
+      */
+-    DefaultProject(File rootDir, Executor repositoryWorker, @Nullable RepositoryCache cache,
+-                   long creationTimeMillis, Author author) {
++    DefaultProject(File rootDir, Executor repositoryWorker, Executor purgeWorker,
++                   long creationTimeMillis, Author author, @Nullable RepositoryCache cache) {
+         requireNonNull(rootDir, "rootDir");
+         requireNonNull(repositoryWorker, "repositoryWorker");
+ 
+@@ -102,7 +103,7 @@ public class DefaultProject implements Project {
+         }
+ 
+         name = rootDir.getName();
+-        repos = newRepoManager(rootDir, repositoryWorker, cache);
++        repos = newRepoManager(rootDir, repositoryWorker, purgeWorker, cache);
+ 
+         boolean success = false;
+         try {
+@@ -116,10 +117,11 @@ public class DefaultProject implements Project {
+         }
+     }
+ 
+-    private RepositoryManager newRepoManager(File rootDir, Executor repositoryWorker,
++    private RepositoryManager newRepoManager(File rootDir, Executor repositoryWorker, Executor purgeWorker,
+                                              @Nullable RepositoryCache cache) {
+         // Enable caching if 'cache' is not null.
+-        final GitRepositoryManager gitRepos = new GitRepositoryManager(this, rootDir, repositoryWorker, cache);
++        final GitRepositoryManager gitRepos =
++                new GitRepositoryManager(this, rootDir, repositoryWorker, purgeWorker, cache);
+         return cache == null ? gitRepos : new CachingRepositoryManager(gitRepos, cache);
+     }
+ 
+diff --git a/server/src/main/java/com/linecorp/centraldogma/server/internal/storage/project/DefaultProjectManager.java b/server/src/main/java/com/linecorp/centraldogma/server/internal/storage/project/DefaultProjectManager.java
+index 2f6f248605..d4fe10806f 100644
+--- a/server/src/main/java/com/linecorp/centraldogma/server/internal/storage/project/DefaultProjectManager.java
++++ b/server/src/main/java/com/linecorp/centraldogma/server/internal/storage/project/DefaultProjectManager.java
+@@ -41,9 +41,9 @@ public class DefaultProjectManager extends DirectoryBasedStorageManager<Project>
+     @Nullable
+     private final RepositoryCache cache;
+ 
+-    public DefaultProjectManager(File rootDir, Executor repositoryWorker, MeterRegistry meterRegistry,
+-                                 @Nullable String cacheSpec) {
+-        super(rootDir, Project.class);
++    public DefaultProjectManager(File rootDir, Executor repositoryWorker, Executor purgeWorker,
++                                 MeterRegistry meterRegistry, @Nullable String cacheSpec) {
++        super(rootDir, Project.class, purgeWorker);
+ 
+         requireNonNull(meterRegistry, "meterRegistry");
+         requireNonNull(repositoryWorker, "repositoryWorker");
+@@ -64,12 +64,12 @@ public void close(Supplier<CentralDogmaException> failureCauseSupplier) {
+ 
+     @Override
+     protected Project openChild(File childDir) throws Exception {
+-        return new DefaultProject(childDir, repositoryWorker, cache);
++        return new DefaultProject(childDir, repositoryWorker, purgeWorker(), cache);
+     }
+ 
+     @Override
+     protected Project createChild(File childDir, Author author, long creationTimeMillis) throws Exception {
+-        return new DefaultProject(childDir, repositoryWorker, cache, creationTimeMillis, author);
++        return new DefaultProject(childDir, repositoryWorker, purgeWorker(), creationTimeMillis, author, cache);
+     }
+ 
+     @Override
+diff --git a/server/src/main/java/com/linecorp/centraldogma/server/internal/storage/project/SafeProjectManager.java b/server/src/main/java/com/linecorp/centraldogma/server/internal/storage/project/SafeProjectManager.java
+index 8d88009e15..db6d07262a 100644
+--- a/server/src/main/java/com/linecorp/centraldogma/server/internal/storage/project/SafeProjectManager.java
++++ b/server/src/main/java/com/linecorp/centraldogma/server/internal/storage/project/SafeProjectManager.java
+@@ -19,10 +19,10 @@
+ import static com.linecorp.centraldogma.server.internal.storage.project.ProjectInitializer.INTERNAL_PROJ;
+ import static java.util.Objects.requireNonNull;
+ 
++import java.time.Instant;
+ import java.util.Collections;
+ import java.util.LinkedHashMap;
+ import java.util.Map;
+-import java.util.Set;
+ import java.util.function.Supplier;
+ 
+ import com.linecorp.centraldogma.common.Author;
+@@ -78,7 +78,7 @@ public Map<String, Project> list() {
+     }
+ 
+     @Override
+-    public Set<String> listRemoved() {
++    public Map<String, Instant> listRemoved() {
+         return delegate().listRemoved();
+     }
+ 
+@@ -94,6 +94,17 @@ public Project unremove(String name) {
+         return delegate().unremove(name);
+     }
+ 
++    @Override
++    public void purgeMarked() {
++        delegate().purgeMarked();
++    }
++
++    @Override
++    public void markForPurge(String name) {
++        validateProjectName(name);
++        delegate().markForPurge(name);
++    }
++
+     @Override
+     public void ensureOpen() {
+         delegate().ensureOpen();
+diff --git a/server/src/main/java/com/linecorp/centraldogma/server/internal/storage/repository/RepositoryManagerWrapper.java b/server/src/main/java/com/linecorp/centraldogma/server/internal/storage/repository/RepositoryManagerWrapper.java
+index 9adc9d265d..381841910a 100644
+--- a/server/src/main/java/com/linecorp/centraldogma/server/internal/storage/repository/RepositoryManagerWrapper.java
++++ b/server/src/main/java/com/linecorp/centraldogma/server/internal/storage/repository/RepositoryManagerWrapper.java
+@@ -18,12 +18,12 @@
+ 
+ import static java.util.Objects.requireNonNull;
+ 
++import java.time.Instant;
+ import java.util.Arrays;
+ import java.util.Collections;
+ import java.util.Iterator;
+ import java.util.LinkedHashMap;
+ import java.util.Map;
+-import java.util.Set;
+ import java.util.concurrent.ConcurrentHashMap;
+ import java.util.concurrent.ConcurrentMap;
+ import java.util.function.Function;
+@@ -101,7 +101,7 @@ public Map<String, Repository> list() {
+     }
+ 
+     @Override
+-    public Set<String> listRemoved() {
++    public Map<String, Instant> listRemoved() {
+         return delegate.listRemoved();
+     }
+ 
+@@ -119,6 +119,19 @@ public Repository unremove(String name) {
+         return repos.computeIfAbsent(name, n -> repoWrapper.apply(delegate.unremove(n)));
+     }
+ 
++    @Override
++    public void purgeMarked() {
++        delegate.purgeMarked();
++    }
++
++    @Override
++    public void markForPurge(String name) {
++        repos.compute(name, (n, v) -> {
++            delegate.markForPurge(name);
++            return null;
++        });
++    }
++
+     @Override
+     public void ensureOpen() {
+         delegate.ensureOpen();
+diff --git a/server/src/main/java/com/linecorp/centraldogma/server/internal/storage/repository/git/GitRepositoryManager.java b/server/src/main/java/com/linecorp/centraldogma/server/internal/storage/repository/git/GitRepositoryManager.java
+index 22142a8955..9682019801 100644
+--- a/server/src/main/java/com/linecorp/centraldogma/server/internal/storage/repository/git/GitRepositoryManager.java
++++ b/server/src/main/java/com/linecorp/centraldogma/server/internal/storage/repository/git/GitRepositoryManager.java
+@@ -53,14 +53,15 @@ public class GitRepositoryManager extends DirectoryBasedStorageManager<Repositor
+     private final RepositoryCache cache;
+ 
+     public GitRepositoryManager(Project parent, File rootDir, Executor repositoryWorker,
+-                                @Nullable RepositoryCache cache) {
+-        this(parent, rootDir, GitRepositoryFormat.V1, repositoryWorker, cache);
++                                Executor purgeWorker, @Nullable RepositoryCache cache) {
++        this(parent, rootDir, GitRepositoryFormat.V1, repositoryWorker, purgeWorker, cache);
+     }
+ 
+     public GitRepositoryManager(Project parent, File rootDir, GitRepositoryFormat preferredFormat,
+-                                Executor repositoryWorker, @Nullable RepositoryCache cache) {
++                                Executor repositoryWorker, Executor purgeWorker,
++                                @Nullable RepositoryCache cache) {
+ 
+-        super(rootDir, Repository.class);
++        super(rootDir, Repository.class, purgeWorker);
+         this.parent = requireNonNull(parent, "parent");
+         this.preferredFormat = requireNonNull(preferredFormat, "preferredFormat");
+         this.repositoryWorker = requireNonNull(repositoryWorker, "repositoryWorker");
+diff --git a/server/src/main/java/com/linecorp/centraldogma/server/internal/thrift/CentralDogmaServiceImpl.java b/server/src/main/java/com/linecorp/centraldogma/server/internal/thrift/CentralDogmaServiceImpl.java
+index d565b1bd89..21dcc2b653 100644
+--- a/server/src/main/java/com/linecorp/centraldogma/server/internal/thrift/CentralDogmaServiceImpl.java
++++ b/server/src/main/java/com/linecorp/centraldogma/server/internal/thrift/CentralDogmaServiceImpl.java
+@@ -129,6 +129,11 @@ public void removeProject(String name, AsyncMethodCallback resultHandler) {
+                resultHandler);
+     }
+ 
++    @Override
++    public void purgeProject(String name, AsyncMethodCallback resultHandler) {
++        handleAsVoidResult(executor.execute(Command.purgeProject(SYSTEM, name)), resultHandler);
++    }
++
+     @Override
+     public void unremoveProject(String name, AsyncMethodCallback resultHandler) {
+         // Restore the project first then update its metadata as 'active'.
+@@ -150,7 +155,7 @@ public void listProjects(AsyncMethodCallback resultHandler) {
+ 
+     @Override
+     public void listRemovedProjects(AsyncMethodCallback resultHandler) {
+-        handle(projectManager::listRemoved, resultHandler);
++        handle(() -> projectManager.listRemoved().keySet(), resultHandler);
+     }
+ 
+     @Override
+@@ -179,6 +184,13 @@ public void removeRepository(String projectName, String repositoryName,
+                            resultHandler);
+     }
+ 
++    @Override
++    public void purgeRepository(String projectName, String repositoryName, AsyncMethodCallback resultHandler) {
++        handleAsVoidResult(executor.execute(Command.purgeRepository(SYSTEM, projectName, repositoryName))
++                                   .thenCompose(unused -> mds.purgeRepo(SYSTEM, projectName, repositoryName)),
++                           resultHandler);
++    }
++
+     @Override
+     public void unremoveRepository(String projectName, String repositoryName,
+                                    AsyncMethodCallback resultHandler) {
+@@ -197,7 +209,7 @@ public void listRepositories(String projectName, AsyncMethodCallback resultHandl
+ 
+     @Override
+     public void listRemovedRepositories(String projectName, AsyncMethodCallback resultHandler) {
+-        handle(() -> projectManager.get(projectName).repos().listRemoved(), resultHandler);
++        handle(() -> projectManager.get(projectName).repos().listRemoved().keySet(), resultHandler);
+     }
+ 
+     @Override
+diff --git a/server/src/main/java/com/linecorp/centraldogma/server/metadata/MetadataService.java b/server/src/main/java/com/linecorp/centraldogma/server/metadata/MetadataService.java
+index 2788f455fd..a8a428c57f 100644
+--- a/server/src/main/java/com/linecorp/centraldogma/server/metadata/MetadataService.java
++++ b/server/src/main/java/com/linecorp/centraldogma/server/metadata/MetadataService.java
+@@ -196,7 +196,8 @@ public CompletableFuture<Revision> addMember(Author author, String projectName,
+                 Change.ofJsonPatch(METADATA_JSON,
+                                    asJsonArray(new TestAbsenceOperation(path),
+                                                new AddOperation(path, Jackson.valueToTree(newMember))));
+-        final String commitSummary = "Add a member '" + newMember.id() + "' to the project " + projectName;
++        final String commitSummary =
++                "Add a member '" + newMember.id() + "' to the project '" + projectName + '\'';
+         return metadataRepo.push(projectName, Project.REPO_DOGMA, author, commitSummary, change);
+     }
+ 
+@@ -210,7 +211,8 @@ public CompletableFuture<Revision> removeMember(Author author, String projectNam
+         requireNonNull(projectName, "projectName");
+         requireNonNull(member, "member");
+ 
+-        final String commitSummary = "Remove the member '" + member.id() + "' from the project " + projectName;
++        final String commitSummary =
++                "Remove the member '" + member.id() + "' from the project '" + projectName + '\'';
+         return metadataRepo.push(
+                 projectName, Project.REPO_DOGMA, author, commitSummary,
+                 () -> fetchMetadata(projectName).thenApply(
+@@ -245,7 +247,7 @@ public CompletableFuture<Revision> updateMemberRole(Author author, String projec
+                 new ReplaceOperation(JsonPointer.compile("/members" + encodeSegment(member.id()) + "/role"),
+                                      Jackson.valueToTree(projectRole)).toJsonNode());
+         final String commitSummary = "Updates the role of the member '" + member.id() +
+-                                     "' as '" + projectRole + "' for the project " + projectName;
++                                     "' as '" + projectRole + "' for the project '" + projectName + '\'';
+         return metadataRepo.push(projectName, Project.REPO_DOGMA, author, commitSummary, change);
+     }
+ 
+@@ -289,7 +291,7 @@ public CompletableFuture<Revision> addRepo(Author author, String projectName, St
+                                                new AddOperation(path,
+                                                                 Jackson.valueToTree(newRepositoryMetadata))));
+         final String commitSummary =
+-                "Add a repo '" + newRepositoryMetadata.id() + "' to the project " + projectName;
++                "Add a repo '" + newRepositoryMetadata.id() + "' to the project '" + projectName + '\'';
+         return metadataRepo.push(projectName, Project.REPO_DOGMA, author, commitSummary, change)
+                            .handle((revision, cause) -> {
+                                if (cause != null) {
+@@ -318,7 +320,25 @@ public CompletableFuture<Revision> removeRepo(Author author, String projectName,
+                                    asJsonArray(new TestAbsenceOperation(path),
+                                                new AddOperation(path, Jackson.valueToTree(
+                                                        UserAndTimestamp.of(author)))));
+-        final String commitSummary = "Remove the repo '" + repoName + "' from the project " + projectName;
++        final String commitSummary =
++                "Remove the repo '" + repoName + "' from the project '" + projectName + '\'';
++        return metadataRepo.push(projectName, Project.REPO_DOGMA, author, commitSummary, change);
++    }
++
++    /**
++     * Purges a {@link RepositoryMetadata} of the specified {@code repoName} from the specified
++     * {@code projectName}.
++     */
++    public CompletableFuture<Revision> purgeRepo(Author author, String projectName, String repoName) {
++        requireNonNull(author, "author");
++        requireNonNull(projectName, "projectName");
++        requireNonNull(repoName, "repoName");
++
++        final JsonPointer path = JsonPointer.compile("/repos" + encodeSegment(repoName));
++        final Change<JsonNode> change = Change.ofJsonPatch(METADATA_JSON,
++                                                           new RemoveOperation(path).toJsonNode());
++        final String commitSummary =
++                "Purge the repo '" + repoName + "' from the project '" + projectName + '\'';
+         return metadataRepo.push(projectName, Project.REPO_DOGMA, author, commitSummary, change);
+     }
+ 
+@@ -335,7 +355,8 @@ public CompletableFuture<Revision> restoreRepo(Author author, String projectName
+                 Change.ofJsonPatch(METADATA_JSON,
+                                    new RemoveOperation(JsonPointer.compile(
+                                            "/repos" + encodeSegment(repoName) + "/removal")).toJsonNode());
+-        final String commitSummary = "Restore the repo '" + repoName + "' from the project " + projectName;
++        final String commitSummary =
++                "Restore the repo '" + repoName + "' from the project '" + projectName + '\'';
+         return metadataRepo.push(projectName, Project.REPO_DOGMA, author, commitSummary, change);
+     }
+ 
+@@ -357,8 +378,8 @@ public CompletableFuture<Revision> updatePerRolePermissions(Author author,
+                 Change.ofJsonPatch(METADATA_JSON,
+                                    new ReplaceOperation(path, Jackson.valueToTree(perRolePermissions))
+                                            .toJsonNode());
+-        final String commitSummary = "Update the role permission of the '" + repoName +
+-                                     "' in the project " + projectName;
++        final String commitSummary =
++                "Update the role permission of the '" + repoName + "' in the project '" + projectName + '\'';
+         return metadataRepo.push(projectName, Project.REPO_DOGMA, author, commitSummary, change);
+     }
+ 
+@@ -392,7 +413,7 @@ public CompletableFuture<Revision> addToken(Author author, String projectName,
+                                        asJsonArray(new TestAbsenceOperation(path),
+                                                    new AddOperation(path, Jackson.valueToTree(registration))));
+             final String commitSummary = "Add a token '" + registration.id() +
+-                                         "' to the project " + projectName + " with a role '" + role + '\'';
++                                         "' to the project '" + projectName + "' with a role '" + role + '\'';
+             return metadataRepo.push(projectName, Project.REPO_DOGMA, author, commitSummary, change);
+         });
+     }
+@@ -419,7 +440,7 @@ public CompletableFuture<Revision> removeToken(Author author, String projectName
+ 
+     private CompletableFuture<Revision> removeToken(String projectName, Author author, String appId,
+                                                     boolean quiet) {
+-        final String commitSummary = "Remove the token '" + appId + "' from the project " + projectName;
++        final String commitSummary = "Remove the token '" + appId + "' from the project '" + projectName + '\'';
+         return metadataRepo.push(
+                 projectName, Project.REPO_DOGMA, author, commitSummary,
+                 () -> fetchMetadata(projectName).thenApply(metadataWithRevision -> {
+@@ -461,7 +482,7 @@ public CompletableFuture<Revision> updateTokenRole(Author author, String project
+                                    new ReplaceOperation(path, Jackson.valueToTree(registration))
+                                            .toJsonNode());
+         final String commitSummary = "Update the role of a token '" + token.appId() +
+-                                     "' as '" + role + "' for the project " + projectName;
++                                     "' as '" + role + "' for the project '" + projectName + '\'';
+         return metadataRepo.push(projectName, Project.REPO_DOGMA, author, commitSummary, change);
+     }
+ 
+@@ -480,10 +501,10 @@ public CompletableFuture<Revision> addPerUserPermission(Author author, String pr
+ 
+         return getProject(projectName).thenCompose(project -> {
+             ensureProjectMember(project, member);
+-            return addPermissionAtPointer(author, projectName,
+-                                          perUserPermissionPointer(repoName, member.id()), permission,
+-                                          "Add permission of '" + member.id() +
+-                                          "' as '" + permission + "' to the project " + projectName);
++            final String commitSummary = "Add permission of '" + member.id() +
++                                         "' as '" + permission + "' to the project '" + projectName + '\n';
++            return addPermissionAtPointer(author, projectName, perUserPermissionPointer(repoName, member.id()),
++                                          permission, commitSummary);
+         });
+     }
+ 
+@@ -502,7 +523,7 @@ public CompletableFuture<Revision> removePerUserPermission(Author author, String
+         return removePermissionAtPointer(author, projectName,
+                                          perUserPermissionPointer(repoName, memberId),
+                                          "Remove permission of the '" + memberId +
+-                                         "' from the project " + projectName);
++                                         "' from the project '" + projectName + '\'');
+     }
+ 
+     /**
+@@ -522,7 +543,7 @@ public CompletableFuture<Revision> updatePerUserPermission(Author author, String
+         return replacePermissionAtPointer(author, projectName,
+                                           perUserPermissionPointer(repoName, memberId), permission,
+                                           "Update permission of the '" + memberId +
+-                                          "' as '" + permission + "' for the project " + projectName);
++                                          "' as '" + permission + "' for the project '" + projectName + '\'');
+     }
+ 
+     /**
+@@ -543,7 +564,7 @@ public CompletableFuture<Revision> addPerTokenPermission(Author author, String p
+             return addPermissionAtPointer(author, projectName,
+                                           perTokenPermissionPointer(repoName, appId), permission,
+                                           "Add permission of the token '" + appId +
+-                                          "' as '" + permission + "' to the project " + projectName);
++                                          "' as '" + permission + "' to the project '" + projectName + '\'');
+         });
+     }
+ 
+@@ -561,7 +582,7 @@ public CompletableFuture<Revision> removePerTokenPermission(Author author, Strin
+         return removePermissionAtPointer(author, projectName,
+                                          perTokenPermissionPointer(repoName, appId),
+                                          "Remove permission of the token '" + appId +
+-                                         "' from the project " + projectName);
++                                         "' from the project '" + projectName + '\'');
+     }
+ 
+     /**
+@@ -580,7 +601,7 @@ public CompletableFuture<Revision> updatePerTokenPermission(Author author, Strin
+         return replacePermissionAtPointer(author, projectName,
+                                           perTokenPermissionPointer(repoName, appId), permission,
+                                           "Update permission of the token '" + appId +
+-                                          "' as '" + permission + "' for the project " + projectName);
++                                          "' as '" + permission + "' for the project '" + projectName + '\'');
+     }
+ 
+     /**
+@@ -778,7 +799,7 @@ public CompletableFuture<Revision> createToken(Author author, String appId, Stri
+                                                new AddOperation(secretPath,
+                                                                 Jackson.valueToTree(newToken.id()))));
+         return tokenRepo.push(INTERNAL_PROJ, Project.REPO_DOGMA, author,
+-                              "Add a token: '" + newToken.id(), change);
++                              "Add a token: " + newToken.id(), change);
+     }
+ 
+     /**
+@@ -796,7 +817,7 @@ public CompletableFuture<Revision> destroyToken(Author author, String appId) {
+             futures[i++] = removeToken(p.name(), author, appId, true).toCompletableFuture();
+         }
+         return CompletableFuture.allOf(futures).thenCompose(unused -> tokenRepo.push(
+-                INTERNAL_PROJ, Project.REPO_DOGMA, author, "Remove the token: '" + appId,
++                INTERNAL_PROJ, Project.REPO_DOGMA, author, "Remove the token: " + appId,
+                 () -> tokenRepo.fetch(INTERNAL_PROJ, Project.REPO_DOGMA, TOKEN_JSON)
+                                .thenApply(tokens -> {
+                                    final Token token = tokens.object().get(appId);
+@@ -823,7 +844,7 @@ public CompletableFuture<Revision> activateToken(Author author, String appId) {
+         requireNonNull(appId, "appId");
+ 
+         return tokenRepo.push(INTERNAL_PROJ, Project.REPO_DOGMA, author,
+-                              "Enable the token: '" + appId,
++                              "Enable the token: " + appId,
+                               () -> tokenRepo
+                                       .fetch(INTERNAL_PROJ, Project.REPO_DOGMA, TOKEN_JSON)
+                                       .thenApply(tokens -> {
+@@ -854,7 +875,7 @@ public CompletableFuture<Revision> deactivateToken(Author author, String appId)
+         requireNonNull(appId, "appId");
+ 
+         return tokenRepo.push(INTERNAL_PROJ, Project.REPO_DOGMA, author,
+-                              "Disable the token: '" + appId,
++                              "Disable the token: " + appId,
+                               () -> tokenRepo
+                                       .fetch(INTERNAL_PROJ, Project.REPO_DOGMA, TOKEN_JSON)
+                                       .thenApply(tokens -> {
+@@ -904,7 +925,7 @@ private static void ensureProjectMember(ProjectMetadata project, User user) {
+         requireNonNull(user, "user");
+ 
+         checkArgument(project.members().values().stream().anyMatch(member -> member.login().equals(user.id())),
+-                      user.id() + " is not a member of the project " + project.name());
++                      user.id() + " is not a member of the project '" + project.name() + '\'');
+     }
+ 
+     /**
+@@ -915,7 +936,7 @@ private static void ensureProjectToken(ProjectMetadata project, String appId) {
+         requireNonNull(appId, "appId");
+ 
+         checkArgument(project.tokens().containsKey(appId),
+-                      appId + " is not a token of the project " + project.name());
++                      appId + " is not a token of the project '" + project.name() + '\'');
+     }
+ 
+     /**
+diff --git a/server/src/main/java/com/linecorp/centraldogma/server/plugin/PluginContext.java b/server/src/main/java/com/linecorp/centraldogma/server/plugin/PluginContext.java
+index 8cbfd027a3..8cfbfe42ae 100644
+--- a/server/src/main/java/com/linecorp/centraldogma/server/plugin/PluginContext.java
++++ b/server/src/main/java/com/linecorp/centraldogma/server/plugin/PluginContext.java
+@@ -17,6 +17,8 @@
+ 
+ import static java.util.Objects.requireNonNull;
+ 
++import java.util.concurrent.ScheduledExecutorService;
++
+ import com.linecorp.centraldogma.server.CentralDogmaConfig;
+ import com.linecorp.centraldogma.server.command.Command;
+ import com.linecorp.centraldogma.server.command.CommandExecutor;
+@@ -34,6 +36,7 @@ public final class PluginContext {
+     private final ProjectManager projectManager;
+     private final CommandExecutor commandExecutor;
+     private final MeterRegistry meterRegistry;
++    private final ScheduledExecutorService purgeWorker;
+ 
+     /**
+      * Creates a new instance.
+@@ -42,15 +45,18 @@ public final class PluginContext {
+      * @param projectManager the instance which has the operations for the {@link Project}s
+      * @param commandExecutor the executor which executes the {@link Command}s
+      * @param meterRegistry the {@link MeterRegistry} of the Central Dogma server
++     * @param purgeWorker the {@link ScheduledExecutorService} for the purging service
+      */
+     public PluginContext(CentralDogmaConfig config,
+                          ProjectManager projectManager,
+                          CommandExecutor commandExecutor,
+-                         MeterRegistry meterRegistry) {
++                         MeterRegistry meterRegistry,
++                         ScheduledExecutorService purgeWorker) {
+         this.config = requireNonNull(config, "config");
+         this.projectManager = requireNonNull(projectManager, "projectManager");
+         this.commandExecutor = requireNonNull(commandExecutor, "commandExecutor");
+         this.meterRegistry = requireNonNull(meterRegistry, "meterRegistry");
++        this.purgeWorker = requireNonNull(purgeWorker, "purgeWorker");
+     }
+ 
+     /**
+@@ -80,4 +86,11 @@ public CommandExecutor commandExecutor() {
+     public MeterRegistry meterRegistry() {
+         return meterRegistry;
+     }
++
++    /**
++     * Returns the {@link ScheduledExecutorService} of {@code purgeWorker}.
++     */
++    public ScheduledExecutorService purgeWorker() {
++        return purgeWorker;
++    }
+ }
+diff --git a/server/src/main/java/com/linecorp/centraldogma/server/storage/StorageManager.java b/server/src/main/java/com/linecorp/centraldogma/server/storage/StorageManager.java
+index 33b95d2a1b..17a3684e9d 100644
+--- a/server/src/main/java/com/linecorp/centraldogma/server/storage/StorageManager.java
++++ b/server/src/main/java/com/linecorp/centraldogma/server/storage/StorageManager.java
+@@ -16,8 +16,8 @@
+ 
+ package com.linecorp.centraldogma.server.storage;
+ 
++import java.time.Instant;
+ import java.util.Map;
+-import java.util.Set;
+ import java.util.function.Supplier;
+ 
+ import com.linecorp.centraldogma.common.Author;
+@@ -77,9 +77,9 @@ default T create(String name, Author author) {
+     Map<String, T> list();
+ 
+     /**
+-     * Returns a set of names for the elements which have been removed.
++     * Returns all removed elements as a {@link Map} of the name and the removal timestamp.
+      */
+-    Set<String> listRemoved();
++    Map<String, Instant> listRemoved();
+ 
+     /**
+      * Removes an element with the specified {@code name}.
+@@ -95,6 +95,18 @@ default T create(String name, Author author) {
+      */
+     T unremove(String name);
+ 
++    /**
++     * Purges a set of names for the elements which have been marked for purge.
++     */
++    void purgeMarked();
++
++    /**
++     * Marks the specified {@code name} element for purge.
++     *
++     * @param name the name of an element which is supposed to be purged
++     */
++    void markForPurge(String name);
++
+     /**
+      * Ensures that this manager is open.
+      *
+diff --git a/server/src/main/resources/META-INF/services/com.linecorp.centraldogma.server.plugin.Plugin b/server/src/main/resources/META-INF/services/com.linecorp.centraldogma.server.plugin.Plugin
+index ff123255b3..bb89870360 100644
+--- a/server/src/main/resources/META-INF/services/com.linecorp.centraldogma.server.plugin.Plugin
++++ b/server/src/main/resources/META-INF/services/com.linecorp.centraldogma.server.plugin.Plugin
+@@ -1 +1,2 @@
+ com.linecorp.centraldogma.server.internal.mirror.DefaultMirroringServicePlugin
++com.linecorp.centraldogma.server.internal.storage.PurgeSchedulingServicePlugin
+diff --git a/server/src/test/java/com/linecorp/centraldogma/server/CentralDogmaConfigTest.java b/server/src/test/java/com/linecorp/centraldogma/server/CentralDogmaConfigTest.java
+index 1d351bffd4..316c1a343d 100644
+--- a/server/src/test/java/com/linecorp/centraldogma/server/CentralDogmaConfigTest.java
++++ b/server/src/test/java/com/linecorp/centraldogma/server/CentralDogmaConfigTest.java
+@@ -15,7 +15,9 @@
+  */
+ package com.linecorp.centraldogma.server;
+ 
++import static com.linecorp.centraldogma.server.CentralDogmaBuilder.DEFAULT_MAX_REMOVED_REPOSITORY_AGE_MILLIS;
+ import static org.assertj.core.api.Assertions.assertThat;
++import static org.assertj.core.api.Assertions.assertThatThrownBy;
+ 
+ import java.net.InetAddress;
+ import java.util.List;
+@@ -170,4 +172,75 @@ public void noTrustedProxyAddress() throws Exception {
+         assertThat(cfg.clientAddressSources()).isNull();
+         assertThat(cfg.clientAddressSourceList()).isEmpty();
+     }
++
++    @Test
++    public void maxRemovedRepositoryAgeMillis() throws Exception {
++        final CentralDogmaConfig cfg =
++                Jackson.readValue("{\n" +
++                                  "  \"dataDir\": \"./data\",\n" +
++                                  "  \"ports\": [\n" +
++                                  "    {\n" +
++                                  "      \"localAddress\": {\n" +
++                                  "        \"host\": \"*\",\n" +
++                                  "        \"port\": 36462\n" +
++                                  "      },\n" +
++                                  "      \"protocols\": [\n" +
++                                  "        \"https\",\n" +
++                                  "        \"http\",\n" +
++                                  "        \"proxy\"\n" +
++                                  "      ]\n" +
++                                  "    }\n" +
++                                  "  ],\n" +
++                                  "  \"maxRemovedRepositoryAgeMillis\": 50000 \n" +
++                                  '}',
++                                  CentralDogmaConfig.class);
++        assertThat(cfg.maxRemovedRepositoryAgeMillis()).isEqualTo(50000);
++    }
++
++    @Test
++    public void maxRemovedRepositoryAgeMillis_withDefault() throws Exception {
++        final CentralDogmaConfig cfg =
++                Jackson.readValue("{\n" +
++                                  "  \"dataDir\": \"./data\",\n" +
++                                  "  \"ports\": [\n" +
++                                  "    {\n" +
++                                  "      \"localAddress\": {\n" +
++                                  "        \"host\": \"*\",\n" +
++                                  "        \"port\": 36462\n" +
++                                  "      },\n" +
++                                  "      \"protocols\": [\n" +
++                                  "        \"https\",\n" +
++                                  "        \"http\",\n" +
++                                  "        \"proxy\"\n" +
++                                  "      ]\n" +
++                                  "    }\n" +
++                                  "  ]\n" +
++                                  '}',
++                                  CentralDogmaConfig.class);
++        assertThat(cfg.maxRemovedRepositoryAgeMillis()).isEqualTo(DEFAULT_MAX_REMOVED_REPOSITORY_AGE_MILLIS);
++    }
++
++    @Test
++    public void maxRemovedRepositoryAgeMillis_withNegativeValue() throws Exception {
++        assertThatThrownBy(() ->
++                Jackson.readValue("{\n" +
++                                  "  \"dataDir\": \"./data\",\n" +
++                                  "  \"ports\": [\n" +
++                                  "    {\n" +
++                                  "      \"localAddress\": {\n" +
++                                  "        \"host\": \"*\",\n" +
++                                  "        \"port\": 36462\n" +
++                                  "      },\n" +
++                                  "      \"protocols\": [\n" +
++                                  "        \"https\",\n" +
++                                  "        \"http\",\n" +
++                                  "        \"proxy\"\n" +
++                                  "      ]\n" +
++                                  "    }\n" +
++                                  "  ],\n" +
++                                  "  \"maxRemovedRepositoryAgeMillis\": -50000 \n" +
++                                  '}',
++                                  CentralDogmaConfig.class)
++        ).hasCauseInstanceOf(IllegalArgumentException.class);
++    }
+ }
+diff --git a/server/src/test/java/com/linecorp/centraldogma/server/PluginGroupTest.java b/server/src/test/java/com/linecorp/centraldogma/server/PluginGroupTest.java
+index 920c115366..335f2b1cae 100644
+--- a/server/src/test/java/com/linecorp/centraldogma/server/PluginGroupTest.java
++++ b/server/src/test/java/com/linecorp/centraldogma/server/PluginGroupTest.java
+@@ -24,6 +24,7 @@
+ import org.junit.Test;
+ 
+ import com.linecorp.centraldogma.server.internal.mirror.DefaultMirroringServicePlugin;
++import com.linecorp.centraldogma.server.internal.storage.PurgeSchedulingServicePlugin;
+ import com.linecorp.centraldogma.server.plugin.AbstractNoopPlugin;
+ import com.linecorp.centraldogma.server.plugin.NoopPluginForAllReplicas;
+ import com.linecorp.centraldogma.server.plugin.NoopPluginForLeader;
+@@ -66,6 +67,24 @@ public void confirmDefaultMirroringServiceLoadedDependingOnConfig() {
+         assertThat(group2.findFirstPlugin(DefaultMirroringServicePlugin.class)).isNotPresent();
+     }
+ 
++    /**
++     * The {@link PurgeSchedulingServicePlugin} must be loaded only if the
++     * {@link CentralDogmaConfig#maxRemovedRepositoryAgeMillis()} property is greater then 0.
++     */
++    @Test
++    public void confirmScheduledPurgingServiceLoadedDependingOnConfig() {
++        final CentralDogmaConfig cfg = mock(CentralDogmaConfig.class);
++        when(cfg.maxRemovedRepositoryAgeMillis()).thenReturn(1L);
++        final PluginGroup group1 = PluginGroup.loadPlugins(PluginTarget.LEADER_ONLY, cfg);
++        assertThat(group1).isNotNull();
++        assertThat(group1.findFirstPlugin(PurgeSchedulingServicePlugin.class)).isPresent();
++
++        when(cfg.maxRemovedRepositoryAgeMillis()).thenReturn(0L);
++        final PluginGroup group2 = PluginGroup.loadPlugins(PluginTarget.LEADER_ONLY, cfg);
++        assertThat(group2).isNotNull();
++        assertThat(group2.findFirstPlugin(PurgeSchedulingServicePlugin.class)).isNotPresent();
++    }
++
+     private static void confirmPluginStartStop(@Nullable AbstractNoopPlugin plugin) {
+         assertThat(plugin).isNotNull();
+ 
+diff --git a/server/src/test/java/com/linecorp/centraldogma/server/command/PurgeProjectCommandTest.java b/server/src/test/java/com/linecorp/centraldogma/server/command/PurgeProjectCommandTest.java
+new file mode 100644
+index 0000000000..7f816b0ff2
+--- /dev/null
++++ b/server/src/test/java/com/linecorp/centraldogma/server/command/PurgeProjectCommandTest.java
+@@ -0,0 +1,55 @@
++/*
++ * Copyright 2019 LINE Corporation
++ *
++ * LINE Corporation licenses this file to you under the Apache License,
++ * version 2.0 (the "License"); you may not use this file except in compliance
++ * with the License. You may obtain a copy of the License at:
++ *
++ *   https://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
++ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
++ * License for the specific language governing permissions and limitations
++ * under the License.
++ */
++
++package com.linecorp.centraldogma.server.command;
++
++import static com.linecorp.centraldogma.testing.internal.TestUtil.assertJsonConversion;
++import static org.assertj.core.api.Assertions.assertThat;
++
++import org.junit.Test;
++
++import com.linecorp.centraldogma.common.Author;
++import com.linecorp.centraldogma.internal.Jackson;
++
++public class PurgeProjectCommandTest {
++    @Test
++    public void testJsonConversion() {
++        assertJsonConversion(new PurgeProjectCommand(1234L, Author.SYSTEM, "foo"),
++                             Command.class,
++                             '{' +
++                             "  \"type\": \"PURGE_PROJECT\"," +
++                             "  \"timestamp\": 1234," +
++                             "  \"author\": {" +
++                             "    \"name\": \"System\"," +
++                             "    \"email\": \"system@localhost.localdomain\"" +
++                             "  }," +
++                             "  \"projectName\": \"foo\"" +
++                             '}');
++    }
++
++    @Test
++    public void backwardCompatibility() throws Exception {
++        final PurgeProjectCommand c = (PurgeProjectCommand) Jackson.readValue(
++                '{' +
++                "  \"type\": \"PURGE_PROJECT\"," +
++                "  \"projectName\": \"foo\"" +
++                '}', Command.class);
++
++        assertThat(c.author()).isEqualTo(Author.SYSTEM);
++        assertThat(c.timestamp()).isNotZero();
++        assertThat(c.projectName()).isEqualTo("foo");
++    }
++}
+diff --git a/server/src/test/java/com/linecorp/centraldogma/server/command/PurgeRepositoryCommandTest.java b/server/src/test/java/com/linecorp/centraldogma/server/command/PurgeRepositoryCommandTest.java
+new file mode 100644
+index 0000000000..827c3d0860
+--- /dev/null
++++ b/server/src/test/java/com/linecorp/centraldogma/server/command/PurgeRepositoryCommandTest.java
+@@ -0,0 +1,59 @@
++/*
++ * Copyright 2019 LINE Corporation
++ *
++ * LINE Corporation licenses this file to you under the Apache License,
++ * version 2.0 (the "License"); you may not use this file except in compliance
++ * with the License. You may obtain a copy of the License at:
++ *
++ *   https://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
++ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
++ * License for the specific language governing permissions and limitations
++ * under the License.
++ */
++
++package com.linecorp.centraldogma.server.command;
++
++import static com.linecorp.centraldogma.testing.internal.TestUtil.assertJsonConversion;
++import static org.assertj.core.api.Assertions.assertThat;
++
++import org.junit.Test;
++
++import com.linecorp.centraldogma.common.Author;
++import com.linecorp.centraldogma.internal.Jackson;
++
++public class PurgeRepositoryCommandTest {
++
++    @Test
++    public void testJsonConversion() {
++        assertJsonConversion(new PurgeRepositoryCommand(1234L, Author.SYSTEM, "foo", "bar"),
++                             Command.class,
++                             '{' +
++                             "  \"type\": \"PURGE_REPOSITORY\"," +
++                             "  \"timestamp\": 1234," +
++                             "  \"author\": {" +
++                             "    \"name\": \"System\"," +
++                             "    \"email\": \"system@localhost.localdomain\"" +
++                             "  }," +
++                             "  \"projectName\": \"foo\"," +
++                             "  \"repositoryName\": \"bar\"" +
++                             '}');
++    }
++
++    @Test
++    public void backwardCompatibility() throws Exception {
++        final PurgeRepositoryCommand c = (PurgeRepositoryCommand) Jackson.readValue(
++                '{' +
++                "  \"type\": \"PURGE_REPOSITORY\"," +
++                "  \"projectName\": \"foo\"," +
++                "  \"repositoryName\": \"bar\"" +
++                '}', Command.class);
++
++        assertThat(c.author()).isEqualTo(Author.SYSTEM);
++        assertThat(c.timestamp()).isNotZero();
++        assertThat(c.projectName()).isEqualTo("foo");
++        assertThat(c.repositoryName()).isEqualTo("bar");
++    }
++}
+diff --git a/server/src/test/java/com/linecorp/centraldogma/server/internal/api/ProjectServiceV1Test.java b/server/src/test/java/com/linecorp/centraldogma/server/internal/api/ProjectServiceV1Test.java
+index 64388b034e..a231d2f172 100644
+--- a/server/src/test/java/com/linecorp/centraldogma/server/internal/api/ProjectServiceV1Test.java
++++ b/server/src/test/java/com/linecorp/centraldogma/server/internal/api/ProjectServiceV1Test.java
+@@ -151,6 +151,15 @@ public void removeAbsentProject() {
+         assertThat(ResponseHeaders.of(aRes.headers()).status()).isEqualTo(HttpStatus.NOT_FOUND);
+     }
+ 
++    @Test
++    public void purgeProject() {
++        removeProject();
++        final AggregatedHttpResponse aRes = httpClient.delete(PROJECTS_PREFIX + "/foo/removed")
++                                                      .aggregate().join();
++        final ResponseHeaders headers = ResponseHeaders.of(aRes.headers());
++        assertThat(ResponseHeaders.of(headers).status()).isEqualTo(HttpStatus.NO_CONTENT);
++    }
++
+     @Test
+     public void listRemovedProjects() throws IOException {
+         createProject("trustin");
+diff --git a/server/src/test/java/com/linecorp/centraldogma/server/internal/api/auth/PermissionTest.java b/server/src/test/java/com/linecorp/centraldogma/server/internal/api/auth/PermissionTest.java
+index d9148aba55..c58b1209c4 100644
+--- a/server/src/test/java/com/linecorp/centraldogma/server/internal/api/auth/PermissionTest.java
++++ b/server/src/test/java/com/linecorp/centraldogma/server/internal/api/auth/PermissionTest.java
+@@ -34,6 +34,8 @@
+ import org.junit.runners.Parameterized;
+ import org.junit.runners.Parameterized.Parameters;
+ 
++import com.google.common.util.concurrent.MoreExecutors;
++
+ import com.linecorp.armeria.client.HttpClient;
+ import com.linecorp.armeria.client.HttpClientBuilder;
+ import com.linecorp.armeria.common.AggregatedHttpResponse;
+@@ -98,7 +100,9 @@ public static void cleanup() throws Exception {
+         @Override
+         protected void configure(ServerBuilder sb) throws Exception {
+             final ProjectManager pm = new DefaultProjectManager(
+-                    rootDir.newFolder(), ForkJoinPool.commonPool(), NoopMeterRegistry.get(), null);
++                    rootDir.newFolder(), ForkJoinPool.commonPool(), MoreExecutors.directExecutor(),
++                    NoopMeterRegistry.get(), null
++            );
+             final CommandExecutor executor = new StandaloneCommandExecutor(
+                     pm, ForkJoinPool.commonPool(), null, null, null);
+             executor.start().join();
+diff --git a/server/src/test/java/com/linecorp/centraldogma/server/internal/storage/DefaultProjectManagerTest.java b/server/src/test/java/com/linecorp/centraldogma/server/internal/storage/DefaultProjectManagerTest.java
+new file mode 100644
+index 0000000000..c1fd5d7ddd
+--- /dev/null
++++ b/server/src/test/java/com/linecorp/centraldogma/server/internal/storage/DefaultProjectManagerTest.java
+@@ -0,0 +1,68 @@
++/*
++ * Copyright 2019 LINE Corporation
++ *
++ * LINE Corporation licenses this file to you under the Apache License,
++ * version 2.0 (the "License"); you may not use this file except in compliance
++ * with the License. You may obtain a copy of the License at:
++ *
++ *   https://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
++ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
++ * License for the specific language governing permissions and limitations
++ * under the License
++ */
++
++package com.linecorp.centraldogma.server.internal.storage;
++
++import static org.assertj.core.api.Assertions.assertThat;
++import static org.mockito.Mockito.mock;
++
++import java.io.IOException;
++import java.util.concurrent.atomic.AtomicInteger;
++
++import org.junit.Rule;
++import org.junit.Test;
++import org.junit.rules.TemporaryFolder;
++
++import com.google.common.util.concurrent.MoreExecutors;
++
++import com.linecorp.centraldogma.common.Author;
++import com.linecorp.centraldogma.server.internal.storage.project.DefaultProjectManager;
++import com.linecorp.centraldogma.server.storage.project.Project;
++import com.linecorp.centraldogma.server.storage.repository.RepositoryManager;
++
++import io.micrometer.core.instrument.MeterRegistry;
++
++public class DefaultProjectManagerTest {
++
++    @Rule
++    public TemporaryFolder folder = new TemporaryFolder();
++
++    @Test
++    public void testProjectPurgeMarked() throws IOException {
++        final AtomicInteger counter = new AtomicInteger();
++        final DefaultProjectManager pm = new DefaultProjectManager(
++                folder.newFolder(),
++                MoreExecutors.directExecutor(),
++                (Runnable r) -> counter.incrementAndGet(),
++                mock(MeterRegistry.class),
++                null);
++
++        final String projectName = "foo";
++        final String repoName = "bar";
++        final Project project = pm.create(projectName, Author.SYSTEM);
++        final RepositoryManager repos = project.repos();
++        repos.create(repoName, Author.SYSTEM);
++        repos.remove(repoName);
++        repos.markForPurge(repoName);
++        repos.purgeMarked();
++        assertThat(counter.get()).isEqualTo(1);
++
++        pm.remove(projectName);
++        pm.markForPurge(projectName);
++        pm.purgeMarked();
++        assertThat(counter.get()).isEqualTo(2);
++    }
++}
+diff --git a/server/src/test/java/com/linecorp/centraldogma/server/internal/storage/PurgeSchedulingServiceTest.java b/server/src/test/java/com/linecorp/centraldogma/server/internal/storage/PurgeSchedulingServiceTest.java
+new file mode 100644
+index 0000000000..923898d28c
+--- /dev/null
++++ b/server/src/test/java/com/linecorp/centraldogma/server/internal/storage/PurgeSchedulingServiceTest.java
+@@ -0,0 +1,100 @@
++/*
++ * Copyright 2019 LINE Corporation
++ *
++ * LINE Corporation licenses this file to you under the Apache License,
++ * version 2.0 (the "License"); you may not use this file except in compliance
++ * with the License. You may obtain a copy of the License at:
++ *
++ *   https://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
++ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
++ * License for the specific language governing permissions and limitations
++ * under the License.
++ */
++
++package com.linecorp.centraldogma.server.internal.storage;
++
++import static org.mockito.ArgumentMatchers.isA;
++import static org.mockito.Mockito.spy;
++import static org.mockito.Mockito.verify;
++
++import java.util.concurrent.Executor;
++
++import org.junit.Before;
++import org.junit.Rule;
++import org.junit.Test;
++
++import com.linecorp.centraldogma.common.Author;
++import com.linecorp.centraldogma.server.command.Command;
++import com.linecorp.centraldogma.server.command.CommandExecutor;
++import com.linecorp.centraldogma.server.command.PurgeProjectCommand;
++import com.linecorp.centraldogma.server.command.PurgeRepositoryCommand;
++import com.linecorp.centraldogma.server.metadata.MetadataService;
++import com.linecorp.centraldogma.server.storage.project.ProjectManager;
++import com.linecorp.centraldogma.testing.internal.ProjectManagerRule;
++
++public class PurgeSchedulingServiceTest {
++
++    private static final String PROJA_ACTIVE = "proja";
++    private static final String REPOA_REMOVED = "repoa";
++    private static final String PROJB_REMOVED = "projb";
++    private static final Author AUTHOR = Author.SYSTEM;
++    private static final long MAX_REMOVED_REPOSITORY_AGE_MILLIS = 1;
++
++    private PurgeSchedulingService service;
++    private MetadataService metadataService;
++
++    @Rule
++    public final ProjectManagerRule rule = new ProjectManagerRule() {
++        @Override
++        protected ProjectManager newProjectManager(Executor repositoryWorker, Executor purgeWorker) {
++            return spy(super.newProjectManager(repositoryWorker, unused -> { /* noop for test */}));
++        }
++
++        @Override
++        protected CommandExecutor newCommandExecutor(ProjectManager projectManager, Executor worker) {
++            return spy(super.newCommandExecutor(projectManager, worker));
++        }
++
++        @Override
++        protected void afterExecutorStarted() {
++            metadataService = new MetadataService(projectManager(), executor());
++
++            executor().execute(Command.createProject(AUTHOR, PROJA_ACTIVE)).join();
++            executor().execute(Command.createRepository(AUTHOR, PROJA_ACTIVE, REPOA_REMOVED)).join();
++            metadataService.addRepo(AUTHOR, PROJA_ACTIVE, REPOA_REMOVED).join();
++            executor().execute(Command.removeRepository(AUTHOR, PROJA_ACTIVE, REPOA_REMOVED)).join();
++            metadataService.removeRepo(AUTHOR, PROJA_ACTIVE, REPOA_REMOVED).join();
++
++            executor().execute(Command.createProject(AUTHOR, PROJB_REMOVED)).join();
++            executor().execute(Command.removeProject(AUTHOR, PROJB_REMOVED)).join();
++        }
++    };
++
++    @Before
++    public void init() {
++        service = new PurgeSchedulingService(rule.projectManager(),
++                                             rule.purgeWorker(),
++                                             MAX_REMOVED_REPOSITORY_AGE_MILLIS);
++    }
++
++    @Test
++    public void testClear() throws InterruptedException {
++        rule.executor().execute(Command.purgeRepository(AUTHOR, PROJA_ACTIVE, REPOA_REMOVED)).join();
++        rule.executor().execute(Command.purgeProject(AUTHOR, PROJB_REMOVED)).join();
++
++        service.start(rule.executor(), metadataService);
++        verify(rule.projectManager()).purgeMarked();
++        service.stop();
++    }
++
++    @Test
++    public void testSchedule() throws InterruptedException {
++        Thread.sleep(10); // let removed files be purged
++        service.purgeProjectAndRepository(rule.executor(), metadataService);
++        verify(rule.executor()).execute(isA(PurgeProjectCommand.class));
++        verify(rule.executor()).execute(isA(PurgeRepositoryCommand.class));
++    }
++}
+diff --git a/server/src/test/java/com/linecorp/centraldogma/server/internal/storage/repository/DefaultMetaRepositoryTest.java b/server/src/test/java/com/linecorp/centraldogma/server/internal/storage/repository/DefaultMetaRepositoryTest.java
+index 214e2d636a..1e966f898b 100644
+--- a/server/src/test/java/com/linecorp/centraldogma/server/internal/storage/repository/DefaultMetaRepositoryTest.java
++++ b/server/src/test/java/com/linecorp/centraldogma/server/internal/storage/repository/DefaultMetaRepositoryTest.java
+@@ -39,6 +39,7 @@
+ import com.cronutils.model.definition.CronDefinitionBuilder;
+ import com.cronutils.parser.CronParser;
+ import com.fasterxml.jackson.databind.JsonNode;
++import com.google.common.util.concurrent.MoreExecutors;
+ 
+ import com.linecorp.armeria.common.metric.NoopMeterRegistry;
+ import com.linecorp.centraldogma.common.Author;
+@@ -89,7 +90,7 @@ public class DefaultMetaRepositoryTest {
+     @BeforeClass
+     public static void init() throws Exception {
+         pm = new DefaultProjectManager(rootDir.getRoot(), ForkJoinPool.commonPool(),
+-                                       NoopMeterRegistry.get(), null);
++                                       MoreExecutors.directExecutor(), NoopMeterRegistry.get(), null);
+     }
+ 
+     @AfterClass
+diff --git a/server/src/test/java/com/linecorp/centraldogma/server/internal/storage/repository/RepositoryManagerWrapperTest.java b/server/src/test/java/com/linecorp/centraldogma/server/internal/storage/repository/RepositoryManagerWrapperTest.java
+index 9c75fa6c7a..8d1db0be51 100644
+--- a/server/src/test/java/com/linecorp/centraldogma/server/internal/storage/repository/RepositoryManagerWrapperTest.java
++++ b/server/src/test/java/com/linecorp/centraldogma/server/internal/storage/repository/RepositoryManagerWrapperTest.java
+@@ -20,11 +20,14 @@
+ import static org.assertj.core.api.Assertions.assertThatThrownBy;
+ import static org.junit.Assert.assertTrue;
+ import static org.junit.Assert.fail;
++import static org.mockito.ArgumentMatchers.any;
+ import static org.mockito.Mockito.mock;
++import static org.mockito.Mockito.verify;
+ 
+ import java.io.IOException;
+ import java.util.List;
+ import java.util.Map;
++import java.util.concurrent.Executor;
+ import java.util.concurrent.ForkJoinPool;
+ import java.util.stream.Collectors;
+ 
+@@ -54,10 +57,14 @@ public class RepositoryManagerWrapperTest {
+     @Rule
+     public final TestName testName = new TestName();
+ 
++    private Executor purgeWorker;
++
+     @Before
+     public void init() throws IOException {
++        purgeWorker = mock(Executor.class);
+         m = new RepositoryManagerWrapper(new GitRepositoryManager(mock(Project.class), rootDir.getRoot(),
+-                                                                  ForkJoinPool.commonPool(), null),
++                                                                  ForkJoinPool.commonPool(),
++                                                                  purgeWorker, null),
+                                          RepositoryWrapper::new);
+     }
+ 
+@@ -119,6 +126,33 @@ public void testList() {
+         }
+     }
+ 
++    @Test
++    public void testMarkForPurge() {
++        final String name = testName.getMethodName();
++        m.create(name, Author.SYSTEM);
++        m.remove(name);
++        m.markForPurge(name);
++        verify(purgeWorker).execute(any());
++        assertThat(m.listRemoved().keySet()).doesNotContain(name);
++    }
++
++    @Test
++    public void testPurgeMarked() {
++        final String name = testName.getMethodName();
++        final int numNames = 10;
++        for (int i = 0; i < numNames; i++) {
++            String targetName = name + i;
++            m.create(targetName, Author.SYSTEM);
++            m.remove(targetName);
++            m.markForPurge(targetName);
++        }
++        m.purgeMarked();
++        for (int i = 0; i < numNames; i++) {
++            String targetName = name + i;
++            assertThatThrownBy(() -> m.get(targetName)).isInstanceOf(RepositoryNotFoundException.class);
++        }
++    }
++
+     @Test
+     public void testClose() {
+         final String name = testName.getMethodName();
+diff --git a/server/src/test/java/com/linecorp/centraldogma/server/internal/storage/repository/git/GitRepositoryManagerTest.java b/server/src/test/java/com/linecorp/centraldogma/server/internal/storage/repository/git/GitRepositoryManagerTest.java
+index 11aba24ff5..3c80990522 100644
+--- a/server/src/test/java/com/linecorp/centraldogma/server/internal/storage/repository/git/GitRepositoryManagerTest.java
++++ b/server/src/test/java/com/linecorp/centraldogma/server/internal/storage/repository/git/GitRepositoryManagerTest.java
+@@ -31,6 +31,8 @@
+ import org.junit.Test;
+ import org.junit.rules.TemporaryFolder;
+ 
++import com.google.common.util.concurrent.MoreExecutors;
++
+ import com.linecorp.centraldogma.common.Author;
+ import com.linecorp.centraldogma.common.RepositoryExistsException;
+ import com.linecorp.centraldogma.common.RepositoryNotFoundException;
+@@ -138,6 +140,6 @@ public void testHas() throws IOException {
+ 
+     private GitRepositoryManager newRepositoryManager() {
+         return new GitRepositoryManager(mock(Project.class), rootDir(), ForkJoinPool.commonPool(),
+-                                        mock(RepositoryCache.class));
++                                        MoreExecutors.directExecutor(), mock(RepositoryCache.class));
+     }
+ }
+diff --git a/server/src/test/java/com/linecorp/centraldogma/server/internal/storage/repository/git/GitRepositoryMigrationTest.java b/server/src/test/java/com/linecorp/centraldogma/server/internal/storage/repository/git/GitRepositoryMigrationTest.java
+index bd964f1ee1..7f0a0a8622 100644
+--- a/server/src/test/java/com/linecorp/centraldogma/server/internal/storage/repository/git/GitRepositoryMigrationTest.java
++++ b/server/src/test/java/com/linecorp/centraldogma/server/internal/storage/repository/git/GitRepositoryMigrationTest.java
+@@ -26,6 +26,7 @@
+ import java.nio.file.Paths;
+ import java.util.List;
+ import java.util.Map;
++import java.util.concurrent.Executor;
+ import java.util.concurrent.ThreadLocalRandom;
+ 
+ import org.junit.Rule;
+@@ -34,6 +35,8 @@
+ import org.slf4j.Logger;
+ import org.slf4j.LoggerFactory;
+ 
++import com.google.common.util.concurrent.MoreExecutors;
++
+ import com.linecorp.centraldogma.common.Author;
+ import com.linecorp.centraldogma.common.Change;
+ import com.linecorp.centraldogma.common.Commit;
+@@ -163,8 +166,10 @@ public void singleRepositoryMigration() {
+     @Test
+     public void multipleRepositoryMigration() {
+         final File tempDir = this.tempDir.getRoot();
++        final Executor purgeWorker = MoreExecutors.directExecutor();
+         // Create repositories of older format.
+-        final GitRepositoryManager managerA = new GitRepositoryManager(proj, tempDir, V0, commonPool(), null);
++        final GitRepositoryManager managerA = new GitRepositoryManager(proj, tempDir, V0, commonPool(),
++                                                                       purgeWorker, null);
+         try {
+             assertThat(((GitRepository) managerA.create("foo", Author.SYSTEM)).format()).isSameAs(V0);
+             assertThat(((GitRepository) managerA.create("bar", Author.SYSTEM)).format()).isSameAs(V0);
+@@ -173,7 +178,8 @@ public void multipleRepositoryMigration() {
+         }
+ 
+         // Load the repositories with newer format to trigger automatic migration.
+-        final GitRepositoryManager managerB = new GitRepositoryManager(proj, tempDir, commonPool(), null);
++        final GitRepositoryManager managerB = new GitRepositoryManager(proj, tempDir, commonPool(),
++                                                                       purgeWorker, null);
+         try {
+             assertThat(((GitRepository) managerB.get("foo")).format()).isSameAs(V1);
+             assertThat(((GitRepository) managerB.get("bar")).format()).isSameAs(V1);
+diff --git a/server/src/test/java/com/linecorp/centraldogma/server/metadata/MetadataServiceTest.java b/server/src/test/java/com/linecorp/centraldogma/server/metadata/MetadataServiceTest.java
+index 2e34eeeb08..4f28c19b7f 100644
+--- a/server/src/test/java/com/linecorp/centraldogma/server/metadata/MetadataServiceTest.java
++++ b/server/src/test/java/com/linecorp/centraldogma/server/metadata/MetadataServiceTest.java
+@@ -30,6 +30,7 @@
+ import com.linecorp.centraldogma.common.ChangeConflictException;
+ import com.linecorp.centraldogma.common.ProjectExistsException;
+ import com.linecorp.centraldogma.common.RepositoryExistsException;
++import com.linecorp.centraldogma.common.RepositoryNotFoundException;
+ import com.linecorp.centraldogma.server.command.Command;
+ import com.linecorp.centraldogma.testing.internal.ProjectManagerRule;
+ 
+@@ -123,6 +124,14 @@ public void repository() throws Exception {
+         assertThat(repositoryMetadata.name()).isEqualTo(repo1);
+         assertThat(repositoryMetadata.creation().user()).isEqualTo(author.email());
+         assertThat(repositoryMetadata.removal()).isNull();
++
++        // Purge a repository.
++        mds.removeRepo(author, project1, repo1).join();
++        mds.purgeRepo(author, project1, repo1).join();
++        assertThatThrownBy(() -> getRepo1(mds)).isInstanceOf(RepositoryNotFoundException.class);
++        // Recreate the purged repository.
++        mds.addRepo(author, project1, repo1, PerRolePermissions.ofPublic()).join();
++        assertThat(getProject(mds, project1).repos().get(repo1).name()).isEqualTo(repo1);
+     }
+ 
+     @Test
+diff --git a/site/src/sphinx/setup-configuration.rst b/site/src/sphinx/setup-configuration.rst
+index d20bd60eae..45d550cfc8 100644
+--- a/site/src/sphinx/setup-configuration.rst
++++ b/site/src/sphinx/setup-configuration.rst
+@@ -32,6 +32,7 @@ defaults:
+       "idleTimeoutMillis": null,
+       "maxFrameLength": null,
+       "numRepositoryWorkers": 16,
++      "maxRemovedRepositoryAgeMillis": null,
+       "repositoryCacheSpec": "maximumWeight=134217728,expireAfterAccess=5m",
+       "webAppEnabled": true,
+       "webAppTitle": null,
+@@ -130,6 +131,12 @@ Core properties
+   - the number of worker threads dedicated to handling repository reads and writes.
+     If ``null``, the default value of '16 threads' is used.
+ 
++- ``maxRemovedRepositoryAgeMillis`` (integer)
++
++ - the maximum allowed age of removed projects and repositories before they are purged.
++   Set 0 to disable automatic purge.
++   If ``null``, the default value of '604800000 milliseconds' (7 days) is used.
++
+ - ``repositoryCacheSpec`` (string)
+ 
+   - the cache specification string which determines the capacity and behavior of the repository
+diff --git a/testing-internal/src/main/java/com/linecorp/centraldogma/testing/internal/ProjectManagerRule.java b/testing-internal/src/main/java/com/linecorp/centraldogma/testing/internal/ProjectManagerRule.java
+index 88322a2ec8..22c7df519e 100644
+--- a/testing-internal/src/main/java/com/linecorp/centraldogma/testing/internal/ProjectManagerRule.java
++++ b/testing-internal/src/main/java/com/linecorp/centraldogma/testing/internal/ProjectManagerRule.java
+@@ -17,7 +17,9 @@
+ package com.linecorp.centraldogma.testing.internal;
+ 
+ import java.util.concurrent.Executor;
++import java.util.concurrent.Executors;
+ import java.util.concurrent.ForkJoinPool;
++import java.util.concurrent.ScheduledExecutorService;
+ 
+ import org.junit.Rule;
+ import org.junit.rules.TemporaryFolder;
+@@ -30,6 +32,8 @@
+ import com.linecorp.centraldogma.server.internal.storage.project.ProjectInitializer;
+ import com.linecorp.centraldogma.server.storage.project.ProjectManager;
+ 
++import io.netty.util.concurrent.DefaultThreadFactory;
++
+ /**
+  * JUnit {@link Rule} that starts a {@link ProjectManager}.
+  *
+@@ -50,6 +54,7 @@ public class ProjectManagerRule extends TemporaryFolder {
+ 
+     private ProjectManager projectManager;
+     private CommandExecutor executor;
++    private ScheduledExecutorService purgeWorker;
+ 
+     /**
+      * Returns a {@link ProjectManager}.
+@@ -65,6 +70,13 @@ public CommandExecutor executor() {
+         return executor;
+     }
+ 
++    /**
++     * Returns a {@link ScheduledExecutorService} to purge a project.
++     */
++    public ScheduledExecutorService purgeWorker() {
++        return purgeWorker;
++    }
++
+     /**
+      * Configures an {@link Executor}, {@link ProjectManager} and {@link CommandExecutor}, then starts the
+      * {@link CommandExecutor} and initializes internal projects.
+@@ -73,9 +85,11 @@ public CommandExecutor executor() {
+     protected final void before() throws Throwable {
+         super.before();
+ 
+-        final Executor worker = newWorker();
+-        projectManager = newProjectManager(worker);
+-        executor = newCommandExecutor(projectManager, worker);
++        final Executor repositoryWorker = newWorker();
++        purgeWorker = Executors.newSingleThreadScheduledExecutor(
++                new DefaultThreadFactory("purge-worker", true));
++        projectManager = newProjectManager(repositoryWorker, purgeWorker);
++        executor = newCommandExecutor(projectManager, repositoryWorker);
+ 
+         executor.start().get();
+         ProjectInitializer.initializeInternalProject(executor);
+@@ -98,9 +112,11 @@ protected Executor newWorker() {
+     /**
+      * Override this method to customize a {@link ProjectManager}.
+      */
+-    protected ProjectManager newProjectManager(Executor worker) {
++    protected ProjectManager newProjectManager(Executor repositoryWorker,
++                                               Executor purgeWorker) {
+         try {
+-            return new DefaultProjectManager(newFolder(), worker, NoopMeterRegistry.get(), null);
++            return new DefaultProjectManager(newFolder(), repositoryWorker, purgeWorker,
++                                             NoopMeterRegistry.get(), null);
+         } catch (Exception e) {
+             // Should not reach here.
+             throw new Error(e);
+@@ -121,6 +137,7 @@ protected CommandExecutor newCommandExecutor(ProjectManager projectManager, Exec
+     protected void after() {
+         super.after();
+         executor.stop();
++        purgeWorker.shutdownNow();
+         projectManager.close(ShuttingDownException::new);
+     }
+ }

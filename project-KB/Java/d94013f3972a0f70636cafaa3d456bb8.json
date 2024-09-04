@@ -1,0 +1,20 @@
+{
+    "original_source": {
+        "database(url)": "https://github.com/SAP/project-kb",
+        "software_system(CPE)": [],
+        "fix_commit": "https://github.com/apache/struts/commit/113c47082c09818bcef65acc436a2d0c7c47aa6c",
+        "version_end_excluding": {},
+        "path": {
+            "file_path": "core/src/test/java/org/apache/struts2/dispatcher/mapper/DefaultActionMapperTest.java"
+        }
+    },
+    "programming_language": "JAVA",
+    "licences": {
+        "database": "Apache",
+        "affected_repository": "Apache License 2.0"
+    },
+    "related_vulnerability_entry": {
+        "CVE": [],
+        "CWE": []
+    }
+}

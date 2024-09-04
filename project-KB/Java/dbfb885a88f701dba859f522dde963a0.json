@@ -1,0 +1,27 @@
+{
+    "original_source": {
+        "database(url)": "https://github.com/SAP/project-kb",
+        "software_system(CPE)": [
+            "cpe:2.3:a:apache:struts:2.0.0:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:struts:2.0.0:*:*:*:*:*:*:*"
+        ],
+        "fix_commit": "https://github.com/apache/struts/commit/6bd694b7980494c12d49ca1bf39f12aec3e03e2f",
+        "version_end_excluding": {
+            "apache:struts": "unknown"
+        },
+        "path": {
+            "file_path": "core/src/main/java/org/apache/struts2/views/xslt/XSLTResult.java"
+        }
+    },
+    "programming_language": "JAVA",
+    "licences": {
+        "database": "Apache",
+        "affected_repository": "Apache License 2.0"
+    },
+    "related_vulnerability_entry": {
+        "CVE": [
+            "CVE-2016-3082"
+        ],
+        "CWE": []
+    }
+}

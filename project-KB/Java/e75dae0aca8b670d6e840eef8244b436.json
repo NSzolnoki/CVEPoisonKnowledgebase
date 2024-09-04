@@ -1,0 +1,20 @@
+{
+    "original_source": {
+        "database(url)": "https://github.com/SAP/project-kb",
+        "software_system(CPE)": [],
+        "fix_commit": "https://github.com/elastic/elasticsearch/commit/29ee3a05b6ac14f5c8dcbcd52a67acbf61130c24",
+        "version_end_excluding": {},
+        "path": {
+            "file_path": "x-pack/plugin/security/src/main/java/org/elasticsearch/xpack/security/authz/RBACEngine.java"
+        }
+    },
+    "programming_language": "JAVA",
+    "licences": {
+        "database": "Apache",
+        "affected_repository": "Other"
+    },
+    "related_vulnerability_entry": {
+        "CVE": [],
+        "CWE": []
+    }
+}

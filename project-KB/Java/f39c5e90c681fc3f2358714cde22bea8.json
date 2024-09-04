@@ -1,0 +1,20 @@
+{
+    "original_source": {
+        "database(url)": "https://github.com/SAP/project-kb",
+        "software_system(CPE)": [],
+        "fix_commit": "https://github.com/line/centraldogma/commit/d650417c3f38e2bff68a843bf89f6af55e845d91",
+        "version_end_excluding": {},
+        "path": {
+            "file_path": "server/src/main/java/com/linecorp/centraldogma/server/internal/storage/repository/git/GitRepository.java"
+        }
+    },
+    "programming_language": "JAVA",
+    "licences": {
+        "database": "Apache",
+        "affected_repository": "Apache License 2.0"
+    },
+    "related_vulnerability_entry": {
+        "CVE": [],
+        "CWE": []
+    }
+}

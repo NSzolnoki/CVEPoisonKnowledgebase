@@ -1,0 +1,305 @@
+diff --git a/datetime/src/main/java/com/fasterxml/jackson/datatype/jsr310/DecimalUtils.java b/datetime/src/main/java/com/fasterxml/jackson/datatype/jsr310/DecimalUtils.java
+index a36cf8c3..5549b332 100644
+--- a/datetime/src/main/java/com/fasterxml/jackson/datatype/jsr310/DecimalUtils.java
++++ b/datetime/src/main/java/com/fasterxml/jackson/datatype/jsr310/DecimalUtils.java
+@@ -17,6 +17,7 @@
+ package com.fasterxml.jackson.datatype.jsr310;
+ 
+ import java.math.BigDecimal;
++import java.util.function.BiFunction;
+ 
+ /**
+  * Utilities to aid in the translation of decimal types to/from multiple parts.
+@@ -39,14 +40,14 @@ public static String toDecimal(long seconds, int nanoseconds)
+             .append(seconds)
+             .append('.');
+         // 14-Mar-2016, tatu: Although we do not yet (with 2.7) trim trailing zeroes,
+-        //   for general case, 
++        //   for general case,
+         if (nanoseconds == 0L) {
+             // !!! TODO: 14-Mar-2016, tatu: as per [datatype-jsr310], should trim
+             //     trailing zeroes
+             if (seconds == 0L) {
+                 return "0.0";
+             }
+-            
++
+ //            sb.append('0');
+             sb.append("000000000");
+         } else {
+@@ -92,7 +93,10 @@ public static BigDecimal toBigDecimal(long seconds, int nanoseconds)
+         }
+         return new BigDecimal(toDecimal(seconds, nanoseconds));
+     }
+-    
++
++    /**
++     * @Deprecated due to potential unbounded latency on some JRE releases.
++     */
+     public static int extractNanosecondDecimal(BigDecimal value, long integer)
+     {
+         // !!! 14-Mar-2016, tatu: Somewhat inefficient; should replace with functionally
+@@ -100,4 +104,40 @@ public static int extractNanosecondDecimal(BigDecimal value, long integer)
+         //   there's no difference and do nothing... )
+         return value.subtract(new BigDecimal(integer)).multiply(ONE_BILLION).intValue();
+     }
++
++
++    /**
++     * Extracts the seconds and nanoseconds component of {@code seconds} as {@code long} and {@code int}
++     * values, passing them to the given converter.   The implementation avoids latency issues present
++     * on some JRE releases.
++     *
++     * @since 2.9.8
++     */
++    public static <T> T extractSecondsAndNanos(BigDecimal seconds, BiFunction<Long, Integer, T> convert)
++    {
++        // Complexity is here to workaround unbounded latency in some BigDecimal operations.
++        //   https://github.com/FasterXML/jackson-databind/issues/2141
++
++        long secondsOnly;
++        int nanosOnly;
++
++        BigDecimal nanoseconds = seconds.scaleByPowerOfTen(9);
++        if (nanoseconds.precision() - nanoseconds.scale() <= 0) {
++            // There are no non-zero digits to the left of the decimal point.
++            // This protects against very negative exponents.
++            secondsOnly = nanosOnly = 0;
++        }
++        else if (seconds.scale() < -63) {
++            // There would be no low-order bits once we chop to a long.
++            // This protects against very positive exponents.
++            secondsOnly = nanosOnly = 0;
++        }
++        else {
++            // Now we know that seconds has reasonable scale, we can safely chop it apart.
++            secondsOnly = seconds.longValue();
++            nanosOnly = nanoseconds.subtract(new BigDecimal(secondsOnly).scaleByPowerOfTen(9)).intValue();
++        }
++
++        return convert.apply(secondsOnly, nanosOnly);
++    }
+ }
+diff --git a/datetime/src/main/java/com/fasterxml/jackson/datatype/jsr310/deser/DurationDeserializer.java b/datetime/src/main/java/com/fasterxml/jackson/datatype/jsr310/deser/DurationDeserializer.java
+index be0ad8bd..cba6e3b7 100644
+--- a/datetime/src/main/java/com/fasterxml/jackson/datatype/jsr310/deser/DurationDeserializer.java
++++ b/datetime/src/main/java/com/fasterxml/jackson/datatype/jsr310/deser/DurationDeserializer.java
+@@ -52,9 +52,7 @@ public Duration deserialize(JsonParser parser, DeserializationContext context) t
+         {
+             case JsonTokenId.ID_NUMBER_FLOAT:
+                 BigDecimal value = parser.getDecimalValue();
+-                long seconds = value.longValue();
+-                int nanoseconds = DecimalUtils.extractNanosecondDecimal(value, seconds);
+-                return Duration.ofSeconds(seconds, nanoseconds);
++                return DecimalUtils.extractSecondsAndNanos(value, Duration::ofSeconds);
+ 
+             case JsonTokenId.ID_NUMBER_INT:
+                 if(context.isEnabled(DeserializationFeature.READ_DATE_TIMESTAMPS_AS_NANOSECONDS)) {
+diff --git a/datetime/src/main/java/com/fasterxml/jackson/datatype/jsr310/deser/InstantDeserializer.java b/datetime/src/main/java/com/fasterxml/jackson/datatype/jsr310/deser/InstantDeserializer.java
+index bec6a0f1..e8c115a0 100644
+--- a/datetime/src/main/java/com/fasterxml/jackson/datatype/jsr310/deser/InstantDeserializer.java
++++ b/datetime/src/main/java/com/fasterxml/jackson/datatype/jsr310/deser/InstantDeserializer.java
+@@ -91,7 +91,7 @@ public class InstantDeserializer<T extends Temporal>
+     protected final Function<FromDecimalArguments, T> fromNanoseconds;
+ 
+     protected final Function<TemporalAccessor, T> parsedToValue;
+-    
++
+     protected final BiFunction<T, ZoneId, T> adjust;
+ 
+     /**
+@@ -150,7 +150,7 @@ protected InstantDeserializer(InstantDeserializer<T> base, Boolean adjustToConte
+         replaceZeroOffsetAsZ = base.replaceZeroOffsetAsZ;
+         _adjustToContextTZOverride = adjustToContextTimezoneOverride;
+     }
+-    
++
+     @Override
+     protected JsonDeserializer<T> withDateFormat(DateTimeFormatter dtf) {
+         if (dtf == _formatter) {
+@@ -218,7 +218,7 @@ public T deserialize(JsonParser parser, DeserializationContext context) throws I
+                 // 20-Apr-2016, tatu: Related to [databind#1208], can try supporting embedded
+                 //    values quite easily
+                 return (T) parser.getEmbeddedObject();
+-                
++
+             case JsonTokenId.ID_START_ARRAY:
+             	return _deserializeFromArray(parser, context);
+         }
+@@ -265,7 +265,7 @@ protected int _countPeriods(String str)
+         }
+         return commas;
+     }
+-    
++
+     protected T _fromLong(DeserializationContext context, long timestamp)
+     {
+         if(context.isEnabled(DeserializationFeature.READ_DATE_TIMESTAMPS_AS_NANOSECONDS)){
+@@ -276,15 +276,14 @@ protected T _fromLong(DeserializationContext context, long timestamp)
+         return fromMilliseconds.apply(new FromIntegerArguments(
+                 timestamp, this.getZone(context)));
+     }
+-    
++
+     protected T _fromDecimal(DeserializationContext context, BigDecimal value)
+     {
+-        long seconds = value.longValue();
+-        int nanoseconds = DecimalUtils.extractNanosecondDecimal(value, seconds);
+-        return fromNanoseconds.apply(new FromDecimalArguments(
+-                seconds, nanoseconds, getZone(context)));
++        FromDecimalArguments args =
++            DecimalUtils.extractSecondsAndNanos(value, (s, ns) -> new FromDecimalArguments(s, ns, getZone(context)));
++        return fromNanoseconds.apply(args);
+     }
+-    
++
+     private ZoneId getZone(DeserializationContext context)
+     {
+         // Instants are always in UTC, so don't waste compute cycles
+diff --git a/datetime/src/test/java/com/fasterxml/jackson/datatype/jsr310/TestDecimalUtils.java b/datetime/src/test/java/com/fasterxml/jackson/datatype/jsr310/TestDecimalUtils.java
+index 54e4548b..df0e76d1 100644
+--- a/datetime/src/test/java/com/fasterxml/jackson/datatype/jsr310/TestDecimalUtils.java
++++ b/datetime/src/test/java/com/fasterxml/jackson/datatype/jsr310/TestDecimalUtils.java
+@@ -82,4 +82,62 @@ public void testExtractNanosecondDecimal06()
+         checkExtractNanos(19827342231L, 999999999, value);
+     }
+ 
++
++    private void checkExtractSecondsAndNanos(long expectedSeconds, int expectedNanos, BigDecimal decimal)
++    {
++        DecimalUtils.extractSecondsAndNanos(decimal, (Long s, Integer ns) -> {
++            assertEquals("The second part is not correct.", expectedSeconds, s.longValue());
++            assertEquals("The nanosecond part is not correct.", expectedNanos, ns.intValue());
++            return null;
++        });
++    }
++
++    @Test
++    public void testExtractSecondsAndNanos01()
++    {
++        BigDecimal value = new BigDecimal("0");
++        checkExtractSecondsAndNanos(0L, 0, value);
++    }
++
++    @Test
++    public void testExtractSecondsAndNanos02()
++    {
++        BigDecimal value = new BigDecimal("15.000000072");
++        checkExtractSecondsAndNanos(15L, 72, value);
++    }
++
++    @Test
++    public void testExtractSecondsAndNanos03()
++    {
++        BigDecimal value = new BigDecimal("15.72");
++        checkExtractSecondsAndNanos(15L, 720000000, value);
++    }
++
++    @Test
++    public void testExtractSecondsAndNanos04()
++    {
++        BigDecimal value = new BigDecimal("19827342231.192837465");
++        checkExtractSecondsAndNanos(19827342231L, 192837465, value);
++    }
++
++    @Test
++    public void testExtractSecondsAndNanos05()
++    {
++        BigDecimal value = new BigDecimal("19827342231");
++        checkExtractSecondsAndNanos(19827342231L, 0, value);
++    }
++
++    @Test
++    public void testExtractSecondsAndNanos06()
++    {
++        BigDecimal value = new BigDecimal("19827342231.999999999");
++        checkExtractSecondsAndNanos(19827342231L, 999999999, value);
++    }
++
++    @Test(timeout = 100)
++    public void testExtractSecondsAndNanos07()
++    {
++        BigDecimal value = new BigDecimal("1e10000000");
++        checkExtractSecondsAndNanos(0L, 0, value);
++    }
+ }
+diff --git a/datetime/src/test/java/com/fasterxml/jackson/datatype/jsr310/TestDurationDeserialization.java b/datetime/src/test/java/com/fasterxml/jackson/datatype/jsr310/TestDurationDeserialization.java
+index 166e2682..ed65acc4 100644
+--- a/datetime/src/test/java/com/fasterxml/jackson/datatype/jsr310/TestDurationDeserialization.java
++++ b/datetime/src/test/java/com/fasterxml/jackson/datatype/jsr310/TestDurationDeserialization.java
+@@ -146,7 +146,7 @@ public void testDeserializationAsFloatEdgeCase07() throws Exception
+      * Numbers with very large exponents can take a long time, but still result in zero.
+      * https://github.com/FasterXML/jackson-databind/issues/2141
+      */
+-    @Test
++    @Test(timeout = 100)
+     public void testDeserializationAsFloatEdgeCase08() throws Exception
+     {
+         String input = "1e10000000";
+@@ -155,7 +155,7 @@ public void testDeserializationAsFloatEdgeCase08() throws Exception
+         assertEquals(0, value.getSeconds());
+     }
+ 
+-    @Test
++    @Test(timeout = 100)
+     public void testDeserializationAsFloatEdgeCase09() throws Exception
+     {
+         String input = "-1e10000000";
+@@ -167,7 +167,7 @@ public void testDeserializationAsFloatEdgeCase09() throws Exception
+     /**
+      * Same for large negative exponents.
+      */
+-    @Test
++    @Test(timeout = 100)
+     public void testDeserializationAsFloatEdgeCase10() throws Exception
+     {
+         String input = "1e-10000000";
+@@ -176,7 +176,7 @@ public void testDeserializationAsFloatEdgeCase10() throws Exception
+         assertEquals(0, value.getSeconds());
+     }
+ 
+-    @Test
++    @Test(timeout = 100)
+     public void testDeserializationAsFloatEdgeCase11() throws Exception
+     {
+         String input = "-1e-10000000";
+diff --git a/datetime/src/test/java/com/fasterxml/jackson/datatype/jsr310/TestInstantSerialization.java b/datetime/src/test/java/com/fasterxml/jackson/datatype/jsr310/TestInstantSerialization.java
+index 33113d9b..37523edb 100644
+--- a/datetime/src/test/java/com/fasterxml/jackson/datatype/jsr310/TestInstantSerialization.java
++++ b/datetime/src/test/java/com/fasterxml/jackson/datatype/jsr310/TestInstantSerialization.java
+@@ -311,7 +311,7 @@ public void testDeserializationAsFloatEdgeCase07() throws Exception
+      * Numbers with very large exponents can take a long time, but still result in zero.
+      * https://github.com/FasterXML/jackson-databind/issues/2141
+      */
+-    @Test
++    @Test(timeout = 100)
+     public void testDeserializationAsFloatEdgeCase08() throws Exception
+     {
+         String input = "1e10000000";
+@@ -319,7 +319,7 @@ public void testDeserializationAsFloatEdgeCase08() throws Exception
+         assertEquals(0, value.getEpochSecond());
+     }
+ 
+-    @Test
++    @Test(timeout = 100)
+     public void testDeserializationAsFloatEdgeCase09() throws Exception
+     {
+         String input = "-1e10000000";
+@@ -330,7 +330,7 @@ public void testDeserializationAsFloatEdgeCase09() throws Exception
+     /**
+      * Same for large negative exponents.
+      */
+-    @Test
++    @Test(timeout = 100)
+     public void testDeserializationAsFloatEdgeCase10() throws Exception
+     {
+         String input = "1e-10000000";
+@@ -338,7 +338,7 @@ public void testDeserializationAsFloatEdgeCase10() throws Exception
+         assertEquals(0, value.getEpochSecond());
+     }
+ 
+-    @Test
++    @Test(timeout = 100)
+     public void testDeserializationAsFloatEdgeCase11() throws Exception
+     {
+         String input = "-1e-10000000";

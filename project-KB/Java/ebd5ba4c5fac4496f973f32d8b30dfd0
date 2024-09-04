@@ -1,0 +1,83 @@
+diff --git a/core/pom.xml b/core/pom.xml
+index 5790faa1cc..9c59d91587 100644
+--- a/core/pom.xml
++++ b/core/pom.xml
+@@ -432,5 +432,11 @@
+             <scope>test</scope>
+         </dependency>
+ 
++        <dependency>
++            <groupId>commons-validator</groupId>
++            <artifactId>commons-validator</artifactId>
++            <scope>test</scope>
++        </dependency>
++
+     </dependencies>
+ </project>
+diff --git a/core/src/test/java/com/opensymphony/xwork2/validator/URLValidatorTest.java b/core/src/test/java/com/opensymphony/xwork2/validator/URLValidatorTest.java
+index 56a9bcc50f..438173a99a 100644
+--- a/core/src/test/java/com/opensymphony/xwork2/validator/URLValidatorTest.java
++++ b/core/src/test/java/com/opensymphony/xwork2/validator/URLValidatorTest.java
+@@ -19,6 +19,7 @@
+ import com.opensymphony.xwork2.XWorkTestCase;
+ import com.opensymphony.xwork2.util.ValueStack;
+ import com.opensymphony.xwork2.validator.validators.URLValidator;
++import org.apache.commons.validator.routines.UrlValidator;
+ 
+ import java.util.HashMap;
+ import java.util.Map;
+@@ -133,7 +134,7 @@ public void testValidUrlWithRegexExpression() throws Exception {
+ 	public void testValidUrlWithDefaultRegex() throws Exception {
+ 		URLValidator validator = new URLValidator();
+ 
+-        Pattern pattern = Pattern.compile(validator.getUrlRegex());
++        Pattern pattern = Pattern.compile(validator.getUrlRegex(), Pattern.CASE_INSENSITIVE);
+ 
+         assertFalse(pattern.matcher("myapp://test.com").matches());
+         assertFalse(pattern.matcher("myap://test.com").matches());
+@@ -146,9 +147,18 @@ public void testValidUrlWithDefaultRegex() throws Exception {
+         assertTrue(pattern.matcher("https://www.opensymphony.com").matches());
+         assertTrue(pattern.matcher("https://www.opensymphony.com:443/login").matches());
+         assertTrue(pattern.matcher("http://localhost:8080/myapp").matches());
+-    }
+ 
+-	public void testValidUrlCaseInsesitive() throws Exception {
++        assertTrue(pattern.matcher("http://www.legalspace.com/__media__/js/netsoltrademark.php?d=www.a-vos-travaux.fr%2Facheter-un-aspirateur-sans-sac-pas-cher%2F").matches());
++        assertTrue(UrlValidator.getInstance().isValid("http://www.legalspace.com/__media__/js/netsoltrademark.php?d=www.a-vos-travaux.fr%2Facheter-un-aspirateur-sans-sac-pas-cher%2F"));
++
++		assertTrue(pattern.matcher("http://www.duadmin.isaev.Infoduadmin.Isaev.info/?a%5B%5D=%3Ca%20href%3Dhttp%3A%2F%2Fwww.aspert.fr%2Fun-seche-cheveux-lisseur-est-il-vraiment-utile%2F%3Eseche%20cheveux%20dyson%20test%3C%2Fa").matches());
++		assertTrue(UrlValidator.getInstance().isValid("http://www.duadmin.isaev.Infoduadmin.Isaev.info/?a%5B%5D=%3Ca%20href%3Dhttp%3A%2F%2Fwww.aspert.fr%2Fun-seche-cheveux-lisseur-est-il-vraiment-utile%2F%3Eseche%20cheveux%20dyson%20test%3C%2Fa"));
++
++		assertTrue(pattern.matcher("http://netsol-underconstruction-page-monitor-1.com/__media__/js/netsoltrademark.php?d=www.le-soutien-scolaire.fr%2Favis-et-test-comparatifs-des-robots-multifonctions%2F").matches());
++		assertTrue(UrlValidator.getInstance().isValid("http://netsol-underconstruction-page-monitor-1.com/__media__/js/netsoltrademark.php?d=www.le-soutien-scolaire.fr%2Favis-et-test-comparatifs-des-robots-multifonctions%2F"));
++	}
++
++	public void testValidUrlCaseInsensitive() throws Exception {
+ 		// given
+ 		final Map<String, Object> fieldErrors = new HashMap<>();
+ 
+@@ -222,7 +232,7 @@ public String getTestingUrl4() {
+ 		}
+ 		
+ 		public String getTestingUrl5() {
+-			return "http://yahoo.com/articles?id=123";
++			return "http://yahoo.com/articles?id=123\n";
+ 		}
+ 	}
+ 
+diff --git a/pom.xml b/pom.xml
+index b120f6c783..62f8db9220 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -736,6 +736,11 @@
+                 <artifactId>commons-beanutils</artifactId>
+                 <version>1.9.2</version>
+             </dependency>
++            <dependency>
++                <groupId>commons-validator</groupId>
++                <artifactId>commons-validator</artifactId>
++                <version>1.5.1</version>
++            </dependency>
+ 
+             <!-- Mocks for unit testing (by Spring) -->
+             <dependency>

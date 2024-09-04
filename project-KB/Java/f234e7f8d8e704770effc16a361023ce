@@ -1,0 +1,13 @@
+diff --git a/core/src/main/java/com/opensymphony/xwork2/config/entities/PackageConfig.java b/core/src/main/java/com/opensymphony/xwork2/config/entities/PackageConfig.java
+index bb34018de5..95f6f6633c 100644
+--- a/core/src/main/java/com/opensymphony/xwork2/config/entities/PackageConfig.java
++++ b/core/src/main/java/com/opensymphony/xwork2/config/entities/PackageConfig.java
+@@ -351,7 +351,7 @@ public List<ExceptionMappingConfig> getGlobalExceptionMappingConfigs() {
+      *
+      * @return a Set of method names allowed to be executed if strict method invocation is enabled
+      */
+-    public Set<String> getGlobalAllowedMethods() { return globalAllowedMethods; }
++    public Set<String> getGlobalAllowedMethods() { return Collections.unmodifiableSet(globalAllowedMethods); }
+ 
+     public boolean isStrictMethodInvocation() {
+         return strictMethodInvocation;

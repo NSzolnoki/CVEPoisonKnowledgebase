@@ -1,0 +1,158 @@
+diff --git a/java/org/apache/catalina/valves/AbstractAccessLogValve.java b/java/org/apache/catalina/valves/AbstractAccessLogValve.java
+index fee6facdfb48..a55b2896bab1 100644
+--- a/java/org/apache/catalina/valves/AbstractAccessLogValve.java
++++ b/java/org/apache/catalina/valves/AbstractAccessLogValve.java
+@@ -455,6 +455,12 @@ protected Date initialValue() {
+      */
+     protected AccessLogElement[] logElements = null;
+ 
++    /**
++     * Array of elements where the value needs to be cached at the start of the
++     * request.
++     */
++    protected CachedElement[] cachedElements = null;
++
+     /**
+      * Should this valve use request attributes for IP address, hostname,
+      * protocol and port used for the request.
+@@ -563,6 +569,7 @@ public void setPattern(String pattern) {
+             this.pattern = pattern;
+         }
+         logElements = createLogElements();
++        cachedElements = createCachedElements(logElements);
+     }
+ 
+     /**
+@@ -675,6 +682,9 @@ public void invoke(Request request, Response response) throws IOException,
+             // to be cached in the request.
+             request.getAttribute(Globals.CERTIFICATES_ATTR);
+         }
++        for (CachedElement element : cachedElements) {
++                element.cache(request);
++        }
+         getNext().invoke(request, response);
+     }
+ 
+@@ -797,7 +807,20 @@ protected synchronized void stopInternal() throws LifecycleException {
+     protected interface AccessLogElement {
+         public void addElement(CharArrayWriter buf, Date date, Request request,
+                 Response response, long time);
++    }
+ 
++    /**
++     * Marks an AccessLogElement as needing to be have the value cached at the
++     * start of the request rather than just recorded at the end as the source
++     * data for the element may not be available at the end of the request. This
++     * typically occurs for remote network information, such as ports, IP
++     * addresses etc. when the connection is closed unexpectedly. These elements
++     * take advantage of these values being cached elsewhere on first request
++     * and do not cache the value in the element since the elements are
++     * state-less.
++     */
++    protected interface CachedElement {
++        public void cache(Request request);
+     }
+ 
+     /**
+@@ -849,7 +872,7 @@ public void addElement(CharArrayWriter buf, Date date, Request request,
+     /**
+      * write remote IP address - %a
+      */
+-    protected class RemoteAddrElement implements AccessLogElement {
++    protected class RemoteAddrElement implements AccessLogElement, CachedElement {
+         @Override
+         public void addElement(CharArrayWriter buf, Date date, Request request,
+                 Response response, long time) {
+@@ -870,12 +893,19 @@ public void addElement(CharArrayWriter buf, Date date, Request request,
+             }
+             buf.append(value);
+         }
++
++        @Override
++        public void cache(Request request) {
++            if (!requestAttributesEnabled) {
++                request.getRemoteAddr();
++            }
++        }
+     }
+ 
+     /**
+      * write remote host name - %h
+      */
+-    protected class HostElement implements AccessLogElement {
++    protected class HostElement implements AccessLogElement, CachedElement {
+         @Override
+         public void addElement(CharArrayWriter buf, Date date, Request request,
+                 Response response, long time) {
+@@ -898,6 +928,13 @@ public void addElement(CharArrayWriter buf, Date date, Request request,
+             }
+             buf.append(value);
+         }
++
++        @Override
++        public void cache(Request request) {
++            if (!requestAttributesEnabled) {
++                request.getRemoteHost();
++            }
++        }
+     }
+ 
+     /**
+@@ -1183,7 +1220,7 @@ public void addElement(CharArrayWriter buf, Date date, Request request,
+     /**
+      * write local or remote port for request connection - %p and %{xxx}p
+      */
+-    protected class PortElement implements AccessLogElement {
++    protected class PortElement implements AccessLogElement, CachedElement {
+ 
+         /**
+          * Type of port to log
+@@ -1230,6 +1267,13 @@ public void addElement(CharArrayWriter buf, Date date, Request request,
+                 }
+             }
+         }
++
++        @Override
++        public void cache(Request request) {
++            if (portType == PortType.REMOTE) {
++                request.getRemotePort();
++            }
++        }
+     }
+ 
+     /**
+@@ -1668,6 +1712,18 @@ protected AccessLogElement[] createLogElements() {
+         return list.toArray(new AccessLogElement[0]);
+     }
+ 
++
++    private CachedElement[] createCachedElements(AccessLogElement[] elements) {
++        List<CachedElement> list = new ArrayList<>();
++        for (AccessLogElement element : elements) {
++            if (element instanceof CachedElement) {
++                list.add((CachedElement) element);
++            }
++        }
++        return list.toArray(new CachedElement[0]);
++    }
++
++
+     /**
+      * Create an AccessLogElement implementation which needs an element name.
+      * @param name Header name
+diff --git a/webapps/docs/changelog.xml b/webapps/docs/changelog.xml
+index 00c2a7ee93c5..5a6c3097402a 100644
+--- a/webapps/docs/changelog.xml
++++ b/webapps/docs/changelog.xml
+@@ -138,6 +138,11 @@
+       <scode>
+         Deprecate <code>MappingData.contextPath</code> as it is unused. (markt)
+       </scode>
++      <fix>
++        Fix a problem that meant that remote host, address and port information
++        could be missing in the access log for an HTTP/2 request where the
++        connection was closed unexpectely.
++      </fix>
+     </changelog>
+   </subsection>
+   <subsection name="Coyote">

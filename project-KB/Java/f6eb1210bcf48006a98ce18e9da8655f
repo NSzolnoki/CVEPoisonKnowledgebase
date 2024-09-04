@@ -1,0 +1,80 @@
+diff --git a/uaa/src/main/webapp/WEB-INF/spring/codestore-endpoints.xml b/uaa/src/main/webapp/WEB-INF/spring/codestore-endpoints.xml
+index 012d8842f03..b72e89304c7 100644
+--- a/uaa/src/main/webapp/WEB-INF/spring/codestore-endpoints.xml
++++ b/uaa/src/main/webapp/WEB-INF/spring/codestore-endpoints.xml
+@@ -26,7 +26,7 @@
+     <http  name="codeStoreSecurity" pattern="/Codes/**" create-session="stateless" authentication-manager-ref="emptyAuthenticationManager"
+            entry-point-ref="oauthAuthenticationEntryPoint"
+            xmlns="http://www.springframework.org/schema/security" use-expressions="true">
+-        <intercept-url pattern="/**" access="#oauth2.hasAnyScope('scim.create','scim.write','password.write')"/>
++        <intercept-url pattern="/**" access="#oauth2.hasAnyScope('oauth.login')"/>
+         <custom-filter ref="resourceAgnosticAuthenticationFilter" position="PRE_AUTH_FILTER" />
+         <anonymous enabled="false" />
+         <expression-handler ref="oauthWebExpressionHandler" />
+diff --git a/uaa/src/test/java/org/cloudfoundry/identity/uaa/integration/feature/InvitationsIT.java b/uaa/src/test/java/org/cloudfoundry/identity/uaa/integration/feature/InvitationsIT.java
+index 210ec01a32e..fe99a9494da 100644
+--- a/uaa/src/test/java/org/cloudfoundry/identity/uaa/integration/feature/InvitationsIT.java
++++ b/uaa/src/test/java/org/cloudfoundry/identity/uaa/integration/feature/InvitationsIT.java
+@@ -91,7 +91,7 @@ public class InvitationsIT {
+     @Before
+     public void setup() throws Exception {
+         scimToken = testClient.getOAuthAccessToken("admin", "adminsecret", "client_credentials", "scim.read,scim.write");
+-        loginToken = testClient.getOAuthAccessToken("login", "loginsecret", "client_credentials", "password.write,scim.write");
++        loginToken = testClient.getOAuthAccessToken("login", "loginsecret", "client_credentials", "oauth.login");
+         screenShootRule.setWebDriver(webDriver);
+     }
+ 
+@@ -199,9 +199,9 @@ private String createInvitation(String username, String userEmail, String redire
+         return createInvitation(baseUrl, uaaUrl, username, userEmail, origin, redirectUri, loginToken, scimToken);
+     }
+ 
+-    public static String createInvitation(String baseUrl, String uaaUrl, String username, String userEmail, String origin, String redirectUri, String scimWriteToken, String scimReadToken) {
++    public static String createInvitation(String baseUrl, String uaaUrl, String username, String userEmail, String origin, String redirectUri, String loginToken, String scimToken) {
+         HttpHeaders headers = new HttpHeaders();
+-        headers.add("Authorization", "Bearer " + scimWriteToken);
++        headers.add("Authorization", "Bearer " + scimToken);
+         RestTemplate uaaTemplate = new RestTemplate();
+         ScimUser scimUser = new ScimUser();
+         scimUser.setUserName(username);
+@@ -211,8 +211,8 @@ public static String createInvitation(String baseUrl, String uaaUrl, String user
+ 
+         String userId = null;
+         try {
+-            userId = IntegrationTestUtils.getUserIdByField(scimReadToken, baseUrl, origin, "email", userEmail);
+-            scimUser = IntegrationTestUtils.getUser(scimReadToken, baseUrl, userId);
++            userId = IntegrationTestUtils.getUserIdByField(scimToken, baseUrl, origin, "email", userEmail);
++            scimUser = IntegrationTestUtils.getUser(scimToken, baseUrl, userId);
+         } catch (RuntimeException x) {
+         }
+         if (userId == null) {
+@@ -224,12 +224,15 @@ public static String createInvitation(String baseUrl, String uaaUrl, String user
+             userId = response.getBody().getId();
+         } else {
+             scimUser.setVerified(false);
+-            IntegrationTestUtils.updateUser(scimWriteToken, uaaUrl, scimUser);
++            IntegrationTestUtils.updateUser(scimToken, uaaUrl, scimUser);
+         }
+ 
++        HttpHeaders invitationHeaders = new HttpHeaders();
++        invitationHeaders.add("Authorization", "Bearer " + loginToken);
++
+         Timestamp expiry = new Timestamp(System.currentTimeMillis() + TimeUnit.MILLISECONDS.convert(System.currentTimeMillis() + 24 * 3600, TimeUnit.MILLISECONDS));
+         ExpiringCode expiringCode = new ExpiringCode(null, expiry, "{\"origin\":\"" + origin + "\", \"client_id\":\"app\", \"redirect_uri\":\"" + redirectUri + "\", \"user_id\":\"" + userId + "\", \"email\":\"" + userEmail + "\"}", null);
+-        HttpEntity<ExpiringCode> expiringCodeRequest = new HttpEntity<>(expiringCode, headers);
++        HttpEntity<ExpiringCode> expiringCodeRequest = new HttpEntity<>(expiringCode, invitationHeaders);
+         ResponseEntity<ExpiringCode> expiringCodeResponse = uaaTemplate.exchange(uaaUrl + "/Codes", HttpMethod.POST, expiringCodeRequest, ExpiringCode.class);
+         expiringCode = expiringCodeResponse.getBody();
+         return expiringCode.getCode();
+diff --git a/uaa/src/test/java/org/cloudfoundry/identity/uaa/mock/codestore/ExpiringCodeStoreMockMvcTests.java b/uaa/src/test/java/org/cloudfoundry/identity/uaa/mock/codestore/ExpiringCodeStoreMockMvcTests.java
+index e759103c540..9dea3952a36 100644
+--- a/uaa/src/test/java/org/cloudfoundry/identity/uaa/mock/codestore/ExpiringCodeStoreMockMvcTests.java
++++ b/uaa/src/test/java/org/cloudfoundry/identity/uaa/mock/codestore/ExpiringCodeStoreMockMvcTests.java
+@@ -43,7 +43,7 @@ public class ExpiringCodeStoreMockMvcTests extends InjectedMockContextTest {
+     @Before
+     public void setUp() throws Exception {
+         testClient = new TestClient(getMockMvc());
+-        loginToken = testClient.getClientCredentialsOAuthAccessToken("login", "loginsecret", null);
++        loginToken = testClient.getClientCredentialsOAuthAccessToken("login", "loginsecret", "oauth.login");
+         getWebApplicationContext().getBean(JdbcTemplate.class).update("DELETE FROM expiring_code_store ");
+     }
+ 

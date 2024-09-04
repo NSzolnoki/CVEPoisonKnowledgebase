@@ -1,0 +1,20 @@
+{
+    "original_source": {
+        "database(url)": "https://github.com/SAP/project-kb",
+        "software_system(CPE)": [],
+        "fix_commit": "https://github.com/apache/struts/commit/7e169a93e2772eb861d5a833e54b9ef4c031567b",
+        "version_end_excluding": {},
+        "path": {
+            "file_path": "core/src/test/java/org/apache/struts2/views/jsp/ui/AnchorTest.java"
+        }
+    },
+    "programming_language": "JAVA",
+    "licences": {
+        "database": "Apache",
+        "affected_repository": "Apache License 2.0"
+    },
+    "related_vulnerability_entry": {
+        "CVE": [],
+        "CWE": []
+    }
+}

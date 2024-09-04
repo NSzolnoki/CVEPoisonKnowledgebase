@@ -1,0 +1,20 @@
+{
+    "original_source": {
+        "database(url)": "https://github.com/SAP/project-kb",
+        "software_system(CPE)": [],
+        "fix_commit": "https://github.com/wso2/carbon-governance/commit/9135774e8ce5963a03055e2e3ba645266de72c30",
+        "version_end_excluding": {},
+        "path": {
+            "file_path": "components/governance/org.wso2.carbon.governance.lcm/src/main/java/org/wso2/carbon/governance/lcm/util/CommonUtil.java"
+        }
+    },
+    "programming_language": "JAVA",
+    "licences": {
+        "database": "Apache",
+        "affected_repository": "Apache License 2.0"
+    },
+    "related_vulnerability_entry": {
+        "CVE": [],
+        "CWE": []
+    }
+}

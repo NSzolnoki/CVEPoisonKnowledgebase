@@ -1,0 +1,20 @@
+{
+    "original_source": {
+        "database(url)": "https://github.com/SAP/project-kb",
+        "software_system(CPE)": [],
+        "fix_commit": "https://github.com/netty/netty/commit/c85b770ac4d3d03af3b603af89c841ebf6c4d082",
+        "version_end_excluding": {},
+        "path": {
+            "file_path": "codec-http/src/main/java/io/netty/handler/codec/http/cookie/ClientCookieDecoder.java"
+        }
+    },
+    "programming_language": "JAVA",
+    "licences": {
+        "database": "Apache",
+        "affected_repository": "Apache License 2.0"
+    },
+    "related_vulnerability_entry": {
+        "CVE": [],
+        "CWE": []
+    }
+}

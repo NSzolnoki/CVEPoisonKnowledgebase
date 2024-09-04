@@ -1,0 +1,20 @@
+{
+    "original_source": {
+        "database(url)": "https://github.com/SAP/project-kb",
+        "software_system(CPE)": [],
+        "fix_commit": "https://github.com/apache/jspwiki/commit/60a9cb84ce36a0392fa5a01afcf28c11857c2f9e",
+        "version_end_excluding": {},
+        "path": {
+            "file_path": "jspwiki-main/src/main/java/org/apache/wiki/parser/JSPWikiMarkupParser.java"
+        }
+    },
+    "programming_language": "JAVA",
+    "licences": {
+        "database": "Apache",
+        "affected_repository": "Apache License 2.0"
+    },
+    "related_vulnerability_entry": {
+        "CVE": [],
+        "CWE": []
+    }
+}

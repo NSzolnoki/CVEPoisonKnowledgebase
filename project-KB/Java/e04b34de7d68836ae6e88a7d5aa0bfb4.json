@@ -1,0 +1,20 @@
+{
+    "original_source": {
+        "database(url)": "https://github.com/SAP/project-kb",
+        "software_system(CPE)": [],
+        "fix_commit": "https://github.com/apache/tomcat/commit/bef3f40400243348d12f4abfe9b413f43897c02b",
+        "version_end_excluding": {},
+        "path": {
+            "file_path": "java/org/apache/catalina/mbeans/JmxRemoteLifecycleListener.java"
+        }
+    },
+    "programming_language": "JAVA",
+    "licences": {
+        "database": "Apache",
+        "affected_repository": "Apache License 2.0"
+    },
+    "related_vulnerability_entry": {
+        "CVE": [],
+        "CWE": []
+    }
+}

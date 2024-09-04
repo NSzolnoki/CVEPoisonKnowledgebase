@@ -1,0 +1,50 @@
+diff --git a/x-pack/plugin/core/src/main/resources/logs-mappings.json b/x-pack/plugin/core/src/main/resources/logs-mappings.json
+index 5569f6695ecb7..04ac179a04b5a 100644
+--- a/x-pack/plugin/core/src/main/resources/logs-mappings.json
++++ b/x-pack/plugin/core/src/main/resources/logs-mappings.json
+@@ -17,20 +17,6 @@
+         "@timestamp": {
+           "type": "date"
+         },
+-        "dataset": {
+-          "properties": {
+-            "type": {
+-              "type": "constant_keyword",
+-              "value": "logs"
+-            },
+-            "name": {
+-              "type": "constant_keyword"
+-            },
+-            "namespace": {
+-              "type": "constant_keyword"
+-            }
+-          }
+-        },
+         "data_stream": {
+           "properties": {
+             "type": {
+diff --git a/x-pack/plugin/core/src/main/resources/metrics-mappings.json b/x-pack/plugin/core/src/main/resources/metrics-mappings.json
+index a38a73e9b4cc1..d37cdc3f4c53b 100644
+--- a/x-pack/plugin/core/src/main/resources/metrics-mappings.json
++++ b/x-pack/plugin/core/src/main/resources/metrics-mappings.json
+@@ -17,20 +17,6 @@
+         "@timestamp": {
+           "type": "date"
+         },
+-        "dataset": {
+-          "properties": {
+-            "type": {
+-              "type": "constant_keyword",
+-              "value": "metrics"
+-            },
+-            "name": {
+-              "type": "constant_keyword"
+-            },
+-            "namespace": {
+-              "type": "constant_keyword"
+-            }
+-          }
+-        },
+         "data_stream": {
+           "properties": {
+             "type": {

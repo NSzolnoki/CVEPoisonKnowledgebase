@@ -1,0 +1,357 @@
+diff --git a/solr/CHANGES.txt b/solr/CHANGES.txt
+index 16da34a25ae9..9e401c263524 100644
+--- a/solr/CHANGES.txt
++++ b/solr/CHANGES.txt
+@@ -132,6 +132,8 @@ Other Changes
+ 
+ * SOLR-11187: contrib/ltr TestModelManagerPersistence improvements. (Yuki Yano via Christine Poerschke)
+ 
++* SOLR-11090: Add Replica.getProperty accessor. (Christine Poerschke)
++
+ ==================  7.0.0 ==================
+ 
+ Versions of Major Components
+diff --git a/solr/core/src/test/org/apache/solr/cloud/CollectionsAPISolrJTest.java b/solr/core/src/test/org/apache/solr/cloud/CollectionsAPISolrJTest.java
+index 99e4fda3832b..d6d492c779e3 100644
+--- a/solr/core/src/test/org/apache/solr/cloud/CollectionsAPISolrJTest.java
++++ b/solr/core/src/test/org/apache/solr/cloud/CollectionsAPISolrJTest.java
+@@ -369,14 +369,14 @@ public void testAddAndDeleteReplicaProp() throws InterruptedException, IOExcepti
+     assertEquals(0, response.getStatus());
+ 
+     waitForState("Expecting property 'preferredleader' to appear on replica " + replica.getName(), collection,
+-        (n, c) -> "true".equals(c.getReplica(replica.getName()).getStr("property.preferredleader")));
++        (n, c) -> "true".equals(c.getReplica(replica.getName()).getProperty("preferredleader")));
+ 
+     response = CollectionAdminRequest.deleteReplicaProperty(collection, "shard1", replica.getName(), "property.preferredleader")
+         .process(cluster.getSolrClient());
+     assertEquals(0, response.getStatus());
+ 
+     waitForState("Expecting property 'preferredleader' to be removed from replica " + replica.getName(), collection,
+-        (n, c) -> c.getReplica(replica.getName()).getStr("property.preferredleader") == null);
++        (n, c) -> c.getReplica(replica.getName()).getProperty("preferredleader") == null);
+ 
+   }
+ 
+@@ -396,7 +396,7 @@ public void testBalanceShardUnique() throws IOException,
+       for (Slice slice : c) {
+         int count = 0;
+         for (Replica replica : slice) {
+-          if ("true".equals(replica.getStr("property.preferredleader")))
++          if ("true".equals(replica.getProperty("preferredleader")))
+             count += 1;
+         }
+         if (count != 1)
+diff --git a/solr/core/src/test/org/apache/solr/cloud/ReplicaPropertiesBase.java b/solr/core/src/test/org/apache/solr/cloud/ReplicaPropertiesBase.java
+index 0cb3f8f87dd5..a3fbb32d466b 100644
+--- a/solr/core/src/test/org/apache/solr/cloud/ReplicaPropertiesBase.java
++++ b/solr/core/src/test/org/apache/solr/cloud/ReplicaPropertiesBase.java
+@@ -62,7 +62,7 @@ public static void verifyPropertyNotPresent(CloudSolrClient client, String colle
+       if (replica == null) {
+         fail("Could not find collection/replica pair! " + collectionName + "/" + replicaName);
+       }
+-      if (StringUtils.isBlank(replica.getStr(property))) return;
++      if (StringUtils.isBlank(replica.getProperty(property))) return;
+       Thread.sleep(100);
+     }
+     fail("Property " + property + " not set correctly for collection/replica pair: " +
+@@ -88,11 +88,11 @@ public static void verifyPropertyVal(CloudSolrClient client, String collectionNa
+       if (replica == null) {
+         fail("Could not find collection/replica pair! " + collectionName + "/" + replicaName);
+       }
+-      if (StringUtils.equals(val, replica.getStr(property))) return;
++      if (StringUtils.equals(val, replica.getProperty(property))) return;
+       Thread.sleep(100);
+     }
+ 
+-    fail("Property '" + property + "' with value " + replica.getStr(property) +
++    fail("Property '" + property + "' with value " + replica.getProperty(property) +
+         " not set correctly for collection/replica pair: " + collectionName + "/" + replicaName + " property map is " +
+         replica.getProperties().toString() + ".");
+ 
+@@ -131,7 +131,7 @@ public static void verifyUnique(CloudSolrClient client, String collectionName, S
+         int propCount = 0;
+         for (Replica replica : slice.getReplicas()) {
+           uniqueNodes.add(replica.getNodeName());
+-          String propVal = replica.getStr(property);
++          String propVal = replica.getProperty(property);
+           if (StringUtils.isNotBlank(propVal)) {
+             ++propCount;
+             if (counts.containsKey(replica.getNodeName()) == false) {
+diff --git a/solr/core/src/test/org/apache/solr/cloud/TestCollectionAPI.java b/solr/core/src/test/org/apache/solr/cloud/TestCollectionAPI.java
+index 037a3e6806e5..cf4111e6a85f 100644
+--- a/solr/core/src/test/org/apache/solr/cloud/TestCollectionAPI.java
++++ b/solr/core/src/test/org/apache/solr/cloud/TestCollectionAPI.java
+@@ -401,8 +401,8 @@ private void replicaPropTest() throws Exception {
+       client.request(request);
+ 
+       // The above should have set exactly one preferredleader...
+-      verifyPropertyVal(client, COLLECTION_NAME, c1_s1_r1, "property.preferredleader", "true");
+-      verifyUniquePropertyWithinCollection(client, COLLECTION_NAME, "property.preferredLeader");
++      verifyPropertyVal(client, COLLECTION_NAME, c1_s1_r1, "preferredleader", "true");
++      verifyUniquePropertyWithinCollection(client, COLLECTION_NAME, "preferredLeader");
+ 
+       doPropertyAction(client,
+           "action", CollectionParams.CollectionAction.ADDREPLICAPROP.toString(),
+@@ -412,8 +412,8 @@ private void replicaPropTest() throws Exception {
+           "property", "preferredLeader",
+           "property.value", "true");
+       // The preferred leader property for shard1 should have switched to the other replica.
+-      verifyPropertyVal(client, COLLECTION_NAME, c1_s1_r2, "property.preferredleader", "true");
+-      verifyUniquePropertyWithinCollection(client, COLLECTION_NAME, "property.preferredLeader");
++      verifyPropertyVal(client, COLLECTION_NAME, c1_s1_r2, "preferredleader", "true");
++      verifyUniquePropertyWithinCollection(client, COLLECTION_NAME, "preferredLeader");
+ 
+       doPropertyAction(client,
+           "action", CollectionParams.CollectionAction.ADDREPLICAPROP.toString(),
+@@ -424,9 +424,9 @@ private void replicaPropTest() throws Exception {
+           "property.value", "true");
+ 
+       // Now we should have a preferred leader in both shards...
+-      verifyPropertyVal(client, COLLECTION_NAME, c1_s1_r2, "property.preferredleader", "true");
+-      verifyPropertyVal(client, COLLECTION_NAME, c1_s2_r1, "property.preferredleader", "true");
+-      verifyUniquePropertyWithinCollection(client, COLLECTION_NAME, "property.preferredLeader");
++      verifyPropertyVal(client, COLLECTION_NAME, c1_s1_r2, "preferredleader", "true");
++      verifyPropertyVal(client, COLLECTION_NAME, c1_s2_r1, "preferredleader", "true");
++      verifyUniquePropertyWithinCollection(client, COLLECTION_NAME, "preferredLeader");
+ 
+       doPropertyAction(client,
+           "action", CollectionParams.CollectionAction.ADDREPLICAPROP.toString(),
+@@ -437,11 +437,11 @@ private void replicaPropTest() throws Exception {
+           "property.value", "true");
+ 
+       // Now we should have three preferred leaders.
+-      verifyPropertyVal(client, COLLECTION_NAME, c1_s1_r2, "property.preferredleader", "true");
+-      verifyPropertyVal(client, COLLECTION_NAME, c1_s2_r1, "property.preferredleader", "true");
+-      verifyPropertyVal(client, COLLECTION_NAME1, c2_s1_r1, "property.preferredleader", "true");
+-      verifyUniquePropertyWithinCollection(client, COLLECTION_NAME, "property.preferredLeader");
+-      verifyUniquePropertyWithinCollection(client, COLLECTION_NAME1, "property.preferredLeader");
++      verifyPropertyVal(client, COLLECTION_NAME, c1_s1_r2, "preferredleader", "true");
++      verifyPropertyVal(client, COLLECTION_NAME, c1_s2_r1, "preferredleader", "true");
++      verifyPropertyVal(client, COLLECTION_NAME1, c2_s1_r1, "preferredleader", "true");
++      verifyUniquePropertyWithinCollection(client, COLLECTION_NAME, "preferredLeader");
++      verifyUniquePropertyWithinCollection(client, COLLECTION_NAME1, "preferredLeader");
+ 
+       doPropertyAction(client,
+           "action", CollectionParams.CollectionAction.DELETEREPLICAPROP.toString(),
+@@ -452,10 +452,10 @@ private void replicaPropTest() throws Exception {
+ 
+       // Now we should have two preferred leaders.
+       // But first we have to wait for the overseer to finish the action
+-      verifyPropertyVal(client, COLLECTION_NAME, c1_s1_r2, "property.preferredleader", "true");
+-      verifyPropertyVal(client, COLLECTION_NAME, c1_s2_r1, "property.preferredleader", "true");
+-      verifyUniquePropertyWithinCollection(client, COLLECTION_NAME, "property.preferredLeader");
+-      verifyUniquePropertyWithinCollection(client, COLLECTION_NAME1, "property.preferredLeader");
++      verifyPropertyVal(client, COLLECTION_NAME, c1_s1_r2, "preferredleader", "true");
++      verifyPropertyVal(client, COLLECTION_NAME, c1_s2_r1, "preferredleader", "true");
++      verifyUniquePropertyWithinCollection(client, COLLECTION_NAME, "preferredLeader");
++      verifyUniquePropertyWithinCollection(client, COLLECTION_NAME1, "preferredLeader");
+ 
+       // Try adding an arbitrary property to one that has the leader property
+       doPropertyAction(client,
+@@ -466,11 +466,11 @@ private void replicaPropTest() throws Exception {
+           "property", "testprop",
+           "property.value", "true");
+ 
+-      verifyPropertyVal(client, COLLECTION_NAME, c1_s1_r2, "property.preferredleader", "true");
+-      verifyPropertyVal(client, COLLECTION_NAME, c1_s2_r1, "property.preferredleader", "true");
+-      verifyPropertyVal(client, COLLECTION_NAME, c1_s1_r1, "property.testprop", "true");
+-      verifyUniquePropertyWithinCollection(client, COLLECTION_NAME, "property.preferredLeader");
+-      verifyUniquePropertyWithinCollection(client, COLLECTION_NAME1, "property.preferredLeader");
++      verifyPropertyVal(client, COLLECTION_NAME, c1_s1_r2, "preferredleader", "true");
++      verifyPropertyVal(client, COLLECTION_NAME, c1_s2_r1, "preferredleader", "true");
++      verifyPropertyVal(client, COLLECTION_NAME, c1_s1_r1, "testprop", "true");
++      verifyUniquePropertyWithinCollection(client, COLLECTION_NAME, "preferredLeader");
++      verifyUniquePropertyWithinCollection(client, COLLECTION_NAME1, "preferredLeader");
+ 
+       doPropertyAction(client,
+           "action", CollectionParams.CollectionAction.ADDREPLICAPROP.toString(),
+@@ -480,12 +480,12 @@ private void replicaPropTest() throws Exception {
+           "property", "prop",
+           "property.value", "silly");
+ 
+-      verifyPropertyVal(client, COLLECTION_NAME, c1_s1_r2, "property.preferredleader", "true");
+-      verifyPropertyVal(client, COLLECTION_NAME, c1_s2_r1, "property.preferredleader", "true");
+-      verifyPropertyVal(client, COLLECTION_NAME, c1_s1_r1, "property.testprop", "true");
+-      verifyPropertyVal(client, COLLECTION_NAME, c1_s1_r2, "property.prop", "silly");
+-      verifyUniquePropertyWithinCollection(client, COLLECTION_NAME, "property.preferredLeader");
+-      verifyUniquePropertyWithinCollection(client, COLLECTION_NAME1, "property.preferredLeader");
++      verifyPropertyVal(client, COLLECTION_NAME, c1_s1_r2, "preferredleader", "true");
++      verifyPropertyVal(client, COLLECTION_NAME, c1_s2_r1, "preferredleader", "true");
++      verifyPropertyVal(client, COLLECTION_NAME, c1_s1_r1, "testprop", "true");
++      verifyPropertyVal(client, COLLECTION_NAME, c1_s1_r2, "prop", "silly");
++      verifyUniquePropertyWithinCollection(client, COLLECTION_NAME, "preferredLeader");
++      verifyUniquePropertyWithinCollection(client, COLLECTION_NAME1, "preferredLeader");
+ 
+       doPropertyAction(client,
+           "action", CollectionParams.CollectionAction.ADDREPLICAPROP.toLower(),
+@@ -496,12 +496,12 @@ private void replicaPropTest() throws Exception {
+           "property.value", "nonsense",
+           SHARD_UNIQUE, "true");
+ 
+-      verifyPropertyVal(client, COLLECTION_NAME, c1_s1_r2, "property.preferredleader", "true");
+-      verifyPropertyVal(client, COLLECTION_NAME, c1_s2_r1, "property.preferredleader", "true");
+-      verifyPropertyVal(client, COLLECTION_NAME, c1_s1_r1, "property.testprop", "nonsense");
+-      verifyPropertyVal(client, COLLECTION_NAME, c1_s1_r2, "property.prop", "silly");
+-      verifyUniquePropertyWithinCollection(client, COLLECTION_NAME, "property.preferredLeader");
+-      verifyUniquePropertyWithinCollection(client, COLLECTION_NAME1, "property.preferredLeader");
++      verifyPropertyVal(client, COLLECTION_NAME, c1_s1_r2, "preferredleader", "true");
++      verifyPropertyVal(client, COLLECTION_NAME, c1_s2_r1, "preferredleader", "true");
++      verifyPropertyVal(client, COLLECTION_NAME, c1_s1_r1, "testprop", "nonsense");
++      verifyPropertyVal(client, COLLECTION_NAME, c1_s1_r2, "prop", "silly");
++      verifyUniquePropertyWithinCollection(client, COLLECTION_NAME, "preferredLeader");
++      verifyUniquePropertyWithinCollection(client, COLLECTION_NAME1, "preferredLeader");
+ 
+ 
+       doPropertyAction(client,
+@@ -513,12 +513,12 @@ private void replicaPropTest() throws Exception {
+           "property.value", "true",
+           SHARD_UNIQUE, "false");
+ 
+-      verifyPropertyVal(client, COLLECTION_NAME, c1_s1_r2, "property.preferredleader", "true");
+-      verifyPropertyVal(client, COLLECTION_NAME, c1_s2_r1, "property.preferredleader", "true");
+-      verifyPropertyVal(client, COLLECTION_NAME, c1_s1_r1, "property.testprop", "true");
+-      verifyPropertyVal(client, COLLECTION_NAME, c1_s1_r2, "property.prop", "silly");
+-      verifyUniquePropertyWithinCollection(client, COLLECTION_NAME, "property.preferredLeader");
+-      verifyUniquePropertyWithinCollection(client, COLLECTION_NAME1, "property.preferredLeader");
++      verifyPropertyVal(client, COLLECTION_NAME, c1_s1_r2, "preferredleader", "true");
++      verifyPropertyVal(client, COLLECTION_NAME, c1_s2_r1, "preferredleader", "true");
++      verifyPropertyVal(client, COLLECTION_NAME, c1_s1_r1, "testprop", "true");
++      verifyPropertyVal(client, COLLECTION_NAME, c1_s1_r2, "prop", "silly");
++      verifyUniquePropertyWithinCollection(client, COLLECTION_NAME, "preferredLeader");
++      verifyUniquePropertyWithinCollection(client, COLLECTION_NAME1, "preferredLeader");
+ 
+       doPropertyAction(client,
+           "action", CollectionParams.CollectionAction.DELETEREPLICAPROP.toLower(),
+@@ -527,12 +527,12 @@ private void replicaPropTest() throws Exception {
+           "replica", c1_s1_r1,
+           "property", "property.testprop");
+ 
+-      verifyPropertyVal(client, COLLECTION_NAME, c1_s1_r2, "property.preferredleader", "true");
+-      verifyPropertyVal(client, COLLECTION_NAME, c1_s2_r1, "property.preferredleader", "true");
+-      verifyPropertyNotPresent(client, COLLECTION_NAME, c1_s1_r1, "property.testprop");
+-      verifyPropertyVal(client, COLLECTION_NAME, c1_s1_r2, "property.prop", "silly");
+-      verifyUniquePropertyWithinCollection(client, COLLECTION_NAME, "property.preferredLeader");
+-      verifyUniquePropertyWithinCollection(client, COLLECTION_NAME1, "property.preferredLeader");
++      verifyPropertyVal(client, COLLECTION_NAME, c1_s1_r2, "preferredleader", "true");
++      verifyPropertyVal(client, COLLECTION_NAME, c1_s2_r1, "preferredleader", "true");
++      verifyPropertyNotPresent(client, COLLECTION_NAME, c1_s1_r1, "testprop");
++      verifyPropertyVal(client, COLLECTION_NAME, c1_s1_r2, "prop", "silly");
++      verifyUniquePropertyWithinCollection(client, COLLECTION_NAME, "preferredLeader");
++      verifyUniquePropertyWithinCollection(client, COLLECTION_NAME1, "preferredLeader");
+ 
+       try {
+         doPropertyAction(client,
+@@ -549,12 +549,12 @@ private void replicaPropTest() throws Exception {
+             se.getMessage().contains("with the shardUnique parameter set to something other than 'true'"));
+       }
+ 
+-      verifyPropertyVal(client, COLLECTION_NAME, c1_s1_r2, "property.preferredleader", "true");
+-      verifyPropertyVal(client, COLLECTION_NAME, c1_s2_r1, "property.preferredleader", "true");
+-      verifyPropertyNotPresent(client, COLLECTION_NAME, c1_s1_r1, "property.testprop");
+-      verifyPropertyVal(client, COLLECTION_NAME, c1_s1_r2, "property.prop", "silly");
+-      verifyUniquePropertyWithinCollection(client, COLLECTION_NAME, "property.preferredLeader");
+-      verifyUniquePropertyWithinCollection(client, COLLECTION_NAME1, "property.preferredLeader");
++      verifyPropertyVal(client, COLLECTION_NAME, c1_s1_r2, "preferredleader", "true");
++      verifyPropertyVal(client, COLLECTION_NAME, c1_s2_r1, "preferredleader", "true");
++      verifyPropertyNotPresent(client, COLLECTION_NAME, c1_s1_r1, "testprop");
++      verifyPropertyVal(client, COLLECTION_NAME, c1_s1_r2, "prop", "silly");
++      verifyUniquePropertyWithinCollection(client, COLLECTION_NAME, "preferredLeader");
++      verifyUniquePropertyWithinCollection(client, COLLECTION_NAME1, "preferredLeader");
+ 
+       Map<String, String> origProps = getProps(client, COLLECTION_NAME, c1_s1_r1,
+           "state", "core", "node_name", "base_url");
+@@ -592,10 +592,10 @@ private void replicaPropTest() throws Exception {
+           "property.value", "base_url_bad");
+ 
+       // The above should be on new proeprties.
+-      verifyPropertyVal(client, COLLECTION_NAME, c1_s1_r1, "property.state", "state_bad");
+-      verifyPropertyVal(client, COLLECTION_NAME, c1_s1_r1, "property.core", "core_bad");
+-      verifyPropertyVal(client, COLLECTION_NAME, c1_s1_r1, "property.node_name", "node_name_bad");
+-      verifyPropertyVal(client, COLLECTION_NAME, c1_s1_r1, "property.base_url", "base_url_bad");
++      verifyPropertyVal(client, COLLECTION_NAME, c1_s1_r1, "state", "state_bad");
++      verifyPropertyVal(client, COLLECTION_NAME, c1_s1_r1, "core", "core_bad");
++      verifyPropertyVal(client, COLLECTION_NAME, c1_s1_r1, "node_name", "node_name_bad");
++      verifyPropertyVal(client, COLLECTION_NAME, c1_s1_r1, "base_url", "base_url_bad");
+ 
+       doPropertyAction(client,
+           "action", CollectionParams.CollectionAction.DELETEREPLICAPROP.toLower(),
+@@ -630,10 +630,10 @@ private void replicaPropTest() throws Exception {
+         verifyPropertyVal(client, COLLECTION_NAME, c1_s1_r1, ent.getKey(), ent.getValue());
+       }
+ 
+-      verifyPropertyNotPresent(client, COLLECTION_NAME, c1_s1_r1, "property.state");
+-      verifyPropertyNotPresent(client, COLLECTION_NAME, c1_s1_r1, "property.core");
+-      verifyPropertyNotPresent(client, COLLECTION_NAME, c1_s1_r1, "property.node_name");
+-      verifyPropertyNotPresent(client, COLLECTION_NAME, c1_s1_r1, "property.base_url");
++      verifyPropertyNotPresent(client, COLLECTION_NAME, c1_s1_r1, "state");
++      verifyPropertyNotPresent(client, COLLECTION_NAME, c1_s1_r1, "core");
++      verifyPropertyNotPresent(client, COLLECTION_NAME, c1_s1_r1, "node_name");
++      verifyPropertyNotPresent(client, COLLECTION_NAME, c1_s1_r1, "base_url");
+ 
+     }
+   }
+@@ -776,7 +776,7 @@ private Map<String, String> getProps(CloudSolrClient client, String collectionNa
+     Replica replica = docCollection.getReplica(replicaName);
+     Map<String, String> propMap = new HashMap<>();
+     for (String prop : props) {
+-      propMap.put(prop, replica.getStr(prop));
++      propMap.put(prop, replica.getProperty(prop));
+     }
+     return propMap;
+   }
+diff --git a/solr/core/src/test/org/apache/solr/cloud/TestReplicaProperties.java b/solr/core/src/test/org/apache/solr/cloud/TestReplicaProperties.java
+index 9a9af9722c66..f654e8ffc6d8 100644
+--- a/solr/core/src/test/org/apache/solr/cloud/TestReplicaProperties.java
++++ b/solr/core/src/test/org/apache/solr/cloud/TestReplicaProperties.java
+@@ -103,7 +103,7 @@ private void clusterAssignPropertyTest() throws Exception {
+           "collection", COLLECTION_NAME,
+           "property", "preferredLeader");
+ 
+-      verifyUniqueAcrossCollection(client, COLLECTION_NAME, "property.preferredleader");
++      verifyUniqueAcrossCollection(client, COLLECTION_NAME, "preferredleader");
+ 
+       doPropertyAction(client,
+           "action", CollectionParams.CollectionAction.BALANCESHARDUNIQUE.toString(),
+@@ -170,7 +170,7 @@ private void clusterAssignPropertyTest() throws Exception {
+           "shardUnique", "true");
+ 
+       verifyPropertyVal(client, COLLECTION_NAME,
+-          c1_s1_r1, "property.bogus1", "true");
++          c1_s1_r1, "bogus1", "true");
+       verifyPropertyVal(client, COLLECTION_NAME,
+           c1_s1_r2, "property.bogus1", "whatever");
+ 
+diff --git a/solr/solrj/src/java/org/apache/solr/common/cloud/Replica.java b/solr/solrj/src/java/org/apache/solr/common/cloud/Replica.java
+index 782839336695..b8ca240fa3bc 100644
+--- a/solr/solrj/src/java/org/apache/solr/common/cloud/Replica.java
++++ b/solr/solrj/src/java/org/apache/solr/common/cloud/Replica.java
+@@ -159,6 +159,17 @@ public Type getType() {
+     return this.type;
+   }
+ 
++  public String getProperty(String propertyName) {
++    final String propertyKey;
++    if (!propertyName.startsWith(ZkStateReader.PROPERTY_PROP_PREFIX)) {
++      propertyKey = ZkStateReader.PROPERTY_PROP_PREFIX+propertyName;
++    } else {
++      propertyKey = propertyName;
++    }
++    final String propertyValue = getStr(propertyKey);
++    return propertyValue;
++  }
++
+   @Override
+   public String toString() {
+     return name + ':' + JSONUtil.toJSON(propMap, -1); // small enough, keep it on one line (i.e. no indent)
+diff --git a/solr/solrj/src/java/org/apache/solr/common/cloud/ZkStateReader.java b/solr/solrj/src/java/org/apache/solr/common/cloud/ZkStateReader.java
+index 0a7d76fa1f0f..11061de1a8ae 100644
+--- a/solr/solrj/src/java/org/apache/solr/common/cloud/ZkStateReader.java
++++ b/solr/solrj/src/java/org/apache/solr/common/cloud/ZkStateReader.java
+@@ -83,6 +83,7 @@ public class ZkStateReader implements Closeable {
+   public static final String NUM_SHARDS_PROP = "numShards";
+   public static final String LEADER_PROP = "leader";
+   public static final String PROPERTY_PROP = "property";
++  public static final String PROPERTY_PROP_PREFIX = "property.";
+   public static final String PROPERTY_VALUE_PROP = "property.value";
+   public static final String MAX_AT_ONCE_PROP = "maxAtOnce";
+   public static final String MAX_WAIT_SECONDS_PROP = "maxWaitSeconds";

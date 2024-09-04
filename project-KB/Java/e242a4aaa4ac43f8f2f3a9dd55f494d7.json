@@ -1,0 +1,27 @@
+{
+    "original_source": {
+        "database(url)": "https://github.com/SAP/project-kb",
+        "software_system(CPE)": [
+            "cpe:2.3:a:netty:netty:*:*:*:*:*:*:*:*",
+            "cpe:2.3:a:netty:netty:*:*:*:*:*:*:*:*"
+        ],
+        "fix_commit": "https://github.com/netty/netty/commit/ac76a24ff6d3cd0f59a2833c2f83eb82184ecaeb",
+        "version_end_excluding": {
+            "netty:netty": "4.1.44"
+        },
+        "path": {
+            "file_path": "codec-http/src/test/java/io/netty/handler/codec/http/HttpRequestDecoderTest.java"
+        }
+    },
+    "programming_language": "JAVA",
+    "licences": {
+        "database": "Apache",
+        "affected_repository": "Apache License 2.0"
+    },
+    "related_vulnerability_entry": {
+        "CVE": [
+            "CVE-2019-20445"
+        ],
+        "CWE": []
+    }
+}

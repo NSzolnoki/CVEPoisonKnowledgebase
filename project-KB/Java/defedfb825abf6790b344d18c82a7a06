@@ -1,0 +1,1182 @@
+diff --git a/jetty-client/src/test/java/org/eclipse/jetty/client/LivelockTest.java b/jetty-client/src/test/java/org/eclipse/jetty/client/LivelockTest.java
+index b17b0bac5cf3..448dd426d16a 100644
+--- a/jetty-client/src/test/java/org/eclipse/jetty/client/LivelockTest.java
++++ b/jetty-client/src/test/java/org/eclipse/jetty/client/LivelockTest.java
+@@ -18,6 +18,7 @@
+ 
+ package org.eclipse.jetty.client;
+ 
++import java.nio.channels.Selector;
+ import java.util.concurrent.CountDownLatch;
+ import java.util.concurrent.TimeUnit;
+ import java.util.concurrent.atomic.AtomicBoolean;
+@@ -29,7 +30,6 @@
+ import org.eclipse.jetty.server.Server;
+ import org.eclipse.jetty.server.ServerConnector;
+ import org.eclipse.jetty.util.SocketAddressResolver;
+-import org.eclipse.jetty.util.thread.Invocable;
+ import org.eclipse.jetty.util.thread.QueuedThreadPool;
+ import org.junit.After;
+ import org.junit.Assert;
+@@ -89,10 +89,10 @@ public void testLivelock() throws Exception
+         AtomicBoolean busy = new AtomicBoolean(true);
+ 
+         ManagedSelector clientSelector = client.getContainedBeans(ManagedSelector.class).stream().findAny().get();
+-        Runnable clientLivelock = new Invocable.NonBlocking()
++        ManagedSelector.SelectorUpdate clientLivelock = new ManagedSelector.SelectorUpdate()
+         {
+             @Override 
+-            public void run()
++            public void update(Selector selector)
+             {
+                 sleep(10);
+                 if (busy.get())
+@@ -102,10 +102,10 @@ public void run()
+         clientSelector.submit(clientLivelock);
+         
+         ManagedSelector serverSelector = connector.getContainedBeans(ManagedSelector.class).stream().findAny().get();
+-        Runnable serverLivelock = new Invocable.NonBlocking()
++        ManagedSelector.SelectorUpdate serverLivelock = new ManagedSelector.SelectorUpdate()
+         {
+             @Override 
+-            public void run()
++            public void update(Selector selector)
+             {
+                 sleep(10);
+                 if (busy.get())
+diff --git a/jetty-io/src/main/java/org/eclipse/jetty/io/ChannelEndPoint.java b/jetty-io/src/main/java/org/eclipse/jetty/io/ChannelEndPoint.java
+index 8eed559e4852..ed6a761c0412 100644
+--- a/jetty-io/src/main/java/org/eclipse/jetty/io/ChannelEndPoint.java
++++ b/jetty-io/src/main/java/org/eclipse/jetty/io/ChannelEndPoint.java
+@@ -25,6 +25,7 @@
+ import java.nio.channels.CancelledKeyException;
+ import java.nio.channels.GatheringByteChannel;
+ import java.nio.channels.SelectionKey;
++import java.nio.channels.Selector;
+ 
+ import org.eclipse.jetty.util.BufferUtil;
+ import org.eclipse.jetty.util.log.Log;
+@@ -41,7 +42,6 @@ public abstract class ChannelEndPoint extends AbstractEndPoint implements Manage
+ {
+     private static final Logger LOG = Log.getLogger(ChannelEndPoint.class);
+ 
+-    private final Locker _locker = new Locker();
+     private final ByteChannel _channel;
+     private final GatheringByteChannel _gather;
+     protected final ManagedSelector _selector;
+@@ -95,16 +95,10 @@ public void close()
+         }
+     }
+ 
+-    private final Runnable _runUpdateKey = new RunnableTask("runUpdateKey")
++    private final ManagedSelector.SelectorUpdate _updateKeyAction = new ManagedSelector.SelectorUpdate()
+     {
+         @Override
+-        public InvocationType getInvocationType()
+-        {
+-            return InvocationType.NON_BLOCKING;
+-        }
+-
+-        @Override
+-        public void run()
++        public void update(Selector selector)
+         {
+             updateKey();
+         }
+@@ -336,7 +330,7 @@ public Runnable onSelected()
+         int readyOps = _key.readyOps();
+         int oldInterestOps;
+         int newInterestOps;
+-        try (Locker.Lock lock = _locker.lock())
++        synchronized(this)
+         {
+             _updatePending = true;
+             // Remove the readyOps, that here can only be OP_READ or OP_WRITE (or both).
+@@ -376,7 +370,7 @@ public void updateKey()
+         {
+             int oldInterestOps;
+             int newInterestOps;
+-            try (Locker.Lock lock = _locker.lock())
++            synchronized(this)
+             {
+                 _updatePending = false;
+                 oldInterestOps = _currentInterestOps;
+@@ -413,7 +407,7 @@ private void changeInterests(int operation)
+         int oldInterestOps;
+         int newInterestOps;
+         boolean pending;
+-        try (Locker.Lock lock = _locker.lock())
++        synchronized(this)
+         {
+             pending = _updatePending;
+             oldInterestOps = _desiredInterestOps;
+@@ -426,7 +420,7 @@ private void changeInterests(int operation)
+             LOG.debug("changeInterests p={} {}->{} for {}", pending, oldInterestOps, newInterestOps, this);
+ 
+         if (!pending && _selector!=null)
+-            _selector.submit(_runUpdateKey);
++            _selector.submit(_updateKeyAction);
+     }
+ 
+     @Override
+diff --git a/jetty-io/src/main/java/org/eclipse/jetty/io/ManagedSelector.java b/jetty-io/src/main/java/org/eclipse/jetty/io/ManagedSelector.java
+index 45a83995c85e..229a8fbdd428 100644
+--- a/jetty-io/src/main/java/org/eclipse/jetty/io/ManagedSelector.java
++++ b/jetty-io/src/main/java/org/eclipse/jetty/io/ManagedSelector.java
+@@ -33,6 +33,7 @@
+ import java.util.Arrays;
+ import java.util.Collections;
+ import java.util.Deque;
++import java.util.HashSet;
+ import java.util.Iterator;
+ import java.util.List;
+ import java.util.Set;
+@@ -40,6 +41,7 @@
+ import java.util.concurrent.Executor;
+ import java.util.concurrent.RejectedExecutionException;
+ import java.util.concurrent.TimeUnit;
++import java.util.concurrent.TimeoutException;
+ import java.util.concurrent.atomic.AtomicBoolean;
+ 
+ import org.eclipse.jetty.util.component.ContainerLifeCycle;
+@@ -48,8 +50,6 @@
+ import org.eclipse.jetty.util.log.Log;
+ import org.eclipse.jetty.util.log.Logger;
+ import org.eclipse.jetty.util.thread.ExecutionStrategy;
+-import org.eclipse.jetty.util.thread.Invocable;
+-import org.eclipse.jetty.util.thread.Locker;
+ import org.eclipse.jetty.util.thread.ReservedThreadExecutor;
+ import org.eclipse.jetty.util.thread.Scheduler;
+ import org.eclipse.jetty.util.thread.strategy.EatWhatYouKill;
+@@ -64,14 +64,14 @@ public class ManagedSelector extends ContainerLifeCycle implements Dumpable
+ {
+     private static final Logger LOG = Log.getLogger(ManagedSelector.class);
+ 
+-    private final Locker _locker = new Locker();
++    private final AtomicBoolean _started = new AtomicBoolean(false);
+     private boolean _selecting = false;
+-    private final Deque<Runnable> _actions = new ArrayDeque<>();
+     private final SelectorManager _selectorManager;
+     private final int _id;
+     private final ExecutionStrategy _strategy;
+     private Selector _selector;
+-    private int _actionCount;
++    private Deque<SelectorUpdate> _updates = new ArrayDeque<>();
++    private Deque<SelectorUpdate> _updateable = new ArrayDeque<>();
+ 
+     public ManagedSelector(SelectorManager selectorManager, int id)
+     {
+@@ -102,6 +102,9 @@ protected void doStart() throws Exception
+         // The normal strategy obtains the produced task, schedules
+         // a new thread to produce more, runs the task and then exits.
+         _selectorManager.execute(_strategy::produce);
++
++        // Set started only if we really are started
++        submit(s->_started.set(true));        
+     }
+ 
+     public int size()
+@@ -114,31 +117,64 @@ public int size()
+ 
+     @Override
+     protected void doStop() throws Exception
+-    {
+-        if (LOG.isDebugEnabled())
+-            LOG.debug("Stopping {}", this);
+-        CloseEndPoints close_endps = new CloseEndPoints();
+-        submit(close_endps);
+-        close_endps.await(getStopTimeout());
+-        CloseSelector close_selector = new CloseSelector();
+-        submit(close_selector);
+-        close_selector.await(getStopTimeout());
++    {        
++        // doStop might be called for a failed managedSelector,
++        // We do not want to wait twice, so we only stop once for each start
++        boolean timeout = false;
++        if (_started.compareAndSet(true,false))
++        {
++            if (getStopTimeout()>0)
++            {
++                // If we are graceful we can wait for connections to close
++                Set<Closeable> closed = new HashSet<>();
++                
++                long now = System.nanoTime();
++                long wait_until = now+TimeUnit.MILLISECONDS.toNanos(getStopTimeout());
++                while(now<wait_until)
++                {                    
++                    // Close any connection and wait for no endpoints in selector
++                    CloseConnections close_connections = new CloseConnections(closed);
++                    submit(close_connections);
++                    if (close_connections._noEndPoints.await(100,TimeUnit.MILLISECONDS))
++                        break;
++                    now = System.nanoTime();
++                }
++            }
++            else
++            {
++                // Close connections, but only wait a single selector cycle for it to take effect
++                CloseConnections close_connections = new CloseConnections();
++                submit(close_connections);
++                close_connections._complete.await();
++            }
++            
++            // Wait for any remaining endpoints to be closed and the selector to be stopped
++            StopSelector stop_selector = new StopSelector();
++            submit(stop_selector);
++            stop_selector._stopped.await();
++            
++            timeout = getStopTimeout()>0 && stop_selector._forcedEndPointClose;
++        }
+ 
+         super.doStop();
+         
+-        if (LOG.isDebugEnabled())
+-            LOG.debug("Stopped {}", this);
++        if (timeout)
++            throw new TimeoutException();
+     }
+ 
+-    public void submit(Runnable change)
++    /**
++     * Submit an {@link SelectorUpdate} to be acted on between calls to {@link Selector#select()}
++     * @param action
++     */
++    public void submit(SelectorUpdate action)
+     {
+         if (LOG.isDebugEnabled())
+-            LOG.debug("Queued change {} on {}", change, this);
++            LOG.debug("Queued change {} on {}", action, this);
+ 
+         Selector selector = null;
+-        try (Locker.Lock lock = _locker.lock())
++        synchronized(ManagedSelector.this)
+         {
+-            _actions.offer(change);
++            _updates.offer(action);
+             
+             if (_selecting)
+             {
+@@ -178,15 +214,24 @@ private void processConnect(SelectionKey key, final Connect connect)
+                 if (connect.timeout.cancel())
+                 {
+                     key.interestOps(0);
+-                    execute(new CreateEndPoint(channel, key)
++                    execute(new Runnable()
+                     {
+                         @Override
+-                        protected void failed(Throwable failure)
++                        public void run()
+                         {
+-                            super.failed(failure);
+-                            connect.failed(failure);
++                            try
++                            {
++                                createEndPoint(channel,key);
++                            }
++                            catch(Throwable failure)
++                            {
++                                closeNoExceptions(channel);
++                                LOG.warn(String.valueOf(failure));
++                                LOG.debug(failure);
++                                connect.failed(failure);
++                            }
+                         }
+-                    });
++                    });    
+                 }
+                 else
+                 {
+@@ -204,7 +249,7 @@ protected void failed(Throwable failure)
+         }
+     }
+ 
+-    private void closeNoExceptions(Closeable closeable)
++    private static void closeNoExceptions(Closeable closeable)
+     {
+         try
+         {
+@@ -237,9 +282,9 @@ public void destroyEndPoint(final EndPoint endPoint)
+ 
+     private int getActionSize()
+     {
+-        try (Locker.Lock lock = _locker.lock())
++        synchronized(ManagedSelector.this)
+         {
+-            return _actions.size();
++            return _updates.size();
+         }
+     }
+ 
+@@ -248,16 +293,16 @@ public void dump(Appendable out, String indent) throws IOException
+     {
+         Selector selector = _selector;
+         List<String> keys = null;
+-        List<Runnable> actions = null;
++        List<SelectorUpdate> actions = null;
+         if (selector != null && selector.isOpen())
+         {
+             DumpKeys dump = new DumpKeys();
+             String actionsAt;
+-            try (Locker.Lock lock = _locker.lock())
++            synchronized(ManagedSelector.this)
+             {
+                 actionsAt = DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(ZonedDateTime.now());
+-                actions = new ArrayList<>(_actions);
+-                _actions.addFirst(dump);
++                actions = new ArrayList<>(_updates);
++                _updates.addFirst(dump);
+                 _selecting = false;
+             }
+             selector.wakeup();
+@@ -321,10 +366,8 @@ public Runnable produce()
+                 if (task != null)
+                     return task;
+ 
+-                Runnable action = nextAction();
+-                if (action != null)
+-                    return action;
+-
++                processUpdates();
++                
+                 updateKeys();
+ 
+                 if (!select())
+@@ -332,61 +375,49 @@ public Runnable produce()
+             }
+         }
+ 
+-        private Runnable nextAction()
++        private void processUpdates()
+         {
+-            Selector selector = null;
+-            Runnable action = null;
+-            try (Locker.Lock lock = _locker.lock())
++            synchronized(ManagedSelector.this)
+             {
+-                // It is important to avoid live-lock (busy blocking) here.  If too many actions
+-                // are submitted, this can indefinitely defer selection happening.   Similarly if 
+-                // we give too much priority to selection, it may prevent actions from being run.
+-                // The solution implemented here is to only process the number of actions that were
+-                // originally in the action queue before attempting a select
+-                
+-                if (_actionCount==0)
+-                {               
+-                    // Calculate how many actions we are prepared to handle before selection
+-                    _actionCount = _actions.size();
+-                    if (_actionCount>0)
+-                        action = _actions.poll();
+-                    else
+-                        _selecting = true;
+-                }
+-                else if (_actionCount==1)
++                Deque<SelectorUpdate> updates = _updates;
++                _updates = _updateable;
++                _updateable = updates;
++            }
++            
++            if (LOG.isDebugEnabled())
++                LOG.debug("updateable {}",_updateable.size());
++            
++            for (SelectorUpdate update : _updateable)
++            {
++                if (_selector==null)
++                    break;
++                try
+                 {
+-                    _actionCount = 0;
+-                    
+                     if (LOG.isDebugEnabled())
+-                        LOG.debug("Forcing selection, actions={}",_actions.size());
+-                    
+-                    if (_actions.size()==0)
+-                    {
+-                        // This was the last action, so select normally
+-                        _selecting = true;
+-                    }
+-                    else
+-                    {
+-                        // there are still more actions to handle, so
+-                        // immediately wake up (as if remaining action were just added).
+-                        selector = _selector;
+-                        _selecting = false;
+-                    }
++                        LOG.debug("update {}",update);
++                    update.update(_selector);
+                 }
+-                else
++                catch(Throwable th)
+                 {
+-                    _actionCount--;
+-                    action = _actions.poll();
++                    LOG.warn(th);
+                 }
+             }
++            _updateable.clear();
++
++            Selector selector;
++            int actions;
++            synchronized(ManagedSelector.this)
++            {
++                actions = _updates.size();
++                _selecting = actions==0;
++                selector = _selecting?null:_selector;
++            }
+ 
+             if (LOG.isDebugEnabled())
+-                LOG.debug("action={} wakeup={}",action,selector!=null);
++                LOG.debug("actions {}",actions);
+             
+             if (selector != null)
+-                selector.wakeup();
+-
+-            return action;
++                selector.wakeup();           
+         }
+ 
+         private boolean select()
+@@ -403,11 +434,11 @@ private boolean select()
+                         LOG.debug("Selector {} woken up from select, {}/{} selected", selector, selected, selector.keys().size());
+ 
+                     int actions;
+-                    try (Locker.Lock lock = _locker.lock())
++                    synchronized(ManagedSelector.this)
+                     {
+                         // finished selecting
+                         _selecting = false;
+-                        actions = _actions.size();
++                        actions = _updates.size();
+                     }
+ 
+                     _keys = selector.selectedKeys();
+@@ -505,34 +536,38 @@ public String toString()
+             return String.format("%s@%x", getClass().getSimpleName(), hashCode());
+         }
+     }
++    
++    /**
++     * A selector update to be done when the selector has been woken.
++     */
++    public interface SelectorUpdate
++    {
++        public void update(Selector selector);
++    }
+ 
+-    private class DumpKeys extends Invocable.NonBlocking
++    private static class DumpKeys implements SelectorUpdate
+     {
+         private CountDownLatch latch = new CountDownLatch(1);
+         private List<String> keys;
+         
+         @Override
+-        public void run()
++        public void update(Selector selector)
+         {
+-            Selector selector = _selector;
+-            if (selector != null && selector.isOpen())
+-            {            
+-                Set<SelectionKey> selector_keys = selector.keys();
+-                List<String> list = new ArrayList<>(selector_keys.size()+1);
+-                list.add(selector + " keys=" + selector_keys.size());
+-                for (SelectionKey key : selector_keys)
++            Set<SelectionKey> selector_keys = selector.keys();
++            List<String> list = new ArrayList<>(selector_keys.size()+1);
++            list.add(selector + " keys=" + selector_keys.size());
++            for (SelectionKey key : selector_keys)
++            {
++                try
+                 {
+-                    try
+-                    {
+-                        list.add(String.format("SelectionKey@%x{i=%d}->%s", key.hashCode(), key.interestOps(), key.attachment()));
+-                    }
+-                    catch (Throwable x)
+-                    {
+-                        list.add(String.format("SelectionKey@%x[%s]->%s", key.hashCode(), x, key.attachment()));
+-                    }
++                    list.add(String.format("SelectionKey@%x{i=%d}->%s", key.hashCode(), key.interestOps(), key.attachment()));
++                }
++                catch (Throwable x)
++                {
++                    list.add(String.format("SelectionKey@%x[%s]->%s", key.hashCode(), x, key.attachment()));
+                 }
+-                keys = list;
+             }
++            keys = list;
+             
+             latch.countDown();
+         }
+@@ -551,7 +586,7 @@ public List<String> get(long timeout, TimeUnit unit)
+         }
+     }
+ 
+-    class Acceptor extends Invocable.NonBlocking implements Selectable, Closeable
++    class Acceptor implements SelectorUpdate, Selectable, Closeable
+     {
+         private final SelectableChannel _channel;
+         private SelectionKey _key;
+@@ -562,13 +597,13 @@ public Acceptor(SelectableChannel channel)
+         }
+ 
+         @Override
+-        public void run()
++        public void update(Selector selector)
+         {
+             try
+             {
+                 if (_key==null)
+                 {
+-                    _key = _channel.register(_selector, SelectionKey.OP_ACCEPT, this);
++                    _key = _channel.register(selector, SelectionKey.OP_ACCEPT, this);
+                 }     
+ 
+                 if (LOG.isDebugEnabled())
+@@ -620,10 +655,11 @@ public void close() throws IOException
+         }
+     }
+ 
+-    class Accept extends Invocable.NonBlocking implements Closeable
++    class Accept implements SelectorUpdate, Runnable, Closeable
+     {
+         private final SelectableChannel channel;
+         private final Object attachment;
++        private SelectionKey key;
+ 
+         Accept(SelectableChannel channel, Object attachment)
+         {
+@@ -639,12 +675,12 @@ public void close()
+         }
+ 
+         @Override
+-        public void run()
++        public void update(Selector selector)
+         {
+             try
+             {
+-                final SelectionKey key = channel.register(_selector, 0, attachment);
+-                execute(new CreateEndPoint(channel, key));
++                key = channel.register(selector, 0, attachment);
++                execute(this);
+             }
+             catch (Throwable x)
+             {
+@@ -652,18 +688,6 @@ public void run()
+                 LOG.debug(x);
+             }
+         }
+-    }
+-
+-    private class CreateEndPoint implements Runnable, Closeable
+-    {
+-        private final SelectableChannel channel;
+-        private final SelectionKey key;
+-
+-        public CreateEndPoint(SelectableChannel channel, SelectionKey key)
+-        {
+-            this.channel = channel;
+-            this.key = key;
+-        }
+ 
+         @Override
+         public void run()
+@@ -679,13 +703,6 @@ public void run()
+             }
+         }
+ 
+-        @Override
+-        public void close()
+-        {
+-            LOG.debug("closed creation of {}", channel);
+-            closeNoExceptions(channel);
+-        }
+-
+         protected void failed(Throwable failure)
+         {
+             closeNoExceptions(channel);
+@@ -694,7 +711,8 @@ protected void failed(Throwable failure)
+         }
+     }
+ 
+-    class Connect extends Invocable.NonBlocking
++
++    class Connect implements SelectorUpdate, Runnable
+     {
+         private final AtomicBoolean failed = new AtomicBoolean();
+         private final SelectableChannel channel;
+@@ -705,23 +723,34 @@ class Connect extends Invocable.NonBlocking
+         {
+             this.channel = channel;
+             this.attachment = attachment;
+-            this.timeout = ManagedSelector.this._selectorManager.getScheduler().schedule(new ConnectTimeout(this), ManagedSelector.this._selectorManager.getConnectTimeout(), TimeUnit.MILLISECONDS);
++            this.timeout = ManagedSelector.this._selectorManager.getScheduler().schedule(this, ManagedSelector.this._selectorManager.getConnectTimeout(), TimeUnit.MILLISECONDS);
+         }
+ 
+         @Override
+-        public void run()
++        public void update(Selector selector)
+         {
+             try
+             {
+-                channel.register(_selector, SelectionKey.OP_CONNECT, this);
++                channel.register(selector, SelectionKey.OP_CONNECT, this);
+             }
+             catch (Throwable x)
+             {
+                 failed(x);
+             }
+         }
++        
++        @Override
++        public void run()
++        {
++            if (_selectorManager.isConnectionPending(channel))
++            {
++                if (LOG.isDebugEnabled())
++                    LOG.debug("Channel {} timed out while connecting, closing it", channel);
++                failed(new SocketTimeoutException("Connect Timeout"));
++            }
++        }
+ 
+-        private void failed(Throwable failure)
++        public void failed(Throwable failure)
+         {
+             if (failed.compareAndSet(false, true))
+             {
+@@ -732,120 +761,97 @@ private void failed(Throwable failure)
+         }
+     }
+ 
+-    private class ConnectTimeout extends Invocable.NonBlocking
++    private class CloseConnections implements SelectorUpdate
+     {
+-        private final Connect connect;
++        final Set<Closeable> _closed;
++        final CountDownLatch _noEndPoints = new CountDownLatch(1);
++        final CountDownLatch _complete = new CountDownLatch(1);
+ 
+-        private ConnectTimeout(Connect connect)
++        public CloseConnections()
+         {
+-            this.connect = connect;
++            this(null);
+         }
+-
+-        @Override
+-        public void run()
++        
++        public CloseConnections(Set<Closeable> closed)
+         {
+-            SelectableChannel channel = connect.channel;
+-            if (_selectorManager.isConnectionPending(channel))
+-            {
+-                if (LOG.isDebugEnabled())
+-                    LOG.debug("Channel {} timed out while connecting, closing it", channel);
+-                connect.failed(new SocketTimeoutException("Connect Timeout"));
+-            }
++            _closed = closed;
+         }
+-    }
+-
+-    private class CloseEndPoints extends Invocable.NonBlocking
+-    {
+-        private final CountDownLatch _latch = new CountDownLatch(1);
+-        private CountDownLatch _allClosed;
+ 
+         @Override
+-        public void run()
+-        {
+-            List<EndPoint> end_points = new ArrayList<>();
+-            for (SelectionKey key : _selector.keys())
++        public void update(Selector selector)
++        {            
++            if (LOG.isDebugEnabled())
++                LOG.debug("Closing {} connections on {}", selector.keys().size(), ManagedSelector.this);
++            boolean zero = true;
++            for (SelectionKey key : selector.keys())
+             {
+                 if (key.isValid())
+                 {
++                    Closeable closeable = null;
+                     Object attachment = key.attachment();
+                     if (attachment instanceof EndPoint)
+-                        end_points.add((EndPoint)attachment);
++                    {
++                        EndPoint endp = (EndPoint)attachment;
++                        if (!endp.isOutputShutdown())
++                            zero = false;
++                        Connection connection = endp.getConnection();
++                        if (connection != null)
++                            closeable = connection;
++                        else
++                            closeable = endp;
++                    }
++                    
++                    if (closeable!=null)
++                    {
++                        if (_closed==null)
++                        {
++                            closeNoExceptions(closeable);
++                        }
++                        else if (!_closed.contains(closeable))
++                        {                        
++                            _closed.add(closeable);
++                            closeNoExceptions(closeable);
++                        }
++                    }
+                 }
+             }
+-
+-            int size = end_points.size();
+-            if (LOG.isDebugEnabled())
+-                LOG.debug("Closing {} endPoints on {}", size, ManagedSelector.this);
+-
+-            _allClosed = new CountDownLatch(size);
+-            _latch.countDown();
+-
+-            for (EndPoint endp : end_points)
+-                submit(new EndPointCloser(endp, _allClosed));
+-
+-            if (LOG.isDebugEnabled())
+-                LOG.debug("Closed {} endPoints on {}", size, ManagedSelector.this);
+-        }
+-
+-        public boolean await(long timeout)
+-        {
+-            try
+-            {
+-                return _latch.await(timeout, TimeUnit.MILLISECONDS) &&
+-                        _allClosed.await(timeout, TimeUnit.MILLISECONDS);
+-            }
+-            catch (InterruptedException x)
+-            {
+-                return false;
+-            }
+-        }
+-    }
+-
+-    private class EndPointCloser implements Runnable
+-    {
+-        private final EndPoint _endPoint;
+-        private final CountDownLatch _latch;
+-
+-        private EndPointCloser(EndPoint endPoint, CountDownLatch latch)
+-        {
+-            _endPoint = endPoint;
+-            _latch = latch;
+-        }
+-
+-        @Override
+-        public void run()
+-        {
+-            closeNoExceptions(_endPoint.getConnection());
+-            _latch.countDown();
++            
++            if (zero)
++                _noEndPoints.countDown();
++            _complete.countDown();
+         }
+     }
+-
+-    private class CloseSelector extends Invocable.NonBlocking
++    
++    private class StopSelector implements SelectorUpdate
+     {
+-        private CountDownLatch _latch = new CountDownLatch(1);
+-
++        CountDownLatch _stopped = new CountDownLatch(1);
++        boolean _forcedEndPointClose = false;
++        
+         @Override
+-        public void run()
++        public void update(Selector selector)
+         {
+-            Selector selector = _selector;
+-            _selector = null;
+-            closeNoExceptions(selector);
+-            _latch.countDown();
+-        }
+-
+-        public boolean await(long timeout)
+-        {
+-            try
+-            {
+-                return _latch.await(timeout, TimeUnit.MILLISECONDS);
+-            }
+-            catch (InterruptedException x)
++            for (SelectionKey key : selector.keys())
+             {
+-                return false;
++                if (key.isValid())
++                {
++                    Object attachment = key.attachment();
++                    if (attachment instanceof EndPoint)
++                    {
++                        EndPoint endp = (EndPoint)attachment;
++                        if (!endp.isOutputShutdown())
++                            _forcedEndPointClose = true;
++                        closeNoExceptions((EndPoint)attachment);
++                    }
++                }
+             }
++            
++            _selector = null;
++            closeNoExceptions(selector);
++            _stopped.countDown();
+         }
+     }
+ 
++
+     private class DestroyEndPoint implements Runnable, Closeable
+     {
+         private final EndPoint endPoint;
+diff --git a/jetty-io/src/main/java/org/eclipse/jetty/io/SelectorManager.java b/jetty-io/src/main/java/org/eclipse/jetty/io/SelectorManager.java
+index 41e6f816c481..8320d2b22d4f 100644
+--- a/jetty-io/src/main/java/org/eclipse/jetty/io/SelectorManager.java
++++ b/jetty-io/src/main/java/org/eclipse/jetty/io/SelectorManager.java
+@@ -27,6 +27,7 @@
+ import java.nio.channels.Selector;
+ import java.nio.channels.ServerSocketChannel;
+ import java.nio.channels.SocketChannel;
++import java.util.Arrays;
+ import java.util.concurrent.Executor;
+ import java.util.concurrent.atomic.AtomicInteger;
+ import java.util.function.IntUnaryOperator;
+@@ -64,6 +65,7 @@ public abstract class SelectorManager extends ContainerLifeCycle implements Dump
+     private long _connectTimeout = DEFAULT_CONNECT_TIMEOUT;
+     private int _reservedThreads = -1;
+     private ThreadPoolBudget.Lease _lease;
++    private ReservedThreadExecutor _reservedThreadExecutor;
+ 
+     private static int defaultSelectors(Executor executor)
+     {
+@@ -260,7 +262,8 @@ protected void accepted(SelectableChannel channel) throws IOException
+     @Override
+     protected void doStart() throws Exception
+     {
+-        addBean(new ReservedThreadExecutor(getExecutor(),_reservedThreads,this),true);
++        _reservedThreadExecutor = new ReservedThreadExecutor(getExecutor(),_reservedThreads,this);
++        addBean(_reservedThreadExecutor,true);
+         _lease = ThreadPoolBudget.leaseFrom(getExecutor(), this, _selectors.length);
+         for (int i = 0; i < _selectors.length; i++)
+         {
+@@ -285,11 +288,25 @@ protected ManagedSelector newSelector(int id)
+     @Override
+     protected void doStop() throws Exception
+     {
+-        super.doStop();
+-        for (ManagedSelector selector : _selectors)
+-            removeBean(selector);
+-        if (_lease != null)
+-            _lease.close();
++        try
++        {
++            super.doStop();
++        }
++        finally
++        {
++            // Cleanup
++            for (ManagedSelector selector : _selectors)
++            {
++                if (selector!=null)
++                    removeBean(selector);
++            }
++            Arrays.fill(_selectors,null);
++            if (_reservedThreadExecutor!=null)
++                removeBean(_reservedThreadExecutor);
++            _reservedThreadExecutor = null;
++            if (_lease != null)
++                _lease.close();
++        }
+     }
+ 
+     /**
+diff --git a/jetty-io/src/test/java/org/eclipse/jetty/io/SelectorManagerTest.java b/jetty-io/src/test/java/org/eclipse/jetty/io/SelectorManagerTest.java
+index b37d4750044e..a99894cc8737 100644
+--- a/jetty-io/src/test/java/org/eclipse/jetty/io/SelectorManagerTest.java
++++ b/jetty-io/src/test/java/org/eclipse/jetty/io/SelectorManagerTest.java
+@@ -29,6 +29,8 @@
+ import java.util.concurrent.TimeUnit;
+ import java.util.concurrent.atomic.AtomicLong;
+ 
++import org.eclipse.jetty.io.ManagedSelector.SelectorUpdate;
++import org.eclipse.jetty.io.ManagedSelector.Connect;
+ import org.eclipse.jetty.toolchain.test.annotation.Slow;
+ import org.eclipse.jetty.util.Callback;
+ import org.eclipse.jetty.util.thread.QueuedThreadPool;
+diff --git a/jetty-server/src/test/java/org/eclipse/jetty/server/GracefulStopTest.java b/jetty-server/src/test/java/org/eclipse/jetty/server/GracefulStopTest.java
+index 335dce5dbb31..920351cb2b41 100644
+--- a/jetty-server/src/test/java/org/eclipse/jetty/server/GracefulStopTest.java
++++ b/jetty-server/src/test/java/org/eclipse/jetty/server/GracefulStopTest.java
+@@ -25,12 +25,15 @@
+ import static org.junit.Assert.assertThat;
+ import static org.junit.Assume.assumeTrue;
+ 
++import java.io.BufferedReader;
+ import java.io.EOFException;
+ import java.io.IOException;
+ import java.io.InputStream;
++import java.io.InputStreamReader;
+ import java.net.ConnectException;
+ import java.net.Socket;
+ import java.nio.channels.ClosedChannelException;
++import java.nio.charset.StandardCharsets;
+ import java.util.concurrent.CountDownLatch;
+ import java.util.concurrent.TimeUnit;
+ import java.util.concurrent.TimeoutException;
+@@ -41,12 +44,18 @@
+ import javax.servlet.http.HttpServletRequest;
+ import javax.servlet.http.HttpServletResponse;
+ 
++import org.eclipse.jetty.io.Connection;
++import org.eclipse.jetty.io.EndPoint;
+ import org.eclipse.jetty.io.EofException;
+ import org.eclipse.jetty.server.handler.AbstractHandler;
+ import org.eclipse.jetty.server.handler.StatisticsHandler;
+ import org.eclipse.jetty.toolchain.test.AdvancedRunner;
+ import org.eclipse.jetty.toolchain.test.OS;
+ import org.eclipse.jetty.util.IO;
++import org.eclipse.jetty.util.log.Log;
++import org.eclipse.jetty.util.log.Logger;
++import org.eclipse.jetty.util.thread.QueuedThreadPool;
++import org.hamcrest.Matcher;
+ import org.hamcrest.Matchers;
+ import org.junit.Assert;
+ import org.junit.Test;
+@@ -265,6 +274,167 @@ public void run()
+         }
+     }
+ 
++    
++    public void testSlowClose(long stopTimeout, long closeWait, Matcher<Long> stopTimeMatcher) throws Exception
++    {
++        Server server= new Server();
++        server.setStopTimeout(stopTimeout);
++
++        CountDownLatch closed = new CountDownLatch(1);
++        ServerConnector connector = new ServerConnector(server, 2, 2, new HttpConnectionFactory() 
++        {
++
++            @Override
++            public Connection newConnection(Connector connector, EndPoint endPoint)
++            {
++                // Slow closing connection
++                HttpConnection conn = new HttpConnection(getHttpConfiguration(), connector, endPoint, getHttpCompliance(), isRecordHttpComplianceViolations())
++                {
++                    @Override
++                    public void close()
++                    {
++                        try
++                        {
++                            new Thread(()->
++                            {
++                                try
++                                {
++                                    Thread.sleep(closeWait);
++                                }
++                                catch (InterruptedException e)
++                                {
++                                }
++                                finally
++                                {
++                                    super.close();
++                                }
++
++                            }).start();
++                        }
++                        catch(Exception e)
++                        {
++                            // e.printStackTrace();
++                        }
++                        finally
++                        {
++                            closed.countDown();
++                        }
++                    }
++                };
++                return configure(conn, connector, endPoint);
++            }
++            
++        });
++        connector.setPort(0);
++        server.addConnector(connector);
++
++        NoopHandler handler = new NoopHandler();
++        server.setHandler(handler);
++
++        server.start();
++        final int port=connector.getLocalPort();
++        Socket client = new Socket("127.0.0.1", port);
++        client.setSoTimeout(10000);
++        client.getOutputStream().write((
++                "GET / HTTP/1.1\r\n"+
++                "Host: localhost:"+port+"\r\n" +
++                "Content-Type: plain/text\r\n" +
++                "\r\n"
++                ).getBytes());
++        client.getOutputStream().flush();
++        handler.latch.await();
++
++        // look for a response
++        BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream() ,StandardCharsets.ISO_8859_1));
++        while(true)
++        {
++            String line = in.readLine();
++            if (line==null)
++                Assert.fail();
++            if (line.length()==0)
++                break;
++        }
++
++        long start = System.nanoTime();
++        try
++        {
++            server.stop();
++            Assert.assertTrue(stopTimeout==0 || stopTimeout>closeWait);  
++        }
++        catch(Exception e)
++        {
++            Assert.assertTrue(stopTimeout>0 && stopTimeout<closeWait);                
++        }
++        long stop = System.nanoTime();
++        
++        // Check stop time was correct
++        assertThat(TimeUnit.NANOSECONDS.toMillis(stop-start),stopTimeMatcher);
++
++        // Connection closed
++        while(true)
++        {
++            int r = client.getInputStream().read();
++            if (r==-1)
++                break;
++        }
++
++        // onClose Thread interrupted or completed
++        if (stopTimeout>0)
++            Assert.assertTrue(closed.await(1000,TimeUnit.MILLISECONDS));
++        
++        if (!client.isClosed())
++            client.close();
++    }
++
++    /**
++     * Test of non graceful stop when a connection close is slow
++     * @throws Exception on test failure
++     */
++    @Test
++    public void testSlowCloseNotGraceful() throws Exception
++    {        
++        Log.getLogger(QueuedThreadPool.class).info("Expect some threads can't be stopped");
++        testSlowClose(0,5000,lessThan(750L));
++    }
++
++    /**
++     * Test of graceful stop when close is slower than timeout
++     * @throws Exception on test failure
++     */
++    @Test
++    public void testSlowCloseTinyGraceful() throws Exception
++    {
++        Log.getLogger(QueuedThreadPool.class).info("Expect some threads can't be stopped");
++        testSlowClose(1,5000,lessThan(1500L));
++    }
++
++    /**
++     * Test of graceful stop when close is faster than timeout;
++     * @throws Exception on test failure
++     */
++    @Test
++    public void testSlowCloseGraceful() throws Exception
++    {
++        testSlowClose(5000,1000,Matchers.allOf(greaterThan(750L),lessThan(4999L)));
++    }
++    
++    
++    static class NoopHandler extends AbstractHandler 
++    {           
++        final CountDownLatch latch = new CountDownLatch(1);
++        
++        NoopHandler()
++        {
++        }
++        
++        @Override
++        public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
++                        throws IOException, ServletException 
++        {
++            baseRequest.setHandled(true);
++            latch.countDown();
++        }
++    }
+ 
+     static class TestHandler extends AbstractHandler 
+     {		
+diff --git a/jetty-util/src/main/java/org/eclipse/jetty/util/component/ContainerLifeCycle.java b/jetty-util/src/main/java/org/eclipse/jetty/util/component/ContainerLifeCycle.java
+index a0eeef7d8875..976613eaa2fe 100644
+--- a/jetty-util/src/main/java/org/eclipse/jetty/util/component/ContainerLifeCycle.java
++++ b/jetty-util/src/main/java/org/eclipse/jetty/util/component/ContainerLifeCycle.java
+@@ -27,6 +27,7 @@
+ import java.util.Set;
+ import java.util.concurrent.CopyOnWriteArrayList;
+ 
++import org.eclipse.jetty.util.MultiException;
+ import org.eclipse.jetty.util.annotation.ManagedObject;
+ import org.eclipse.jetty.util.annotation.ManagedOperation;
+ import org.eclipse.jetty.util.log.Log;
+@@ -106,6 +107,7 @@ protected void doStart() throws Exception
+                         if (!l.isRunning())
+                             start(l);
+                         break;
++                        
+                     case AUTO:
+                         if (l.isRunning())
+                             unmanage(b);
+@@ -115,6 +117,9 @@ protected void doStart() throws Exception
+                             start(l);
+                         }
+                         break;
++                        
++                    default:
++                        break;
+                 }
+             }
+         }
+@@ -154,14 +159,23 @@ protected void doStop() throws Exception
+         super.doStop();
+         List<Bean> reverse = new ArrayList<>(_beans);
+         Collections.reverse(reverse);
++        MultiException mex = new MultiException();
+         for (Bean b : reverse)
+         {
+             if (b._managed==Managed.MANAGED && b._bean instanceof LifeCycle)
+             {
+                 LifeCycle l = (LifeCycle)b._bean;
+-                stop(l);
++                try
++                {
++                    stop(l);
++                }
++                catch (Throwable th)
++                {
++                    mex.add(th);
++                }
+             }
+         }
++        mex.ifExceptionThrow();
+     }
+ 
+     /**
+@@ -178,7 +192,14 @@ public void destroy()
+             if (b._bean instanceof Destroyable && (b._managed==Managed.MANAGED || b._managed==Managed.POJO))
+             {
+                 Destroyable d = (Destroyable)b._bean;
+-                d.destroy();
++                try
++                {
++                    d.destroy();
++                }
++                catch(Throwable th)
++                {
++                    LOG.warn(th);
++                }
+             }
+         }
+         _beans.clear();

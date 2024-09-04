@@ -1,0 +1,51 @@
+diff --git a/spring-webmvc/src/main/java/org/springframework/web/servlet/mvc/method/annotation/SseEmitter.java b/spring-webmvc/src/main/java/org/springframework/web/servlet/mvc/method/annotation/SseEmitter.java
+index 4bc3267e4ea5..72b283f06a34 100644
+--- a/spring-webmvc/src/main/java/org/springframework/web/servlet/mvc/method/annotation/SseEmitter.java
++++ b/spring-webmvc/src/main/java/org/springframework/web/servlet/mvc/method/annotation/SseEmitter.java
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright 2002-2015 the original author or authors.
++ * Copyright 2002-2016 the original author or authors.
+  *
+  * Licensed under the Apache License, Version 2.0 (the "License");
+  * you may not use this file except in compliance with the License.
+@@ -38,6 +38,8 @@ public class SseEmitter extends ResponseBodyEmitter {
+ 
+ 	static final MediaType TEXT_PLAIN = new MediaType("text", "plain", Charset.forName("UTF-8"));
+ 
++	static final MediaType UTF8_TEXT_EVENTSTREAM = new MediaType("text", "event-stream", Charset.forName("UTF-8"));
++
+ 
+ 	/**
+ 	 * Create a new SseEmitter instance.
+@@ -65,7 +67,7 @@ protected void extendResponse(ServerHttpResponse outputMessage) {
+ 
+ 		HttpHeaders headers = outputMessage.getHeaders();
+ 		if (headers.getContentType() == null) {
+-			headers.setContentType(new MediaType("text", "event-stream"));
++			headers.setContentType(UTF8_TEXT_EVENTSTREAM);
+ 		}
+ 	}
+ 
+diff --git a/spring-webmvc/src/test/java/org/springframework/web/servlet/mvc/method/annotation/ResponseBodyEmitterReturnValueHandlerTests.java b/spring-webmvc/src/test/java/org/springframework/web/servlet/mvc/method/annotation/ResponseBodyEmitterReturnValueHandlerTests.java
+index bec3bfb1baf7..bf367815373c 100644
+--- a/spring-webmvc/src/test/java/org/springframework/web/servlet/mvc/method/annotation/ResponseBodyEmitterReturnValueHandlerTests.java
++++ b/spring-webmvc/src/test/java/org/springframework/web/servlet/mvc/method/annotation/ResponseBodyEmitterReturnValueHandlerTests.java
+@@ -148,7 +148,7 @@ public void sseEmitter() throws Exception {
+ 
+ 		assertTrue(this.request.isAsyncStarted());
+ 		assertEquals(200, this.response.getStatus());
+-		assertEquals("text/event-stream", this.response.getContentType());
++		assertEquals("text/event-stream;charset=UTF-8", this.response.getContentType());
+ 
+ 		SimpleBean bean1 = new SimpleBean();
+ 		bean1.setId(1L);
+@@ -178,7 +178,7 @@ public void responseEntitySse() throws Exception {
+ 
+ 		assertTrue(this.request.isAsyncStarted());
+ 		assertEquals(200, this.response.getStatus());
+-		assertEquals("text/event-stream", this.response.getContentType());
++		assertEquals("text/event-stream;charset=UTF-8", this.response.getContentType());
+ 		assertEquals("bar", this.response.getHeader("foo"));
+ 	}
+ 

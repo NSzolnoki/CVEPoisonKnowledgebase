@@ -1,0 +1,22 @@
+diff --git a/src/test/java/org/java_websocket/issues/Issue962Test.java b/src/test/java/org/java_websocket/issues/Issue962Test.java
+index f5927b81..1cc9b298 100644
+--- a/src/test/java/org/java_websocket/issues/Issue962Test.java
++++ b/src/test/java/org/java_websocket/issues/Issue962Test.java
+@@ -85,7 +85,7 @@ public Socket createSocket(InetAddress ia, int i, InetAddress ia1, int i1) throw
+ 
+     }
+ 
+-    @Test
++    @Test(timeout = 2000)
+     public void testIssue() throws IOException, URISyntaxException, InterruptedException {
+         int port = SocketUtil.getAvailablePort();
+         WebSocketClient client = new WebSocketClient(new URI("ws://127.0.0.1:" + port)) {
+@@ -103,7 +103,7 @@ public void onClose(int code, String reason, boolean remote) {
+ 
+             @Override
+             public void onError(Exception ex) {
+-                Assert.fail(ex.toString() + " sould not occur");
++                Assert.fail(ex.toString() + " should not occur");
+             }
+         };
+         

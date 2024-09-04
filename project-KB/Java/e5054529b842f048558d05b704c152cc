@@ -1,0 +1,13 @@
+diff --git a/server/openejb-cxf/pom.xml b/server/openejb-cxf/pom.xml
+index a4c16a4da25..ce5cc51e7b5 100644
+--- a/server/openejb-cxf/pom.xml
++++ b/server/openejb-cxf/pom.xml
+@@ -32,7 +32,7 @@
+   <name>OpenEJB :: Server :: CXF</name>
+ 
+   <properties>
+-    <wss4j.version>2.1.9</wss4j.version>
++    <wss4j.version>2.1.12</wss4j.version>
+     <openejb.osgi.import.pkg>
+       org.apache.xml.resolver*;resolution:=optional,
+       *

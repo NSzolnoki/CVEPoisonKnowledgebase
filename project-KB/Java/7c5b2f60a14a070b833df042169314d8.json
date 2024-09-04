@@ -1,0 +1,80 @@
+{
+    "original_source": {
+        "database(url)": "https://github.com/SAP/project-kb",
+        "software_system(CPE)": [
+            "cpe:2.3:a:apache:struts:2.3.26:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:struts:2.3.15:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:struts:2.5.9:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:struts:2.3.24.2:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:struts:2.3.9:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:struts:2.3.19:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:struts:2.3.15.3:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:struts:2.3.7:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:struts:2.3.16:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:struts:2.3.20.2:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:struts:2.5.10:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:struts:2.3.28.1:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:struts:2.5:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:struts:2.5.8:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:struts:2.3.27:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:struts:2.3.17:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:struts:2.3.29:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:struts:2.3.16.2:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:struts:2.3.15.2:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:struts:2.3.5:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:struts:2.3.14.1:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:struts:2.3.11:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:struts:2.5.2:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:struts:2.3.24.3:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:struts:2.3.6:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:struts:2.5.1:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:struts:2.3.28:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:struts:2.3.14.2:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:struts:2.3.20.3:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:struts:2.3.31:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:struts:2.5.7:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:struts:2.3.8:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:struts:2.3.22:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:struts:2.3.24.1:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:struts:2.3.14:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:struts:2.3.21:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:struts:2.3.16.1:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:struts:2.5.6:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:struts:2.3.10:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:struts:2.3.24:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:struts:2.3.14.3:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:struts:2.3.15.1:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:struts:2.3.20.1:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:struts:2.3.30:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:struts:2.3.13:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:struts:2.3.23:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:struts:2.5.4:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:struts:2.5.3:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:struts:2.3.12:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:struts:2.3.16.3:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:struts:2.3.20:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:struts:2.3.25:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:struts:2.5.5:*:*:*:*:*:*:*"
+        ],
+        "fix_commit": "https://github.com/apache/struts/commit/352306493971e7d5a756d61780d57a76eb1f519a",
+        "version_end_excluding": {
+            "apache:struts": "unknown"
+        },
+        "path": {
+            "file_path": "core/src/main/java/org/apache/struts2/dispatcher/multipart/JakartaMultiPartRequest.java"
+        }
+    },
+    "programming_language": "JAVA",
+    "licences": {
+        "database": "Apache",
+        "affected_repository": "Apache License 2.0"
+    },
+    "related_vulnerability_entry": {
+        "CVE": [
+            "CVE-2017-5638"
+        ],
+        "CWE": [
+            "CWE-20"
+        ]
+    }
+}

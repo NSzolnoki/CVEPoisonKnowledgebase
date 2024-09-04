@@ -1,0 +1,27 @@
+{
+    "original_source": {
+        "database(url)": "https://github.com/SAP/project-kb",
+        "software_system(CPE)": [
+            "cpe:2.3:a:apache:groovy:1.7.0:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:groovy:1.7.0:*:*:*:*:*:*:*"
+        ],
+        "fix_commit": "https://github.com/apache/groovy/commit/09e9778e8a33052d8c27105aee5310649637233d",
+        "version_end_excluding": {
+            "apache:groovy": "unknown"
+        },
+        "path": {
+            "file_path": "src/main/org/codehaus/groovy/runtime/MethodClosure.java"
+        }
+    },
+    "programming_language": "JAVA",
+    "licences": {
+        "database": "Apache",
+        "affected_repository": "Apache License 2.0"
+    },
+    "related_vulnerability_entry": {
+        "CVE": [
+            "CVE-2015-3253"
+        ],
+        "CWE": []
+    }
+}

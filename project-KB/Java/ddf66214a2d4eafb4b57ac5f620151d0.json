@@ -1,0 +1,20 @@
+{
+    "original_source": {
+        "database(url)": "https://github.com/SAP/project-kb",
+        "software_system(CPE)": [],
+        "fix_commit": "https://github.com/apache/karaf/commit/cf8191b4b4b9655d3d578fcba8681b04248c31fa",
+        "version_end_excluding": {},
+        "path": {
+            "file_path": "management/server/src/main/java/org/apache/karaf/management/KarafMBeanServerGuard.java"
+        }
+    },
+    "programming_language": "JAVA",
+    "licences": {
+        "database": "Apache",
+        "affected_repository": "Apache License 2.0"
+    },
+    "related_vulnerability_entry": {
+        "CVE": [],
+        "CWE": []
+    }
+}

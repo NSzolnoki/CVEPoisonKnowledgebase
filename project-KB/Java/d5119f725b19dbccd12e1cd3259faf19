@@ -1,0 +1,152 @@
+diff --git a/spring-messaging/src/test/java/org/springframework/messaging/simp/stomp/BufferingStompDecoderTests.java b/spring-messaging/src/test/java/org/springframework/messaging/simp/stomp/BufferingStompDecoderTests.java
+index 136a99acc9fc..b09a597f9622 100644
+--- a/spring-messaging/src/test/java/org/springframework/messaging/simp/stomp/BufferingStompDecoderTests.java
++++ b/spring-messaging/src/test/java/org/springframework/messaging/simp/stomp/BufferingStompDecoderTests.java
+@@ -27,9 +27,8 @@
+ 
+ import static org.junit.Assert.*;
+ 
+-
+ /**
+- * Unit tests for {@link BufferingStompDecoder}..
++ * Unit tests for {@link BufferingStompDecoder}.
+  *
+  * @author Rossen Stoyanchev
+  * @since 4.0.3
+@@ -54,7 +53,6 @@ public void basic() throws InterruptedException {
+ 
+ 	@Test
+ 	public void oneMessageInTwoChunks() throws InterruptedException {
+-
+ 		BufferingStompDecoder stompDecoder = new BufferingStompDecoder(128);
+ 		String chunk1 = "SEND\na:alpha\n\nMessage";
+ 		String chunk2 = " body\0";
+@@ -86,9 +84,8 @@ public void twoMessagesInOneChunk() throws InterruptedException {
+ 
+ 	@Test
+ 	public void oneFullAndOneSplitMessageContentLength() throws InterruptedException {
+-		int contentLength = "Payload2a-Payload2b".getBytes().length;
+-
+ 		BufferingStompDecoder stompDecoder = new BufferingStompDecoder(128);
++		int contentLength = "Payload2a-Payload2b".getBytes().length;
+ 		String chunk1 = "SEND\na:alpha\n\nPayload1\0SEND\ncontent-length:" + contentLength + "\n";
+ 		List<Message<byte[]>> messages = stompDecoder.decode(toByteBuffer(chunk1));
+ 
+@@ -165,7 +162,7 @@ public void oneFullAndOneSplitWithContentLengthExceedingBufferSize() throws Inte
+ 	}
+ 
+ 	@Test(expected = StompConversionException.class)
+-	public void bufferSizeLimit() throws InterruptedException {
++	public void bufferSizeLimit() {
+ 		BufferingStompDecoder stompDecoder = new BufferingStompDecoder(10);
+ 		String payload = "SEND\na:alpha\n\nMessage body";
+ 		stompDecoder.decode(toByteBuffer(payload));
+diff --git a/spring-web/src/main/java/org/springframework/http/converter/StringHttpMessageConverter.java b/spring-web/src/main/java/org/springframework/http/converter/StringHttpMessageConverter.java
+index 686ec93767b9..4e78c3c78d48 100644
+--- a/spring-web/src/main/java/org/springframework/http/converter/StringHttpMessageConverter.java
++++ b/spring-web/src/main/java/org/springframework/http/converter/StringHttpMessageConverter.java
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright 2002-2013 the original author or authors.
++ * Copyright 2002-2014 the original author or authors.
+  *
+  * Licensed under the Apache License, Version 2.0 (the "License");
+  * you may not use this file except in compliance with the License.
+@@ -41,6 +41,7 @@ public class StringHttpMessageConverter extends AbstractHttpMessageConverter<Str
+ 
+ 	public static final Charset DEFAULT_CHARSET = Charset.forName("ISO-8859-1");
+ 
++
+ 	private final Charset defaultCharset;
+ 
+ 	private final List<Charset> availableCharsets;
+@@ -66,6 +67,7 @@ public StringHttpMessageConverter(Charset defaultCharset) {
+ 		this.availableCharsets = new ArrayList<Charset>(Charset.availableCharsets().values());
+ 	}
+ 
++
+ 	/**
+ 	 * Indicates whether the {@code Accept-Charset} should be written to any outgoing request.
+ 	 * <p>Default is {@code true}.
+@@ -74,6 +76,7 @@ public void setWriteAcceptCharset(boolean writeAcceptCharset) {
+ 		this.writeAcceptCharset = writeAcceptCharset;
+ 	}
+ 
++
+ 	@Override
+ 	public boolean supports(Class<?> clazz) {
+ 		return String.class.equals(clazz);
+@@ -86,10 +89,10 @@ protected String readInternal(Class<? extends String> clazz, HttpInputMessage in
+ 	}
+ 
+ 	@Override
+-	protected Long getContentLength(String s, MediaType contentType) {
++	protected Long getContentLength(String str, MediaType contentType) {
+ 		Charset charset = getContentTypeCharset(contentType);
+ 		try {
+-			return (long) s.getBytes(charset.name()).length;
++			return (long) str.getBytes(charset.name()).length;
+ 		}
+ 		catch (UnsupportedEncodingException ex) {
+ 			// should not occur
+@@ -98,17 +101,19 @@ protected Long getContentLength(String s, MediaType contentType) {
+ 	}
+ 
+ 	@Override
+-	protected void writeInternal(String s, HttpOutputMessage outputMessage) throws IOException {
++	protected void writeInternal(String str, HttpOutputMessage outputMessage) throws IOException {
+ 		if (this.writeAcceptCharset) {
+ 			outputMessage.getHeaders().setAcceptCharset(getAcceptedCharsets());
+ 		}
+ 		Charset charset = getContentTypeCharset(outputMessage.getHeaders().getContentType());
+-		StreamUtils.copy(s, charset, outputMessage.getBody());
++		StreamUtils.copy(str, charset, outputMessage.getBody());
+ 	}
+ 
++
+ 	/**
+-	 * Return the list of supported {@link Charset}.
+-	 * <p>By default, returns {@link Charset#availableCharsets()}. Can be overridden in subclasses.
++	 * Return the list of supported {@link Charset}s.
++	 * <p>By default, returns {@link Charset#availableCharsets()}.
++	 * Can be overridden in subclasses.
+ 	 * @return the list of accepted charsets
+ 	 */
+ 	protected List<Charset> getAcceptedCharsets() {
+@@ -123,4 +128,5 @@ private Charset getContentTypeCharset(MediaType contentType) {
+ 			return this.defaultCharset;
+ 		}
+ 	}
++
+ }
+diff --git a/spring-websocket/src/main/java/org/springframework/web/socket/TextMessage.java b/spring-websocket/src/main/java/org/springframework/web/socket/TextMessage.java
+index 7586d8385159..355284c4e23d 100644
+--- a/spring-websocket/src/main/java/org/springframework/web/socket/TextMessage.java
++++ b/spring-websocket/src/main/java/org/springframework/web/socket/TextMessage.java
+@@ -26,7 +26,7 @@
+  */
+ public final class TextMessage extends AbstractWebSocketMessage<String> {
+ 
+-	private static final Charset UTF_8 = Charset.forName("UTF-8");
++	private static final Charset UTF8_CHARSET = Charset.forName("UTF-8");
+ 
+ 	private final byte[] bytes;
+ 
+@@ -46,7 +46,7 @@ public TextMessage(CharSequence payload) {
+ 	 * @param payload the non-null payload
+ 	 */
+ 	public TextMessage(byte[] payload) {
+-		super(new String(payload, UTF_8));
++		super(new String(payload, UTF8_CHARSET));
+ 		this.bytes = payload;
+ 	}
+ 
+@@ -70,7 +70,7 @@ public int getPayloadLength() {
+ 	}
+ 
+ 	public byte[] asBytes() {
+-		return (this.bytes != null ? this.bytes : getPayload().getBytes(UTF_8));
++		return (this.bytes != null ? this.bytes : getPayload().getBytes(UTF8_CHARSET));
+ 	}
+ 
+ 	@Override

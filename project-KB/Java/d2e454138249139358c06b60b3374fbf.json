@@ -1,0 +1,20 @@
+{
+    "original_source": {
+        "database(url)": "https://github.com/SAP/project-kb",
+        "software_system(CPE)": [],
+        "fix_commit": "https://github.com/rhuss/jolokia/commit/d4caa14cbc90ae7b408d02d269d05299c3368478",
+        "version_end_excluding": {},
+        "path": {
+            "file_path": "agent/core/src/main/java/org/jolokia/http/AgentServlet.java"
+        }
+    },
+    "programming_language": "JAVA",
+    "licences": {
+        "database": "Apache",
+        "affected_repository": "Apache License 2.0"
+    },
+    "related_vulnerability_entry": {
+        "CVE": [],
+        "CWE": []
+    }
+}

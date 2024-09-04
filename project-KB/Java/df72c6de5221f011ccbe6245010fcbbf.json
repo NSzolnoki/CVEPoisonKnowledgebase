@@ -1,0 +1,20 @@
+{
+    "original_source": {
+        "database(url)": "https://github.com/SAP/project-kb",
+        "software_system(CPE)": [],
+        "fix_commit": "https://github.com/apache/syncope/commit/c31fe935b62c061e4002c6ba5fa008a5e9c305ba",
+        "version_end_excluding": {},
+        "path": {
+            "file_path": "core/provisioning-java/src/main/java/org/apache/syncope/core/provisioning/java/jexl/ClassFreeUberspect.java"
+        }
+    },
+    "programming_language": "JAVA",
+    "licences": {
+        "database": "Apache",
+        "affected_repository": "Apache License 2.0"
+    },
+    "related_vulnerability_entry": {
+        "CVE": [],
+        "CWE": []
+    }
+}

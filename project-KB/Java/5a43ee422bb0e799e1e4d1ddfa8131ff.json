@@ -1,0 +1,28 @@
+{
+    "original_source": {
+        "database(url)": "https://github.com/SAP/project-kb",
+        "software_system(CPE)": [
+            "cpe:2.3:a:redhat:wildfly:*:*:*:*:*:*:*:*"
+        ],
+        "fix_commit": "https://github.com/wildfly/wildfly/commit/883115ea2168343e870745f538a80b1ddc360914",
+        "version_end_excluding": {
+            "redhat:wildfly": "14.0.0"
+        },
+        "path": {
+            "file_path": "iiop-openjdk/src/main/java/org/wildfly/iiop/openjdk/IIOPExtension.java"
+        }
+    },
+    "programming_language": "JAVA",
+    "licences": {
+        "database": "Apache",
+        "affected_repository": "Apache License 2.0"
+    },
+    "related_vulnerability_entry": {
+        "CVE": [
+            "CVE-2018-14627"
+        ],
+        "CWE": [
+            "CWE-319"
+        ]
+    }
+}

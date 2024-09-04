@@ -1,0 +1,29 @@
+{
+    "original_source": {
+        "database(url)": "https://github.com/SAP/project-kb",
+        "software_system(CPE)": [
+            "cpe:2.3:a:oracle:weblogic_server:14.1.1.0.0:*:*:*:*:*:*:*",
+            "cpe:2.3:a:apache:commons_compress:*:*:*:*:*:*:*:*"
+        ],
+        "fix_commit": "https://github.com/apache/commons-compress/commit/a41ce6892cb0590b2e658704434ac0dbcb6834c8",
+        "version_end_excluding": {
+            "apache:commons_compress": "unknown"
+        },
+        "path": {
+            "file_path": "src/test/java/org/apache/commons/compress/archivers/zip/ZipArchiveInputStreamTest.java"
+        }
+    },
+    "programming_language": "JAVA",
+    "licences": {
+        "database": "Apache",
+        "affected_repository": "Apache License 2.0"
+    },
+    "related_vulnerability_entry": {
+        "CVE": [
+            "CVE-2018-11771"
+        ],
+        "CWE": [
+            "CWE-835"
+        ]
+    }
+}
