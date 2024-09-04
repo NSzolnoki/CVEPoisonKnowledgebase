@@ -1,11 +1,13 @@
 # CVEPoisonKnowledgebase
-The collection of poisoned code snippets that officially identified with a CVE identifier
+
+The collection of poisoned code snippets that are officially identified with a CVE identifier.
 
 ## Content of this repository
 * Vulnerable code snippets
-* Metadata for the vulnerable code snippet
-### Vulnerable code snippet
-We have them in spearate folders per source and per language, for example at `CWE-mitre\C` you can find the vulnerable codes found in C langauges at source `CWE-mitre` like this:
+* Metadata for the vulnerable code snippets
+
+### Vulnerable code snippets
+We have them in separate folders, organized by source and programming language. For example, at `CWE-mitre\C`, you can find the vulnerable code snippets in C language from the source `CWE-mitre`. An example of such code is where we only have a single line that has been removed:
 ```
 -pwd = getpwnam(getlogin());if (isTrustedGroup(pwd->pw_gid)) {allow();} else {deny();}
 ```
@@ -44,23 +46,20 @@ We have a metadata file for each vulnerable code snippets, for the code snippet 
     }
 }
 ```
-* `database(url)` is the source of the vulnerable code snippet
-* `software_system(CPE)` is the affected software and its version
-* `fix_commit` if the fix is known, we list here
-* `programming_language` is the language of the code snippet
-* `related_vulnerability_entry` list of related `CVE` and `CWE` identifiers
+- `database(url)` indicates the source of the vulnerable code snippet.
+- `software_system(CPE)` lists the affected software and its versions.
+- `fix_commit` is where the known fix, if any, is listed.
+- `programming_language` indicates the language of the code snippet.
+- `related_vulnerability_entry` provides the related `CVE` and `CWE` identifiers.
 
 
 ## How the data has been collected
-### CVEFixes
-TODO
------------------------
-### CWE-mitre
-TODO
------------------------
-### project-KB
-TODO
------------------------
 
-DRAFT:
-The collection has been created using three sources to get the code snippets and the [NVD API](https://nvd.nist.gov/developers/vulnerabilities "NVD API") to get the detailed data for the vulnerabilities.
+### CVEFixes
+CVEfixes is a comprehensive vulnerability dataset that is automatically collected and curated from Common Vulnerabilities and Exposures (CVE) records in the public [U.S. National Vulnerability Database (NVD)](https://nvd.nist.gov/). It provides an SQLite file containing records about vulnerable code snippets, along with their CVE and CWE identifiers. We wrote a script to collect the vulnerable snippets into files and create metadata by using the [NVD API](https://nvd.nist.gov/developers/vulnerabilities) and the [GitHub API](https://docs.github.com/en/rest) to retrieve the license information of the projects where the vulnerabilities occurred.
+
+### CWE-mitre
+CWE MITRE is the organization responsible for curating and maintaining the CWE list. They are well-known for their work in cybersecurity, including managing other key frameworks such as CVE (Common Vulnerabilities and Exposures) and ATT&CK (Adversarial Tactics, Techniques, and Common Knowledge). From the MITRE page, you can [download](https://cwe.mitre.org/data/downloads.html) the complete data as an XML file. We used a Python script to collect the vulnerable code snippets and, based on their CVE identifiers, gathered the commit data associated with the vulnerabilities using the [NVD API](https://nvd.nist.gov/developers/vulnerabilities). Additional information was gathered using the [GitHub API](https://docs.github.com/en/rest).
+
+### project-KB
+Project-KB provides a Java code snippet collection along with a database in CSV format. In this CSV file, we found commit information and CVE identifiers. Using this information, we collected the commits containing the vulnerable code snippets, and by using the [NVD API](https://nvd.nist.gov/developers/vulnerabilities) and [GitHub API](https://docs.github.com/en/rest), we gathered the additional information needed to build the knowledgebase.
