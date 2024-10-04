@@ -12,7 +12,7 @@
             "file_path": "composer.json"
         }
     },
-    "programming_language": "jupyter notebook",
+    "programming_language": "jupyternotebook",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

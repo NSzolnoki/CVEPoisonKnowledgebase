@@ -8,7 +8,7 @@
             "file_path": "packages/filter-workspace-packages/package.json"
         }
     },
-    "programming_language": "jupyter notebook",
+    "programming_language": "jupyternotebook",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

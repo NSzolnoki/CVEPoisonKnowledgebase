@@ -23,7 +23,7 @@
             "file_path": "dist/purify.cjs.js.map"
         }
     },
-    "programming_language": "jupyter notebook",
+    "programming_language": "jupyternotebook",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"
