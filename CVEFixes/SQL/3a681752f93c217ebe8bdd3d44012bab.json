@@ -12,7 +12,7 @@
             "file_path": "lhc_web/design/defaulttheme/tpl/lhchat/lists/additional_column_body.tpl.php"
         }
     },
-    "programming_language": "SQL",
+    "programming_language": "sql",
     "licences": {
         "database": "MIT",
         "affected_repository": "Apache License 2.0"

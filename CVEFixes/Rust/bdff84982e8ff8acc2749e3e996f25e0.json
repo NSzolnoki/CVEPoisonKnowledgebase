@@ -12,7 +12,7 @@
             "file_path": "parity/dapps.rs"
         }
     },
-    "programming_language": "Rust",
+    "programming_language": "rust",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

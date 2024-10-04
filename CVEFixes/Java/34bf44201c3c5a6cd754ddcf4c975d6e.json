@@ -39,7 +39,7 @@
             "file_path": "framework/impl/src/main/java/org/ajax4jsf/resource/UserResource.java"
         }
     },
-    "programming_language": "Java",
+    "programming_language": "java",
     "licences": {
         "database": "MIT",
         "affected_repository": "Unknown"

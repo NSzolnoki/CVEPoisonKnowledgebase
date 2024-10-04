@@ -126,7 +126,7 @@
             "file_path": "src/main/org/apache/tools/ant/taskdefs/compilers/DefaultCompilerAdapter.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Other"

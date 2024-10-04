@@ -13,7 +13,7 @@
             "file_path": "extensions/crypto/sodium/src/main/java/dev/paseto/jpaseto/crypto/sodium/SodiumV2LocalCryptoProvider.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Apache License 2.0"

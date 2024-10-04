@@ -45,7 +45,7 @@
             "file_path": "pg/src/main/java/org/bouncycastle/openpgp/PGPSignatureGenerator.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "MIT License"

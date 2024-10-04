@@ -23,7 +23,7 @@
             "file_path": "lib/SimpleSAML/Utils/Crypto.php"
         }
     },
-    "programming_language": "PHP",
+    "programming_language": "php",
     "licences": {
         "database": "MIT",
         "affected_repository": "GNU Lesser General Public License v2.1"

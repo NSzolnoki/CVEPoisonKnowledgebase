@@ -48,7 +48,7 @@
             "file_path": "lib/puppet/file_serving/configuration.rb"
         }
     },
-    "programming_language": "Ruby",
+    "programming_language": "ruby",
     "licences": {
         "database": "MIT",
         "affected_repository": "Apache License 2.0"

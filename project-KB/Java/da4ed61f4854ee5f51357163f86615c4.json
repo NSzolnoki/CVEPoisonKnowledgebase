@@ -13,7 +13,7 @@
             "file_path": "prov/src/main/java/org/bouncycastle/pqc/jcajce/provider/xmss/BCXMSSPrivateKey.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "MIT License"

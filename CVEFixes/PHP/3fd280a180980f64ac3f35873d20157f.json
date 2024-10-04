@@ -148,7 +148,7 @@
             "file_path": "src/Controller/Component/CsrfComponent.php"
         }
     },
-    "programming_language": "PHP",
+    "programming_language": "php",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

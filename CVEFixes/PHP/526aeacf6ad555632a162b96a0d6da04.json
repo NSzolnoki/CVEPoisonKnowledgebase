@@ -14,7 +14,7 @@
             "file_path": "www/include/Administration/corePerformance/getStats.php"
         }
     },
-    "programming_language": "PHP",
+    "programming_language": "php",
     "licences": {
         "database": "MIT",
         "affected_repository": "Apache License 2.0"

@@ -12,7 +12,7 @@
             "file_path": "cps/templates/index.html"
         }
     },
-    "programming_language": "HTML",
+    "programming_language": "html",
     "licences": {
         "database": "MIT",
         "affected_repository": "GNU General Public License v3.0"

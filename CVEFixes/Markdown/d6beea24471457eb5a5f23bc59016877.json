@@ -72,7 +72,7 @@
             "file_path": "release-notes/VERSION-2.x"
         }
     },
-    "programming_language": "Markdown",
+    "programming_language": "markdown",
     "licences": {
         "database": "MIT",
         "affected_repository": "Apache License 2.0"

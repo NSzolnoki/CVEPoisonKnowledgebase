@@ -8,7 +8,7 @@
             "file_path": "CHANGELOG.md"
         }
     },
-    "programming_language": "Markdown",
+    "programming_language": "markdown",
     "licences": {
         "database": "MIT",
         "affected_repository": "Mozilla Public License 2.0"

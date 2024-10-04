@@ -25,7 +25,7 @@
             "file_path": "src/java/org/orbeon/oxf/xml/xerces/XercesSAXParserFactoryImpl.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "GNU Lesser General Public License v2.1"

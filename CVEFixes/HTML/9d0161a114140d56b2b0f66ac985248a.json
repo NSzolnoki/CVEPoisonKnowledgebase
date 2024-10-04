@@ -15,7 +15,7 @@
             "file_path": "opennms-webapp/src/main/webapp/WEB-INF/jsp/event/detail.jsp"
         }
     },
-    "programming_language": "HTML",
+    "programming_language": "html",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

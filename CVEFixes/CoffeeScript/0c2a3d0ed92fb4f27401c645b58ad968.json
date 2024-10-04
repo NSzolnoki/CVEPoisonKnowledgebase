@@ -8,7 +8,7 @@
             "file_path": "packages/git-fetcher/package.json"
         }
     },
-    "programming_language": "CoffeeScript",
+    "programming_language": "coffeescript",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

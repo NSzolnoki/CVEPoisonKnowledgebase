@@ -12,7 +12,7 @@
             "file_path": "spec/mail/message_spec.rb"
         }
     },
-    "programming_language": "Ruby",
+    "programming_language": "ruby",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

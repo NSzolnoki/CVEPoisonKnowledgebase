@@ -12,7 +12,7 @@
             "file_path": "drivers/char/Kconfig"
         }
     },
-    "programming_language": "Go",
+    "programming_language": "go",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

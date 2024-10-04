@@ -13,7 +13,7 @@
             "file_path": "geode-cq/src/distributedTest/java/org/apache/geode/cache/query/cq/dunit/CqQueryUsingPoolDUnitTest.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Apache License 2.0"

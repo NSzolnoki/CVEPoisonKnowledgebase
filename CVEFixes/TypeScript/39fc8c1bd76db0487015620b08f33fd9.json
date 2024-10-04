@@ -8,7 +8,7 @@
             "file_path": "src/unix.js"
         }
     },
-    "programming_language": "TypeScript",
+    "programming_language": "typescript",
     "licences": {
         "database": "MIT",
         "affected_repository": "Mozilla Public License 2.0"

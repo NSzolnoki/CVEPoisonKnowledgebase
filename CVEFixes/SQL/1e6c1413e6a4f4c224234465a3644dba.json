@@ -12,7 +12,7 @@
             "file_path": "server-plugin/server-plugin-buildspec-gradle/pom.xml"
         }
     },
-    "programming_language": "SQL",
+    "programming_language": "sql",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

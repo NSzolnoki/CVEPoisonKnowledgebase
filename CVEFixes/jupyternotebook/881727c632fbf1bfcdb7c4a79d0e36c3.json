@@ -2,27 +2,27 @@
     "original_source": {
         "database(url)": "https://github.com/secureIT-project/CVEfixes",
         "software_system(CPE)": [
-            "cpe:2.3:a:vditor_project:vditor:*:*:*:*:*:*:*:*"
+            "cpe:2.3:a:microweber:microweber:*:*:*:*:*:*:*:*"
         ],
-        "fix_commit": "https://github.com/vanessa219/vditor/commit/e912e36ea98251d700499b1ac7702708d3398476",
+        "fix_commit": "https://github.com/microweber/microweber/commit/867bdda1b4660b0795ad7f87ab5abe9e44b2b318",
         "version_end_excluding": {
-            "vditor_project:vditor": "3.8.13"
+            "microweber:microweber": "1.2.12"
         },
         "path": {
-            "file_path": "package.json"
+            "file_path": "composer.json"
         }
     },
-    "programming_language": "Jupyter Notebook",
+    "programming_language": "jupyter notebook",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"
     },
     "related_vulnerability_entry": {
         "CVE": [
-            "CVE-2022-0350"
+            "CVE-2022-0921"
         ],
         "CWE": [
-            "CWE-79"
+            "CWE-434"
         ]
     }
 }

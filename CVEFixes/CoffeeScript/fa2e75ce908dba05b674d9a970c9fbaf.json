@@ -12,7 +12,7 @@
             "file_path": "views/partials/navigation/_user.blade.php"
         }
     },
-    "programming_language": "CoffeeScript",
+    "programming_language": "coffeescript",
     "licences": {
         "database": "MIT",
         "affected_repository": "Apache License 2.0"

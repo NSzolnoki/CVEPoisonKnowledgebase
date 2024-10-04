@@ -49,7 +49,7 @@
             "file_path": "jboss-seam/src/main/java/org/jboss/seam/util/XML.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Unknown"

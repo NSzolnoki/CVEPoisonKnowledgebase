@@ -12,7 +12,7 @@
             "file_path": "airsonic-main/src/main/java/org/airsonic/player/ajax/LyricsService.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "GNU General Public License v3.0"

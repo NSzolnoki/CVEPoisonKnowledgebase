@@ -13,7 +13,7 @@
             "file_path": "core/src/main/resources/hudson/model/PasswordParameterDefinition/config.jelly"
         }
     },
-    "programming_language": "Markdown",
+    "programming_language": "markdown",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

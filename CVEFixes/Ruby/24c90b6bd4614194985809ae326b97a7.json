@@ -12,7 +12,7 @@
             "file_path": "app/views/admin/users/_user.html.erb"
         }
     },
-    "programming_language": "Ruby",
+    "programming_language": "ruby",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

@@ -12,7 +12,7 @@
             "file_path": "client/src/app/+videos/+video-edit/video-add-components/video-upload.component.ts"
         }
     },
-    "programming_language": "JavaScript",
+    "programming_language": "javascript",
     "licences": {
         "database": "MIT",
         "affected_repository": "GNU Affero General Public License v3.0"

@@ -41,7 +41,7 @@
             "file_path": "include/mbedtls/error.h"
         }
     },
-    "programming_language": "C",
+    "programming_language": "c",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

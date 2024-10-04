@@ -18,7 +18,7 @@
             "file_path": "src/proto/userfunc.pro"
         }
     },
-    "programming_language": "Matlab",
+    "programming_language": "matlab",
     "licences": {
         "database": "MIT",
         "affected_repository": "Vim License"

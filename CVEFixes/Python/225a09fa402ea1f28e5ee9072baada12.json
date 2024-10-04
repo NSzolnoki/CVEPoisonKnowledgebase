@@ -12,7 +12,7 @@
             "file_path": "app/urls.py"
         }
     },
-    "programming_language": "Python",
+    "programming_language": "python",
     "licences": {
         "database": "MIT",
         "affected_repository": "GNU Affero General Public License v3.0"

@@ -13,7 +13,7 @@
             "file_path": "core/src/main/java/com/opensymphony/xwork2/validator/validators/URLValidator.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Apache License 2.0"

@@ -44,7 +44,7 @@
             "file_path": "buffer/src/test/java/io/netty/buffer/ReadOnlyDirectByteBufferBufTest.java"
         }
     },
-    "programming_language": "Java",
+    "programming_language": "java",
     "licences": {
         "database": "MIT",
         "affected_repository": "Apache License 2.0"

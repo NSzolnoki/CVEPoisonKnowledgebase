@@ -25,7 +25,7 @@
             "file_path": "agent/core/src/main/java/org/jolokia/http/AgentServlet.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Apache License 2.0"

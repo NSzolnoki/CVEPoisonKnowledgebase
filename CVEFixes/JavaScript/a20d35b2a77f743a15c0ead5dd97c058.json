@@ -12,7 +12,7 @@
             "file_path": "src/Sulu/Bundle/AdminBundle/Resources/public/dist/app.min.1614246819288.js"
         }
     },
-    "programming_language": "JavaScript",
+    "programming_language": "javascript",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

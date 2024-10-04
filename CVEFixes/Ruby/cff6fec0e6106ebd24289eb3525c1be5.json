@@ -17,7 +17,7 @@
             "file_path": "app/controllers/application_controller.rb"
         }
     },
-    "programming_language": "Ruby",
+    "programming_language": "ruby",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

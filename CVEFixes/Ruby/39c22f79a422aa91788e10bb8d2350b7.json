@@ -24,7 +24,7 @@
             "file_path": "app/views/journals/index.builder"
         }
     },
-    "programming_language": "Ruby",
+    "programming_language": "ruby",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

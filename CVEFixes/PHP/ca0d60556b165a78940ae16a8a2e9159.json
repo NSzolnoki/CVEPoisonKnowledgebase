@@ -12,7 +12,7 @@
             "file_path": "inc/lib/Control/Frontend/cat.control.php"
         }
     },
-    "programming_language": "PHP",
+    "programming_language": "php",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

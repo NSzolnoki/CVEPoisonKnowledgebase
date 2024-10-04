@@ -18,7 +18,7 @@
             "file_path": "lib/rack/cors/version.rb"
         }
     },
-    "programming_language": "Ruby",
+    "programming_language": "ruby",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

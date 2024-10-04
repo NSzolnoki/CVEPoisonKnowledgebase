@@ -12,7 +12,7 @@
             "file_path": "tests/esis_snpa_asan-5.out"
         }
     },
-    "programming_language": "Scala",
+    "programming_language": "scala",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

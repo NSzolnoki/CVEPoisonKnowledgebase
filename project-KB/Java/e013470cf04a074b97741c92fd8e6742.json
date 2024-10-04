@@ -13,7 +13,7 @@
             "file_path": "opc-ua-stack/stack-core/src/test/java/org/eclipse/milo/opcua/stack/core/util/NonceUtilTest.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Eclipse Public License 2.0"

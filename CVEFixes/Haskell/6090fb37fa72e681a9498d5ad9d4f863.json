@@ -14,7 +14,7 @@
             "file_path": "setup.cfg"
         }
     },
-    "programming_language": "Haskell",
+    "programming_language": "haskell",
     "licences": {
         "database": "MIT",
         "affected_repository": "Unknown"

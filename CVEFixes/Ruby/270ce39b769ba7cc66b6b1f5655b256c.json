@@ -12,7 +12,7 @@
             "file_path": "public/.htaccess.dist"
         }
     },
-    "programming_language": "Ruby",
+    "programming_language": "ruby",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

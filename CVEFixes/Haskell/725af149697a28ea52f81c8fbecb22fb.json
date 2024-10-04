@@ -12,7 +12,7 @@
             "file_path": "lhc_web/design/defaulttheme/js/js_static/54bcce5942dd8e6e1e1e0c29802cfbef.js.map"
         }
     },
-    "programming_language": "Haskell",
+    "programming_language": "haskell",
     "licences": {
         "database": "MIT",
         "affected_repository": "Apache License 2.0"

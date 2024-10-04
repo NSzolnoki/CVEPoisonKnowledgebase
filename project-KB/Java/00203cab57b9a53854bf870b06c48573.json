@@ -26,7 +26,7 @@
             "file_path": "jetty-security/src/main/java/org/eclipse/jetty/security/authentication/DigestAuthenticator.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Other"

@@ -13,7 +13,7 @@
             "file_path": "xstream/src/java/com/thoughtworks/xstream/security/ProxyTypePermission.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Other"

@@ -8,7 +8,7 @@
             "file_path": "ext/installfiles/mac/ZeroTier One.pkgproj"
         }
     },
-    "programming_language": "HTML",
+    "programming_language": "html",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

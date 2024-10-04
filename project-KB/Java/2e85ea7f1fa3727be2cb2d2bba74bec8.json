@@ -28,7 +28,7 @@
             "file_path": "titus-api/src/test/java/com/netflix/titus/api/jobmanager/model/job/sanitizer/SchedulingConstraintValidatorTest.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Apache License 2.0"

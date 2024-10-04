@@ -40,7 +40,7 @@
             "file_path": "PerlMagick/demo/demo.pl"
         }
     },
-    "programming_language": "Perl",
+    "programming_language": "perl",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

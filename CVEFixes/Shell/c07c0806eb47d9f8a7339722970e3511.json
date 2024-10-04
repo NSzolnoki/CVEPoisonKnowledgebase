@@ -35,7 +35,7 @@
             "file_path": "templates/lxc-sshd.in"
         }
     },
-    "programming_language": "Shell",
+    "programming_language": "shell",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

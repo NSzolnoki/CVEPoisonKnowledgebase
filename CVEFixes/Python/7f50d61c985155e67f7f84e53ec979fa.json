@@ -8,7 +8,7 @@
             "file_path": "ansible_runner/config/doc.py"
         }
     },
-    "programming_language": "Python",
+    "programming_language": "python",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

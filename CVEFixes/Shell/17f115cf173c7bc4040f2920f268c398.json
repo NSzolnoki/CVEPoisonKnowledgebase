@@ -12,7 +12,7 @@
             "file_path": "examples/CMakeLists.txt"
         }
     },
-    "programming_language": "Shell",
+    "programming_language": "shell",
     "licences": {
         "database": "MIT",
         "affected_repository": "GNU Lesser General Public License v3.0"

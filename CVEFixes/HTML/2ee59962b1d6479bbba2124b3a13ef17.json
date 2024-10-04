@@ -12,7 +12,7 @@
             "file_path": "publiccms-parent/pom.xml"
         }
     },
-    "programming_language": "HTML",
+    "programming_language": "html",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

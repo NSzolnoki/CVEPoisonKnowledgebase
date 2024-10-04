@@ -15,7 +15,7 @@
             "file_path": "opennms-webapp/src/main/webapp/WEB-INF/jsp/alarm/detail.jsp"
         }
     },
-    "programming_language": "Scala",
+    "programming_language": "scala",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

@@ -34,7 +34,7 @@
             "file_path": "src/lib/gssapi/spnego/spnego_mech.c"
         }
     },
-    "programming_language": "C",
+    "programming_language": "c",
     "licences": {
         "database": "MIT",
         "affected_repository": "Unknown"

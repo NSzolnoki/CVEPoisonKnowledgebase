@@ -22,7 +22,7 @@
             "file_path": "app/views/timelog/_form.html.erb"
         }
     },
-    "programming_language": "Ruby",
+    "programming_language": "ruby",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

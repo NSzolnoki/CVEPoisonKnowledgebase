@@ -13,7 +13,7 @@
             "file_path": "build-packages/magento-scripts/lib/commands/execute.js"
         }
     },
-    "programming_language": "TypeScript",
+    "programming_language": "typescript",
     "licences": {
         "database": "MIT",
         "affected_repository": "Open Software License 3.0"

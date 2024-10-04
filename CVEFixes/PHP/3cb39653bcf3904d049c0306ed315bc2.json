@@ -31,7 +31,7 @@
             "file_path": "share/pnp/application/views/kohana_error_page.php"
         }
     },
-    "programming_language": "PHP",
+    "programming_language": "php",
     "licences": {
         "database": "MIT",
         "affected_repository": "GNU General Public License v2.0"

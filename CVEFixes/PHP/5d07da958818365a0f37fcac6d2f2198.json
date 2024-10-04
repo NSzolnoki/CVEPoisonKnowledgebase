@@ -14,7 +14,7 @@
             "file_path": "plugins/testmanagement/include/TestManagement/Step/Execution/Field/StepExecution.php"
         }
     },
-    "programming_language": "PHP",
+    "programming_language": "php",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

@@ -12,7 +12,7 @@
             "file_path": "index.js.map"
         }
     },
-    "programming_language": "Scala",
+    "programming_language": "scala",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

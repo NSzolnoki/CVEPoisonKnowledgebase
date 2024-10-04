@@ -12,7 +12,7 @@
             "file_path": "app/helpers/camaleon_cms/comment_helper.rb"
         }
     },
-    "programming_language": "Ruby",
+    "programming_language": "ruby",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

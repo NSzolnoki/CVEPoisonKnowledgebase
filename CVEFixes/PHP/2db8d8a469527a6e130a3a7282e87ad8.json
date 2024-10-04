@@ -12,7 +12,7 @@
             "file_path": "protected/extensions/CmsInput.php"
         }
     },
-    "programming_language": "PHP",
+    "programming_language": "php",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

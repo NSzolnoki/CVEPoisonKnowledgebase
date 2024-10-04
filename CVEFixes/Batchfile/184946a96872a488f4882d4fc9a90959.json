@@ -12,7 +12,7 @@
             "file_path": "go.mod"
         }
     },
-    "programming_language": "Batchfile",
+    "programming_language": "batchfile",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

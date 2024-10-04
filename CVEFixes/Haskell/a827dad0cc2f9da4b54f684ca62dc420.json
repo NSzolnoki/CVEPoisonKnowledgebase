@@ -15,7 +15,7 @@
             "file_path": "server/src-lib/Hasura/Server/Auth.hs"
         }
     },
-    "programming_language": "Haskell",
+    "programming_language": "haskell",
     "licences": {
         "database": "MIT",
         "affected_repository": "Apache License 2.0"

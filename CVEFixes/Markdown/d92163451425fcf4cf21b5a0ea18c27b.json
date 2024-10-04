@@ -12,7 +12,7 @@
             "file_path": "x2engine/protected/components/phpMailer/LICENSE"
         }
     },
-    "programming_language": "Markdown",
+    "programming_language": "markdown",
     "licences": {
         "database": "MIT",
         "affected_repository": "Unknown"

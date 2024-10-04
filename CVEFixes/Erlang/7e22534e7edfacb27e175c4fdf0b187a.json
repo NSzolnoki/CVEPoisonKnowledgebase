@@ -12,7 +12,7 @@
             "file_path": "publify_core/app/views/articles/_article_excerpt.html.erb"
         }
     },
-    "programming_language": "Erlang",
+    "programming_language": "erlang",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

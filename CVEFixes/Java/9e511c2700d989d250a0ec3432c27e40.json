@@ -72,7 +72,7 @@
             "file_path": "core/src/main/java/hudson/DNSMultiCast.java"
         }
     },
-    "programming_language": "Java",
+    "programming_language": "java",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

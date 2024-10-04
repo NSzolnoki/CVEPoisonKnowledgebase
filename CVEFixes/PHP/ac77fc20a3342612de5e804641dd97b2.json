@@ -12,7 +12,7 @@
             "file_path": "system/database/DB_active_rec.php"
         }
     },
-    "programming_language": "PHP",
+    "programming_language": "php",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

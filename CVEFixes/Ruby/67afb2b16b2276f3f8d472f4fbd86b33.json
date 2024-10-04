@@ -71,7 +71,7 @@
             "file_path": "activerecord/lib/active_record/connection_adapters/mysql2_adapter.rb"
         }
     },
-    "programming_language": "Ruby",
+    "programming_language": "ruby",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

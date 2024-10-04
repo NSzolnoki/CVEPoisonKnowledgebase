@@ -14,7 +14,7 @@
             "file_path": "impl/src/main/java/org/jboss/weld/servlet/HttpContextLifecycle.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Apache License 2.0"

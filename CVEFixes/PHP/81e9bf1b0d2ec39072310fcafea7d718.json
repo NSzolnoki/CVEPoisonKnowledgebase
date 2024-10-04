@@ -12,7 +12,7 @@
             "file_path": "views/default/forms/admin/user/change_email.php"
         }
     },
-    "programming_language": "PHP",
+    "programming_language": "php",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

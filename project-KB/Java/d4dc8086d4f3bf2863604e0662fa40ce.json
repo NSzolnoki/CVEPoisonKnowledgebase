@@ -8,7 +8,7 @@
             "file_path": "src/test/java/org/springframework/data/jpa/repository/UserRepositoryFinderTests.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Apache License 2.0"

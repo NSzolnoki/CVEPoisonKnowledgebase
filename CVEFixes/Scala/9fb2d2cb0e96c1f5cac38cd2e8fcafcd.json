@@ -19,7 +19,7 @@
             "file_path": "test/security/dos.tst"
         }
     },
-    "programming_language": "Scala",
+    "programming_language": "scala",
     "licences": {
         "database": "MIT",
         "affected_repository": "Unknown"

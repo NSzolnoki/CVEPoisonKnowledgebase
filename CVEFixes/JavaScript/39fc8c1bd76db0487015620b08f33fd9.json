@@ -8,7 +8,7 @@
             "file_path": "src/win.js"
         }
     },
-    "programming_language": "JavaScript",
+    "programming_language": "javascript",
     "licences": {
         "database": "MIT",
         "affected_repository": "Mozilla Public License 2.0"

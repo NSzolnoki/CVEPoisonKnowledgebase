@@ -31,7 +31,7 @@
             "file_path": "lib/rubygems/text.rb"
         }
     },
-    "programming_language": "Ruby",
+    "programming_language": "ruby",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

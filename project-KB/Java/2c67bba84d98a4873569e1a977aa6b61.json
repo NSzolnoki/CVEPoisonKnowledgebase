@@ -13,7 +13,7 @@
             "file_path": "soapui/src/main/java/com/eviware/soapui/support/Tools.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Other"

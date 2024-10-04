@@ -62,7 +62,7 @@
             "file_path": "app/Template/task_external_link/edit.php"
         }
     },
-    "programming_language": "PHP",
+    "programming_language": "php",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

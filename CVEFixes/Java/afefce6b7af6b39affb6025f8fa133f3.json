@@ -18,7 +18,7 @@
             "file_path": "cbor/src/main/java/com/fasterxml/jackson/dataformat/cbor/CBORGenerator.java"
         }
     },
-    "programming_language": "Java",
+    "programming_language": "java",
     "licences": {
         "database": "MIT",
         "affected_repository": "Apache License 2.0"

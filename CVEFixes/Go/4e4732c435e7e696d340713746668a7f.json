@@ -15,7 +15,7 @@
             "file_path": "skin/plantuml.skin"
         }
     },
-    "programming_language": "Go",
+    "programming_language": "go",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

@@ -12,7 +12,7 @@
             "file_path": "alkacon.mercury.template/resources/system/modules/alkacon.mercury.template/formatters/navigation/side.jsp"
         }
     },
-    "programming_language": "Shell",
+    "programming_language": "shell",
     "licences": {
         "database": "MIT",
         "affected_repository": "Unknown"

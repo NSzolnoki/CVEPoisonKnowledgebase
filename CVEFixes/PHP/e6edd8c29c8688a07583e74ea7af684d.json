@@ -12,7 +12,7 @@
             "file_path": "mod/reportedcontent/actions/reportedcontent/add.php"
         }
     },
-    "programming_language": "PHP",
+    "programming_language": "php",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

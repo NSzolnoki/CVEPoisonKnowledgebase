@@ -8,7 +8,7 @@
             "file_path": "web/play-filters-helpers/src/main/java/play/filters/csrf/RequireCSRFCheckAction.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Apache License 2.0"

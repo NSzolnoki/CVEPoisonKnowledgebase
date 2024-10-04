@@ -35,7 +35,7 @@
             "file_path": "lapack-netlib/SRC/slarrv.f"
         }
     },
-    "programming_language": "Markdown",
+    "programming_language": "markdown",
     "licences": {
         "database": "MIT",
         "affected_repository": "BSD 3-Clause \"New\" or \"Revised\" License"

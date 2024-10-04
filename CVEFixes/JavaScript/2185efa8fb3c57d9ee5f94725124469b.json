@@ -12,7 +12,7 @@
             "file_path": "static/js/dist/app/settings.min.js"
         }
     },
-    "programming_language": "JavaScript",
+    "programming_language": "javascript",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

@@ -14,7 +14,7 @@
             "file_path": "utils/axodraw2/configure.ac"
         }
     },
-    "programming_language": "Python",
+    "programming_language": "python",
     "licences": {
         "database": "MIT",
         "affected_repository": "Unknown"

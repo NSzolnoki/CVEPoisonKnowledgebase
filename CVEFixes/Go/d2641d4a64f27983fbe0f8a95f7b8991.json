@@ -25,7 +25,7 @@
             "file_path": "pkg/cri/server/container_create_linux.go"
         }
     },
-    "programming_language": "Go",
+    "programming_language": "go",
     "licences": {
         "database": "MIT",
         "affected_repository": "Apache License 2.0"

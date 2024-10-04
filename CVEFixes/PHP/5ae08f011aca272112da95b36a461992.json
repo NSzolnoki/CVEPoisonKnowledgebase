@@ -12,7 +12,7 @@
             "file_path": "net/pfSense-pkg-freeradius3/files/usr/local/www/freeradius_view_config.php"
         }
     },
-    "programming_language": "PHP",
+    "programming_language": "php",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

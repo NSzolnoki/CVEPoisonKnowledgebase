@@ -14,7 +14,7 @@
             "file_path": "synapse/res/templates/sso_auth_bad_user.html"
         }
     },
-    "programming_language": "HTML",
+    "programming_language": "html",
     "licences": {
         "database": "MIT",
         "affected_repository": "Apache License 2.0"

@@ -15,7 +15,7 @@
             "file_path": "autoload/syntastic/c.vim"
         }
     },
-    "programming_language": "Lua",
+    "programming_language": "lua",
     "licences": {
         "database": "MIT",
         "affected_repository": "Do What The F*ck You Want To Public License"

@@ -13,7 +13,7 @@
             "file_path": "production/grafanacloud-install.sh"
         }
     },
-    "programming_language": "Shell",
+    "programming_language": "shell",
     "licences": {
         "database": "MIT",
         "affected_repository": "Apache License 2.0"

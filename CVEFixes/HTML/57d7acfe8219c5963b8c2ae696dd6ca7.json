@@ -12,7 +12,7 @@
             "file_path": "packages/convert-svg-test-helper/src/fixtures/input/viewbox-only-2.svg"
         }
     },
-    "programming_language": "HTML",
+    "programming_language": "html",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

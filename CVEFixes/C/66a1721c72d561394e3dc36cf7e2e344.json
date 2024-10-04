@@ -16,7 +16,7 @@
             "file_path": "fs/ecryptfs/crypto.c"
         }
     },
-    "programming_language": "C",
+    "programming_language": "c",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

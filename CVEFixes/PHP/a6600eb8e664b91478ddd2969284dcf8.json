@@ -12,7 +12,7 @@
             "file_path": "htsrv/call_plugin.php"
         }
     },
-    "programming_language": "PHP",
+    "programming_language": "php",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

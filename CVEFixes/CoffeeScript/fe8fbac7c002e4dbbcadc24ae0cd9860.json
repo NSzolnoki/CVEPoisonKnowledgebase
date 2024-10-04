@@ -16,7 +16,7 @@
             "file_path": "versions-prod.cfg"
         }
     },
-    "programming_language": "CoffeeScript",
+    "programming_language": "coffeescript",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

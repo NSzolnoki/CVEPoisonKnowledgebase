@@ -22,7 +22,7 @@
             "file_path": "man/sd_bus_enqueue_for_read.xml"
         }
     },
-    "programming_language": "HTML",
+    "programming_language": "html",
     "licences": {
         "database": "MIT",
         "affected_repository": "GNU General Public License v2.0"

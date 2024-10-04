@@ -17,7 +17,7 @@
             "file_path": "xwiki-platform-core/xwiki-platform-web/xwiki-platform-web-templates/src/main/resources/templates/registerinline.vm"
         }
     },
-    "programming_language": "CoffeeScript",
+    "programming_language": "coffeescript",
     "licences": {
         "database": "MIT",
         "affected_repository": "GNU Lesser General Public License v2.1"

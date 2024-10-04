@@ -12,7 +12,7 @@
             "file_path": "archiva-modules/archiva-base/archiva-repository-admin/archiva-repository-admin-default/src/test/java/org/apache/archiva/admin/repository/admin/ArchivaAdministrationTest.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Apache License 2.0"

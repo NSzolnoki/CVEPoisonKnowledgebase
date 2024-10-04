@@ -15,7 +15,7 @@
             "file_path": "app/controllers/doorkeeper/authorized_applications_controller.rb"
         }
     },
-    "programming_language": "Ruby",
+    "programming_language": "ruby",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

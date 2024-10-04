@@ -12,7 +12,7 @@
             "file_path": "dcmnet/libsrc/Makefile.in"
         }
     },
-    "programming_language": "Batchfile",
+    "programming_language": "batchfile",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

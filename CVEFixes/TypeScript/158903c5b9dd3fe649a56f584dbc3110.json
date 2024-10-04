@@ -13,7 +13,7 @@
             "file_path": "packages/next-auth/tests/getServerSession.test.ts"
         }
     },
-    "programming_language": "TypeScript",
+    "programming_language": "typescript",
     "licences": {
         "database": "MIT",
         "affected_repository": "ISC License"

@@ -8,7 +8,7 @@
             "file_path": "lib/wicked/controller/concerns/render_redirect.rb"
         }
     },
-    "programming_language": "Ruby",
+    "programming_language": "ruby",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

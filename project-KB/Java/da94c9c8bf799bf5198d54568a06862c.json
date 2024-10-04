@@ -13,7 +13,7 @@
             "file_path": "jetty-util/src/main/java/org/eclipse/jetty/util/security/Credential.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Other"

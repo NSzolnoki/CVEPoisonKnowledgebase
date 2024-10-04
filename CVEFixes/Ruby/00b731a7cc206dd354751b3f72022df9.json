@@ -15,7 +15,7 @@
             "file_path": "lib/bson/object_id.rb"
         }
     },
-    "programming_language": "Ruby",
+    "programming_language": "ruby",
     "licences": {
         "database": "MIT",
         "affected_repository": "Apache License 2.0"

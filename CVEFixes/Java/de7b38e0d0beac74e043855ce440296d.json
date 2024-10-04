@@ -20,7 +20,7 @@
             "file_path": "pgjdbc/src/main/java/org/postgresql/ssl/LibPQFactory.java"
         }
     },
-    "programming_language": "Java",
+    "programming_language": "java",
     "licences": {
         "database": "MIT",
         "affected_repository": "BSD 2-Clause \"Simplified\" License"

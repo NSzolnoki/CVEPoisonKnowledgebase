@@ -16,7 +16,7 @@
             "file_path": ".github/workflows/natsws.yml"
         }
     },
-    "programming_language": "Markdown",
+    "programming_language": "markdown",
     "licences": {
         "database": "MIT",
         "affected_repository": "Apache License 2.0"

@@ -13,7 +13,7 @@
             "file_path": "tpl/bootstrap.php"
         }
     },
-    "programming_language": "PHP",
+    "programming_language": "php",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

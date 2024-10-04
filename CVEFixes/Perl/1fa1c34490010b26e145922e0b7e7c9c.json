@@ -12,7 +12,7 @@
             "file_path": "web-lib-funcs.pl"
         }
     },
-    "programming_language": "Perl",
+    "programming_language": "perl",
     "licences": {
         "database": "MIT",
         "affected_repository": "BSD 3-Clause \"New\" or \"Revised\" License"

@@ -12,7 +12,7 @@
             "file_path": "public_html/layouts/basic/modules/Vtiger/resources/Vtiger.js"
         }
     },
-    "programming_language": "JavaScript",
+    "programming_language": "javascript",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

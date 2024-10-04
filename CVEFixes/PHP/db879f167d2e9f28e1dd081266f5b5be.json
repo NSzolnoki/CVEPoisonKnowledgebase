@@ -12,7 +12,7 @@
             "file_path": "core/src/main/java/com/databasir/core/domain/DomainErrors.java"
         }
     },
-    "programming_language": "PHP",
+    "programming_language": "php",
     "licences": {
         "database": "MIT",
         "affected_repository": "Apache License 2.0"

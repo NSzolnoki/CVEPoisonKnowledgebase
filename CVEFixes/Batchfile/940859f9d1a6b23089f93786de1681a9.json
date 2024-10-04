@@ -60,7 +60,7 @@
             "file_path": "result/XInclude/ns1.xml.rdr"
         }
     },
-    "programming_language": "Batchfile",
+    "programming_language": "batchfile",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

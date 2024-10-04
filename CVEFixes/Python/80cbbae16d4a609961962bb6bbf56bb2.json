@@ -15,7 +15,7 @@
             "file_path": "flask_restx/inputs.py"
         }
     },
-    "programming_language": "Python",
+    "programming_language": "python",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

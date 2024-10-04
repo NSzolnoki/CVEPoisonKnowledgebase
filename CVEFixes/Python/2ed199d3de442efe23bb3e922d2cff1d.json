@@ -12,7 +12,7 @@
             "file_path": "tenable_jira/cli.py"
         }
     },
-    "programming_language": "Python",
+    "programming_language": "python",
     "licences": {
         "database": "MIT",
         "affected_repository": "Unknown"

@@ -13,7 +13,7 @@
             "file_path": "src/main/java/org/olat/core/commons/services/doceditor/discovery/manager/DiscoveryXStream.java"
         }
     },
-    "programming_language": "Java",
+    "programming_language": "java",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

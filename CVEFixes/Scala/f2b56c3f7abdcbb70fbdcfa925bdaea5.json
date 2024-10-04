@@ -12,7 +12,7 @@
             "file_path": "appsv/server/controllers/InviteController.scala"
         }
     },
-    "programming_language": "Scala",
+    "programming_language": "scala",
     "licences": {
         "database": "MIT",
         "affected_repository": "GNU Affero General Public License v3.0"

@@ -12,7 +12,7 @@
             "file_path": "server/src/dto/accept-organization-invite.dto.ts"
         }
     },
-    "programming_language": "TypeScript",
+    "programming_language": "typescript",
     "licences": {
         "database": "MIT",
         "affected_repository": "GNU Affero General Public License v3.0"

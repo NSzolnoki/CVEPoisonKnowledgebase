@@ -12,7 +12,7 @@
             "file_path": "prog/weave-kube/weave-daemonset-k8s-1.11.yaml"
         }
     },
-    "programming_language": "CoffeeScript",
+    "programming_language": "coffeescript",
     "licences": {
         "database": "MIT",
         "affected_repository": "Apache License 2.0"

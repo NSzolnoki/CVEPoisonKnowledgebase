@@ -14,7 +14,7 @@
             "file_path": "prov/src/main/java/org/bouncycastle/jcajce/provider/symmetric/AES.java"
         }
     },
-    "programming_language": "Java",
+    "programming_language": "java",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

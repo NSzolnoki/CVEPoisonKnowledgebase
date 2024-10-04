@@ -14,7 +14,7 @@
             "file_path": "fmc/fmc-webui/src/main/webapp/app/controllers/users_page.coffee"
         }
     },
-    "programming_language": "CoffeeScript",
+    "programming_language": "coffeescript",
     "licences": {
         "database": "MIT",
         "affected_repository": "Apache License 2.0"

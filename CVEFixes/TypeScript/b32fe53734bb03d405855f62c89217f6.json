@@ -13,7 +13,7 @@
             "file_path": "src/flash/ZeroClipboard.as"
         }
     },
-    "programming_language": "TypeScript",
+    "programming_language": "typescript",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

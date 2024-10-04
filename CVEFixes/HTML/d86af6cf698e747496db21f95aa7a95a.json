@@ -19,7 +19,7 @@
             "file_path": "tests/input.html"
         }
     },
-    "programming_language": "HTML",
+    "programming_language": "html",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

@@ -16,7 +16,7 @@
             "file_path": "configure.ac"
         }
     },
-    "programming_language": "PowerShell",
+    "programming_language": "powershell",
     "licences": {
         "database": "MIT",
         "affected_repository": "GNU General Public License v3.0"

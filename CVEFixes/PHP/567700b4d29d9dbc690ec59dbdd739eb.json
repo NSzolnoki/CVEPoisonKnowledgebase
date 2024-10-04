@@ -12,7 +12,7 @@
             "file_path": "lhc_web/design/defaulttheme/tpl/lhuser/wentinactive.tpl.php"
         }
     },
-    "programming_language": "PHP",
+    "programming_language": "php",
     "licences": {
         "database": "MIT",
         "affected_repository": "Apache License 2.0"

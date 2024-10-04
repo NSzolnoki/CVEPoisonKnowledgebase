@@ -14,7 +14,7 @@
             "file_path": "testsuite/integration-arquillian/test-apps/photoz/photoz-realm.json"
         }
     },
-    "programming_language": "JavaScript",
+    "programming_language": "javascript",
     "licences": {
         "database": "MIT",
         "affected_repository": "Apache License 2.0"

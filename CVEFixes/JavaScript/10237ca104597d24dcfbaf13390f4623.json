@@ -18,7 +18,7 @@
             "file_path": "shared-data/default-theme/html/profiles/account-form.html"
         }
     },
-    "programming_language": "JavaScript",
+    "programming_language": "javascript",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

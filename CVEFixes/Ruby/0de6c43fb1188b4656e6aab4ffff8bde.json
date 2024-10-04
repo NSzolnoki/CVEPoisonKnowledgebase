@@ -12,7 +12,7 @@
             "file_path": "lib/rails_multisite/version.rb"
         }
     },
-    "programming_language": "Ruby",
+    "programming_language": "ruby",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

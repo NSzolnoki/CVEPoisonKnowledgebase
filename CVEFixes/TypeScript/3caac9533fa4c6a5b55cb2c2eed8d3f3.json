@@ -16,7 +16,7 @@
             "file_path": "src/nats-base-client.ts"
         }
     },
-    "programming_language": "TypeScript",
+    "programming_language": "typescript",
     "licences": {
         "database": "MIT",
         "affected_repository": "Apache License 2.0"

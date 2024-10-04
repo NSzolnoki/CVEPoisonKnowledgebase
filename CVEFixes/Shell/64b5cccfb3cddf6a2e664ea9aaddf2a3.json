@@ -14,7 +14,7 @@
             "file_path": "katello-configure/modules/certs/manifests/config.pp"
         }
     },
-    "programming_language": "Shell",
+    "programming_language": "shell",
     "licences": {
         "database": "MIT",
         "affected_repository": "GNU General Public License v2.0"

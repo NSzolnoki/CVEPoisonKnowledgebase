@@ -13,7 +13,7 @@
             "file_path": "kura/org.eclipse.kura.web2/src/main/java/org/eclipse/kura/web/server/servlet/SkinServlet.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Eclipse Public License 2.0"

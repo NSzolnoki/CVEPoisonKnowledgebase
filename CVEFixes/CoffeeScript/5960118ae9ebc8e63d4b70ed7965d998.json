@@ -12,7 +12,7 @@
             "file_path": "ajenti/plugins/main/content/js/controls.inputs.coffee"
         }
     },
-    "programming_language": "CoffeeScript",
+    "programming_language": "coffeescript",
     "licences": {
         "database": "MIT",
         "affected_repository": "Unknown"

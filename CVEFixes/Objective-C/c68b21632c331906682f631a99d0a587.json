@@ -51,7 +51,7 @@
             "file_path": "sources/iTermAdvancedSettingsModel.h"
         }
     },
-    "programming_language": "Objective-C",
+    "programming_language": "objective-c",
     "licences": {
         "database": "MIT",
         "affected_repository": "GNU General Public License v2.0"

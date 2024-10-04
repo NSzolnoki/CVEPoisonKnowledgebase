@@ -13,7 +13,7 @@
             "file_path": "ql/src/java/org/apache/hadoop/hive/ql/Driver.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Apache License 2.0"

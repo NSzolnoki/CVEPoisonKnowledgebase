@@ -13,7 +13,7 @@
             "file_path": "web/src/test/java/org/springframework/security/web/firewall/DefaultHttpFirewallTests.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Apache License 2.0"

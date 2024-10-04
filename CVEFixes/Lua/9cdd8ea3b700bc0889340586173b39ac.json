@@ -18,7 +18,7 @@
             "file_path": "include/gpac/internal/isomedia_dev.h"
         }
     },
-    "programming_language": "Lua",
+    "programming_language": "lua",
     "licences": {
         "database": "MIT",
         "affected_repository": "GNU Lesser General Public License v2.1"

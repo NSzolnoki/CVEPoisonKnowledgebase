@@ -71,7 +71,7 @@
             "file_path": "activesupport/lib/active_support/core_ext/string/output_safety.rb"
         }
     },
-    "programming_language": "Ruby",
+    "programming_language": "ruby",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

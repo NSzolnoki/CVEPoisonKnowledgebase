@@ -14,7 +14,7 @@
             "file_path": "plugins/enigma/enigma.js"
         }
     },
-    "programming_language": "JavaScript",
+    "programming_language": "javascript",
     "licences": {
         "database": "MIT",
         "affected_repository": "GNU General Public License v3.0"

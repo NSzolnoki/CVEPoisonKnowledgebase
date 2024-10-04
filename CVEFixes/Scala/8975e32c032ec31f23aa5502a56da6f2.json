@@ -17,7 +17,7 @@
             "file_path": "app/src/main/java/es/gob/radarcovid/features/worker/FakeInfectionReportWorker.kt"
         }
     },
-    "programming_language": "Scala",
+    "programming_language": "scala",
     "licences": {
         "database": "MIT",
         "affected_repository": "Mozilla Public License 2.0"

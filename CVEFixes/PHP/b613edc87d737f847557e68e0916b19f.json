@@ -12,7 +12,7 @@
             "file_path": "view_filters_page.php"
         }
     },
-    "programming_language": "PHP",
+    "programming_language": "php",
     "licences": {
         "database": "MIT",
         "affected_repository": "Unknown"

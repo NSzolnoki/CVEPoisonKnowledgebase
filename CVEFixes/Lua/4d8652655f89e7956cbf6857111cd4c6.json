@@ -12,7 +12,7 @@
             "file_path": "tools/protos.jsi"
         }
     },
-    "programming_language": "Lua",
+    "programming_language": "lua",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

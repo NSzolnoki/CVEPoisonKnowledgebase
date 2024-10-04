@@ -12,7 +12,7 @@
             "file_path": "publify_core/app/views/comments/_comment.html.erb"
         }
     },
-    "programming_language": "Ruby",
+    "programming_language": "ruby",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

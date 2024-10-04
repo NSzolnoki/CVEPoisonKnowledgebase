@@ -12,7 +12,7 @@
             "file_path": "parlai/chat_service/utils/config.py"
         }
     },
-    "programming_language": "Python",
+    "programming_language": "python",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

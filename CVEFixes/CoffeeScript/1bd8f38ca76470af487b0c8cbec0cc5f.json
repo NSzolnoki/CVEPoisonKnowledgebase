@@ -12,7 +12,7 @@
             "file_path": "html5lib/tests/serializer-testdata/core.test"
         }
     },
-    "programming_language": "CoffeeScript",
+    "programming_language": "coffeescript",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

@@ -13,7 +13,7 @@
             "file_path": "broker-core/src/test/java/org/apache/qpid/server/protocol/v0_8/FieldTableTest.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Apache License 2.0"

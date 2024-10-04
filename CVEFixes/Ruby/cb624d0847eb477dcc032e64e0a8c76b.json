@@ -17,7 +17,7 @@
             "file_path": "app/views/layouts/application.html.haml"
         }
     },
-    "programming_language": "Ruby",
+    "programming_language": "ruby",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

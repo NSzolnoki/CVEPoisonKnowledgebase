@@ -12,7 +12,7 @@
             "file_path": "lib/server.js"
         }
     },
-    "programming_language": "TypeScript",
+    "programming_language": "typescript",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

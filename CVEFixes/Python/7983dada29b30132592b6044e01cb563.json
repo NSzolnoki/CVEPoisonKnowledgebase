@@ -20,7 +20,7 @@
             "file_path": "tensorflow/python/tools/saved_model_cli.py"
         }
     },
-    "programming_language": "Python",
+    "programming_language": "python",
     "licences": {
         "database": "MIT",
         "affected_repository": "Apache License 2.0"

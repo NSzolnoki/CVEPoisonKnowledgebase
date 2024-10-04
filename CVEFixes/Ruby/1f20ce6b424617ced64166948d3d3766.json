@@ -30,7 +30,7 @@
             "file_path": "lib/rdoc.rb"
         }
     },
-    "programming_language": "Ruby",
+    "programming_language": "ruby",
     "licences": {
         "database": "MIT",
         "affected_repository": "Unknown"

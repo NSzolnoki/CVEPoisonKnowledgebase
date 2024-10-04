@@ -17,7 +17,7 @@
             "file_path": "gogs.go"
         }
     },
-    "programming_language": "Go",
+    "programming_language": "go",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

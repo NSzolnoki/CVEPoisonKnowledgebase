@@ -12,7 +12,7 @@
             "file_path": "publiccms-parent/publiccms-core/src/main/java/com/publiccms/common/constants/CmsVersion.java"
         }
     },
-    "programming_language": "Java",
+    "programming_language": "java",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

@@ -12,7 +12,7 @@
             "file_path": "app/javascript/dashboard/components/widgets/conversation/bubble/Text.vue"
         }
     },
-    "programming_language": "HTML",
+    "programming_language": "html",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

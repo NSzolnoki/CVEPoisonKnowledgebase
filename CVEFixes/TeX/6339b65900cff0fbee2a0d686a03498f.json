@@ -12,7 +12,7 @@
             "file_path": "node/tenvoy.js"
         }
     },
-    "programming_language": "TeX",
+    "programming_language": "tex",
     "licences": {
         "database": "MIT",
         "affected_repository": "GNU Lesser General Public License v3.0"

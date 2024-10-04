@@ -8,7 +8,7 @@
             "file_path": "x-pack/plugin/security/src/test/java/org/elasticsearch/integration/FieldLevelSecurityTests.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Other"

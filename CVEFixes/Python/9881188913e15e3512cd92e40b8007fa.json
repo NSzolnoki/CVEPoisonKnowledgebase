@@ -12,7 +12,7 @@
             "file_path": "packaging/rhel/xrootd.spec.in"
         }
     },
-    "programming_language": "Python",
+    "programming_language": "python",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

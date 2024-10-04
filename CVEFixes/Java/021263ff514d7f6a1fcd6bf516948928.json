@@ -12,7 +12,7 @@
             "file_path": "ballcat-codegen-backend/src/main/java/com/hccake/ballcat/codegen/exception/TemplateRenderException.java"
         }
     },
-    "programming_language": "Java",
+    "programming_language": "java",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

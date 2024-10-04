@@ -14,7 +14,7 @@
             "file_path": "frontend/app/controllers/spree/orders_controller.rb"
         }
     },
-    "programming_language": "Ruby",
+    "programming_language": "ruby",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

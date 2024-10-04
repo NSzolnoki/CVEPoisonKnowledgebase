@@ -47,7 +47,7 @@
             "file_path": "slf4j-ext/src/test/java/org/slf4j/dummyExt/XLoggerTest.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "MIT License"

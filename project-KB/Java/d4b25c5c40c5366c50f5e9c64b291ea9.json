@@ -13,7 +13,7 @@
             "file_path": "apps/yang/web/src/main/java/org/onosproject/yang/web/YangWebResource.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Apache License 2.0"

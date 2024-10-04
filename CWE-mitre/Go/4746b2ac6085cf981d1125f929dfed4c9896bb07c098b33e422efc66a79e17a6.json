@@ -69,7 +69,7 @@
             "file_path": ""
         }
     },
-    "programming_language": "Go",
+    "programming_language": "go",
     "licences": {
         "database": "MIT",
         "affected_repository": "Unknown"

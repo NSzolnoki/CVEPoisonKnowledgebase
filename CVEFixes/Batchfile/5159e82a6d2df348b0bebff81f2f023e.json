@@ -12,7 +12,7 @@
             "file_path": "src/__tests__/ui/input/__snapshots__/email_input.test.jsx.snap"
         }
     },
-    "programming_language": "Batchfile",
+    "programming_language": "batchfile",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

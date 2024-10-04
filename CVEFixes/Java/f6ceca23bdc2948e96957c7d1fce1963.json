@@ -13,7 +13,7 @@
             "file_path": "xwiki-platform-core/xwiki-platform-oldcore/src/main/java/com/xpn/xwiki/internal/skin/AbstractResourceSkin.java"
         }
     },
-    "programming_language": "Java",
+    "programming_language": "java",
     "licences": {
         "database": "MIT",
         "affected_repository": "GNU Lesser General Public License v2.1"

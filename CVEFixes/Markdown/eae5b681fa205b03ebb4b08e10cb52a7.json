@@ -12,7 +12,7 @@
             "file_path": "README.md"
         }
     },
-    "programming_language": "Markdown",
+    "programming_language": "markdown",
     "licences": {
         "database": "MIT",
         "affected_repository": "GNU Affero General Public License v3.0"

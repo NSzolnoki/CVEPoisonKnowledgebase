@@ -39,7 +39,7 @@
             "file_path": "lib/rack/session/cookie.rb"
         }
     },
-    "programming_language": "Ruby",
+    "programming_language": "ruby",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

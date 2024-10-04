@@ -12,7 +12,7 @@
             "file_path": "packages/convert-svg-test-helper/src/fixtures/input/data-url-font.svg"
         }
     },
-    "programming_language": "JavaScript",
+    "programming_language": "javascript",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

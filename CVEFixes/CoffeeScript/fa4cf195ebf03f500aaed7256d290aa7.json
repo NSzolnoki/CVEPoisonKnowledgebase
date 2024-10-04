@@ -12,7 +12,7 @@
             "file_path": ".github/workflows/ci.yml"
         }
     },
-    "programming_language": "CoffeeScript",
+    "programming_language": "coffeescript",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

@@ -12,7 +12,7 @@
             "file_path": "themes/adminClassic/editauction.tpl"
         }
     },
-    "programming_language": "HTML",
+    "programming_language": "html",
     "licences": {
         "database": "MIT",
         "affected_repository": "Unknown"

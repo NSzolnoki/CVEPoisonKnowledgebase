@@ -14,7 +14,7 @@
             "file_path": "modules/library/referencing/src/main/java/org/geotools/referencing/factory/epsg/AbstractEpsgFactory.java"
         }
     },
-    "programming_language": "Java",
+    "programming_language": "java",
     "licences": {
         "database": "MIT",
         "affected_repository": "GNU Lesser General Public License v2.1"

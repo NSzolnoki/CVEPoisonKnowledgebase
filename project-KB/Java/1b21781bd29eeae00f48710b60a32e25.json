@@ -13,7 +13,7 @@
             "file_path": "server/core/src/main/java/org/infinispan/server/core/utils/SslUtils.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Apache License 2.0"

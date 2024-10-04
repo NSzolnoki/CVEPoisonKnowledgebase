@@ -12,7 +12,7 @@
             "file_path": "templates/inc/logo.tpl"
         }
     },
-    "programming_language": "Markdown",
+    "programming_language": "markdown",
     "licences": {
         "database": "MIT",
         "affected_repository": "GNU General Public License v3.0"

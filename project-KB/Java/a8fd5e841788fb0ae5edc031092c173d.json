@@ -26,7 +26,7 @@
             "file_path": "src/main/java/com/fasterxml/jackson/databind/jsontype/impl/SubTypeValidator.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Apache License 2.0"

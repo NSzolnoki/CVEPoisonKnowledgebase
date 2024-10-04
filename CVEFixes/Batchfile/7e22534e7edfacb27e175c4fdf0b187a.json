@@ -12,7 +12,7 @@
             "file_path": "themes/bootstrap-2/views/articles/view_page.html.erb"
         }
     },
-    "programming_language": "Batchfile",
+    "programming_language": "batchfile",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

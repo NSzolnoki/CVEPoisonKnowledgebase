@@ -35,7 +35,7 @@
             "file_path": "administrator/components/com_media/helpers/media.php"
         }
     },
-    "programming_language": "PHP",
+    "programming_language": "php",
     "licences": {
         "database": "MIT",
         "affected_repository": "GNU General Public License v2.0"

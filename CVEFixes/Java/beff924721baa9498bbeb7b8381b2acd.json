@@ -17,7 +17,7 @@
             "file_path": "evm/src/main/java/org/hyperledger/besu/evm/operation/SarOperation.java"
         }
     },
-    "programming_language": "Java",
+    "programming_language": "java",
     "licences": {
         "database": "MIT",
         "affected_repository": "Apache License 2.0"

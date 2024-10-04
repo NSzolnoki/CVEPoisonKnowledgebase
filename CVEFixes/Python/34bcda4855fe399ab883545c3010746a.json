@@ -15,7 +15,7 @@
             "file_path": "meson.build"
         }
     },
-    "programming_language": "Python",
+    "programming_language": "python",
     "licences": {
         "database": "MIT",
         "affected_repository": "GNU Lesser General Public License v3.0"

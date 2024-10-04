@@ -12,7 +12,7 @@
             "file_path": "modules/backend/behaviors/importexportcontroller/partials/_import_file_columns.htm"
         }
     },
-    "programming_language": "PHP",
+    "programming_language": "php",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

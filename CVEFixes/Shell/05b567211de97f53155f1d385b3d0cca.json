@@ -13,7 +13,7 @@
             "file_path": "misc/nsis/install.nsh"
         }
     },
-    "programming_language": "Shell",
+    "programming_language": "shell",
     "licences": {
         "database": "MIT",
         "affected_repository": "GNU General Public License v3.0"

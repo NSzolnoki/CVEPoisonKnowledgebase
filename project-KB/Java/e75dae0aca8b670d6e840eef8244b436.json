@@ -8,7 +8,7 @@
             "file_path": "x-pack/plugin/security/src/main/java/org/elasticsearch/xpack/security/authz/RBACEngine.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Other"

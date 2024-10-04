@@ -12,7 +12,7 @@
             "file_path": "client/docs/statik/statik.go"
         }
     },
-    "programming_language": "Go",
+    "programming_language": "go",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

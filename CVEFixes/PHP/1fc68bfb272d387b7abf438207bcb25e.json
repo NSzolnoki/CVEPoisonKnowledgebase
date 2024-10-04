@@ -31,7 +31,7 @@
             "file_path": "framework/log/Dispatcher.php"
         }
     },
-    "programming_language": "PHP",
+    "programming_language": "php",
     "licences": {
         "database": "MIT",
         "affected_repository": "BSD 3-Clause \"New\" or \"Revised\" License"

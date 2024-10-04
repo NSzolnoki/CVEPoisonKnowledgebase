@@ -13,7 +13,7 @@
             "file_path": "prov/src/test/java/org/bouncycastle/jce/provider/test/DHIESTest.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "MIT License"

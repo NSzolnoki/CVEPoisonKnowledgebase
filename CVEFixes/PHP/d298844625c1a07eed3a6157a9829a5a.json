@@ -16,7 +16,7 @@
             "file_path": "app/code/core/Mage/Adminhtml/Controller/Action.php"
         }
     },
-    "programming_language": "PHP",
+    "programming_language": "php",
     "licences": {
         "database": "MIT",
         "affected_repository": "Open Software License 3.0"

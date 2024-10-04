@@ -12,7 +12,7 @@
             "file_path": "BTCPayServer/Components/NotificationsDropdown/Default.cshtml"
         }
     },
-    "programming_language": "HTML",
+    "programming_language": "html",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

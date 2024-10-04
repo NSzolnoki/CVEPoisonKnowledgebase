@@ -13,7 +13,7 @@
             "file_path": "composer.json"
         }
     },
-    "programming_language": "CoffeeScript",
+    "programming_language": "coffeescript",
     "licences": {
         "database": "MIT",
         "affected_repository": "GNU Affero General Public License v3.0"

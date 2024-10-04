@@ -12,7 +12,7 @@
             "file_path": "src/main/java/com/github/jlangch/venice/impl/util/io/LoadPaths.java"
         }
     },
-    "programming_language": "Java",
+    "programming_language": "java",
     "licences": {
         "database": "MIT",
         "affected_repository": "Apache License 2.0"

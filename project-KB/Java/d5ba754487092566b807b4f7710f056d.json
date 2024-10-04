@@ -8,7 +8,7 @@
             "file_path": "uaa/src/test/java/org/cloudfoundry/identity/uaa/mock/zones/IdentityZoneEndpointDocs.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Apache License 2.0"

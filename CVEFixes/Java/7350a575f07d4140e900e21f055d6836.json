@@ -12,7 +12,7 @@
             "file_path": "connector/src/main/java/org/geysermc/connector/network/UpstreamPacketHandler.java"
         }
     },
-    "programming_language": "Java",
+    "programming_language": "java",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

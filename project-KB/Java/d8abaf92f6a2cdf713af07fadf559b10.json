@@ -8,7 +8,7 @@
             "file_path": "opc-ua-sdk/sdk-client/src/main/java/org/eclipse/milo/opcua/sdk/client/api/identity/X509IdentityProvider.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Eclipse Public License 2.0"

@@ -16,7 +16,7 @@
             "file_path": "perl/lib/NeedRestart/Interp/Perl.pm"
         }
     },
-    "programming_language": "Perl",
+    "programming_language": "perl",
     "licences": {
         "database": "MIT",
         "affected_repository": "GNU General Public License v2.0"

@@ -12,7 +12,7 @@
             "file_path": "application/views/admin/quotas/_newanswer_equation.php"
         }
     },
-    "programming_language": "PHP",
+    "programming_language": "php",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

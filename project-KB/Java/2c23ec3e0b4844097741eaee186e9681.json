@@ -12,7 +12,7 @@
             "file_path": "server/impl/src/main/java/com/walmartlabs/concord/server/boot/filters/CORSFilter.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Other"

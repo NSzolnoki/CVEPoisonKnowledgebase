@@ -16,7 +16,7 @@
             "file_path": "cas-client-core/src/main/java/org/jasig/cas/client/validation/Cas20ServiceTicketValidator.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Other"

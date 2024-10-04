@@ -14,7 +14,7 @@
             "file_path": "packages/webpack/package.json"
         }
     },
-    "programming_language": "Jupyter Notebook",
+    "programming_language": "jupyter notebook",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

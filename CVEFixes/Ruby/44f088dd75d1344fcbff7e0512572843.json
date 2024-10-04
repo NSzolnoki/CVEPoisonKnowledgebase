@@ -14,7 +14,7 @@
             "file_path": "api/lib/spree/api/testing_support/v2/base.rb"
         }
     },
-    "programming_language": "Ruby",
+    "programming_language": "ruby",
     "licences": {
         "database": "MIT",
         "affected_repository": "BSD 3-Clause \"New\" or \"Revised\" License"

@@ -13,7 +13,7 @@
             "file_path": "pkg/downloader/chart_downloader_test.go"
         }
     },
-    "programming_language": "Go",
+    "programming_language": "go",
     "licences": {
         "database": "MIT",
         "affected_repository": "Apache License 2.0"

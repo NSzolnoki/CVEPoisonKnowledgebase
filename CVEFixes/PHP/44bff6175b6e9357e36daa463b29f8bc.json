@@ -12,7 +12,7 @@
             "file_path": "engine/Shopware/Models/Newsletter/ContainerType/Article.php"
         }
     },
-    "programming_language": "PHP",
+    "programming_language": "php",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

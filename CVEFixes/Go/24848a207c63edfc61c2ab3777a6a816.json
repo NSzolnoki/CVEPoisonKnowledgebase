@@ -12,7 +12,7 @@
             "file_path": "internal/app/kongchuanhujiao/account/apis.go"
         }
     },
-    "programming_language": "Go",
+    "programming_language": "go",
     "licences": {
         "database": "MIT",
         "affected_repository": "GNU Affero General Public License v3.0"

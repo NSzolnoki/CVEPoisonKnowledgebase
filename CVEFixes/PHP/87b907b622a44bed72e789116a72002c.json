@@ -12,7 +12,7 @@
             "file_path": "bl-kernel/admin/themes/booty/html/sidebar.php"
         }
     },
-    "programming_language": "PHP",
+    "programming_language": "php",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

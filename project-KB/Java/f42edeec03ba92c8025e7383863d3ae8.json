@@ -13,7 +13,7 @@
             "file_path": "spring-security-oauth2/src/main/java/org/springframework/security/oauth2/provider/client/BaseClientDetails.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Apache License 2.0"

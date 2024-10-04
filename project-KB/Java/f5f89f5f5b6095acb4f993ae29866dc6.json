@@ -13,7 +13,7 @@
             "file_path": "client/src/main/java/org/asynchttpclient/uri/UriParser.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Other"

@@ -12,7 +12,7 @@
             "file_path": "mayan/apps/appearance/templates/appearance/base_plain.html"
         }
     },
-    "programming_language": "HTML",
+    "programming_language": "html",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

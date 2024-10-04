@@ -46,7 +46,7 @@
             "file_path": "js/normalization.js"
         }
     },
-    "programming_language": "JavaScript",
+    "programming_language": "javascript",
     "licences": {
         "database": "MIT",
         "affected_repository": "GNU General Public License v2.0"

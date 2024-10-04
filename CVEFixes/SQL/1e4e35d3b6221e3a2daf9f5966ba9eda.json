@@ -12,7 +12,7 @@
             "file_path": "userfiles/modules/users/controller.php"
         }
     },
-    "programming_language": "SQL",
+    "programming_language": "sql",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

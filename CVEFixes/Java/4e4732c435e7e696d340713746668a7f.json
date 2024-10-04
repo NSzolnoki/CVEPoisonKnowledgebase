@@ -15,7 +15,7 @@
             "file_path": "src/net/sourceforge/plantuml/SkinParam.java"
         }
     },
-    "programming_language": "Java",
+    "programming_language": "java",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

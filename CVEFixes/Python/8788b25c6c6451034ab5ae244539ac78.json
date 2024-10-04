@@ -19,7 +19,7 @@
             "file_path": "django/contrib/auth/views.py"
         }
     },
-    "programming_language": "Python",
+    "programming_language": "python",
     "licences": {
         "database": "MIT",
         "affected_repository": "BSD 3-Clause \"New\" or \"Revised\" License"

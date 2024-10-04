@@ -8,7 +8,7 @@
             "file_path": "libmount/docs/libmount-sections.txt"
         }
     },
-    "programming_language": "Shell",
+    "programming_language": "shell",
     "licences": {
         "database": "MIT",
         "affected_repository": "GNU General Public License v2.0"

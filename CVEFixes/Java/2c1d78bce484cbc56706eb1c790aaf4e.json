@@ -12,7 +12,7 @@
             "file_path": "common/src/main/java/com/thoughtworks/go/domain/DirectoryEntries.java"
         }
     },
-    "programming_language": "Java",
+    "programming_language": "java",
     "licences": {
         "database": "MIT",
         "affected_repository": "Apache License 2.0"

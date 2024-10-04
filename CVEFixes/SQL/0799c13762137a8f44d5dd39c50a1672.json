@@ -12,7 +12,7 @@
             "file_path": "client/res/templates/attachment/fields/name/detail.tpl"
         }
     },
-    "programming_language": "SQL",
+    "programming_language": "sql",
     "licences": {
         "database": "MIT",
         "affected_repository": "GNU Affero General Public License v3.0"

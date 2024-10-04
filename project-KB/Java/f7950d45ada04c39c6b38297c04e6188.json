@@ -8,7 +8,7 @@
             "file_path": "components/camel-xstream/src/test/java/org/apache/camel/dataformat/xstream/MarshalDomainObjectTest.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Apache License 2.0"

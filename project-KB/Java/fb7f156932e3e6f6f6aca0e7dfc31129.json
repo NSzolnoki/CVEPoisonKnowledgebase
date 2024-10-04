@@ -13,7 +13,7 @@
             "file_path": "src/scratchpad/testcases/org/apache/poi/hwmf/TestHwmfParsing.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Unknown"

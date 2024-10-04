@@ -26,7 +26,7 @@
             "file_path": "VERSION"
         }
     },
-    "programming_language": "Batchfile",
+    "programming_language": "batchfile",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

@@ -16,7 +16,7 @@
             "file_path": "core/cas-server-core-util-api/src/main/java/org/apereo/cas/util/RandomUtils.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Apache License 2.0"

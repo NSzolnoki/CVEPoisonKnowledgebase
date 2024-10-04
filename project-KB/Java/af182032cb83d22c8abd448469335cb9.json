@@ -13,7 +13,7 @@
             "file_path": "remoting/src/test/java/flex/messaging/io/amf/client/AMFConnectionIT.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Apache License 2.0"

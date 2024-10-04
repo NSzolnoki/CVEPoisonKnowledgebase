@@ -18,7 +18,7 @@
             "file_path": "components/event-publisher/org.wso2.carbon.event.publisher.core/src/main/java/org/wso2/carbon/event/publisher/core/internal/util/EventPublisherUtil.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Apache License 2.0"

@@ -13,7 +13,7 @@
             "file_path": "ast3/tests/test_basics.py"
         }
     },
-    "programming_language": "Python",
+    "programming_language": "python",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

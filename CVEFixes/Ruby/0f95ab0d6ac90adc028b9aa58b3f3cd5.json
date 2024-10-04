@@ -15,7 +15,7 @@
             "file_path": "lib/rubygems/package.rb"
         }
     },
-    "programming_language": "Ruby",
+    "programming_language": "ruby",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

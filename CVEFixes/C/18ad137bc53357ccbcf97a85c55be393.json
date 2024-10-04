@@ -100,7 +100,7 @@
             "file_path": "ext/fileinfo/libmagic/cdf.c"
         }
     },
-    "programming_language": "C",
+    "programming_language": "c",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

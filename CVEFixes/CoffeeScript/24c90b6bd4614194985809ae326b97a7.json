@@ -12,7 +12,7 @@
             "file_path": "app/views/admin/topics/_topic_options.html.erb"
         }
     },
-    "programming_language": "CoffeeScript",
+    "programming_language": "coffeescript",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

@@ -15,7 +15,7 @@
             "file_path": "rt/transports/http/src/main/java/org/apache/cxf/transport/https/HttpsURLConnectionFactory.java"
         }
     },
-    "programming_language": "Java",
+    "programming_language": "java",
     "licences": {
         "database": "MIT",
         "affected_repository": "Apache License 2.0"

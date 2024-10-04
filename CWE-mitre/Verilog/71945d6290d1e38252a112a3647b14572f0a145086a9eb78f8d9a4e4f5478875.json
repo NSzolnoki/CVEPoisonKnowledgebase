@@ -23,7 +23,7 @@
             "file_path": ""
         }
     },
-    "programming_language": "Verilog",
+    "programming_language": "verilog",
     "licences": {
         "database": "MIT",
         "affected_repository": "Unknown"

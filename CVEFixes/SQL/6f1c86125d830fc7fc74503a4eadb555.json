@@ -22,7 +22,7 @@
             "file_path": "src/libsystemd/libsystemd.sym"
         }
     },
-    "programming_language": "SQL",
+    "programming_language": "sql",
     "licences": {
         "database": "MIT",
         "affected_repository": "GNU General Public License v2.0"

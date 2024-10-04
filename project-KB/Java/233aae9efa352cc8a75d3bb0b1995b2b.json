@@ -14,7 +14,7 @@
             "file_path": "login/src/main/java/org/cloudfoundry/identity/uaa/login/ResetPasswordController.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Apache License 2.0"

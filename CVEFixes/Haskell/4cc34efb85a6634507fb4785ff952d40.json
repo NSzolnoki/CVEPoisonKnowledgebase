@@ -12,7 +12,7 @@
             "file_path": "doc/uncrustify.cfg"
         }
     },
-    "programming_language": "Haskell",
+    "programming_language": "haskell",
     "licences": {
         "database": "MIT",
         "affected_repository": "GNU Lesser General Public License v3.0"

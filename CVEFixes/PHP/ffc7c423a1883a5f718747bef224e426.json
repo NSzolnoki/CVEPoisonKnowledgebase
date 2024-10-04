@@ -16,7 +16,7 @@
             "file_path": "extended/plugins/assist/functions.inc"
         }
     },
-    "programming_language": "PHP",
+    "programming_language": "php",
     "licences": {
         "database": "MIT",
         "affected_repository": "GNU General Public License v2.0"

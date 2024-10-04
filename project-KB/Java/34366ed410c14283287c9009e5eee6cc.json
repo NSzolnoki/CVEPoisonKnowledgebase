@@ -13,7 +13,7 @@
             "file_path": "core/src/test/java/org/bouncycastle/crypto/test/DSATest.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "MIT License"

@@ -15,7 +15,7 @@
             "file_path": "handler/src/main/java/io/netty/handler/ssl/OpenSslEngine.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Apache License 2.0"

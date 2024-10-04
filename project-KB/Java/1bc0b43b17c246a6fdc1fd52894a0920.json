@@ -66,7 +66,7 @@
             "file_path": "core/src/test/java/org/apache/struts2/dispatcher/mapper/DefaultActionMapperTest.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Apache License 2.0"

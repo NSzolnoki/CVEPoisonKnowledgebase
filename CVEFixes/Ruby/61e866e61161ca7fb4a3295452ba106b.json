@@ -17,7 +17,7 @@
             "file_path": "pcsd/cluster_entity.rb"
         }
     },
-    "programming_language": "Ruby",
+    "programming_language": "ruby",
     "licences": {
         "database": "MIT",
         "affected_repository": "GNU General Public License v2.0"

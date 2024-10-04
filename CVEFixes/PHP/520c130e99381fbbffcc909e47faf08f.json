@@ -19,7 +19,7 @@
             "file_path": "src/Symfony/Bundle/FrameworkBundle/Resources/views/Form/choice_widget_collapsed.html.php"
         }
     },
-    "programming_language": "PHP",
+    "programming_language": "php",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

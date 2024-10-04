@@ -75,7 +75,7 @@
             "file_path": "templates/table/search/rows_zoom.phtml"
         }
     },
-    "programming_language": "PHP",
+    "programming_language": "php",
     "licences": {
         "database": "MIT",
         "affected_repository": "GNU General Public License v2.0"

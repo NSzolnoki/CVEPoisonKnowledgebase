@@ -12,7 +12,7 @@
             "file_path": "public_html/layouts/basic/modules/Vtiger/resources/RelatedList.js"
         }
     },
-    "programming_language": "TypeScript",
+    "programming_language": "typescript",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

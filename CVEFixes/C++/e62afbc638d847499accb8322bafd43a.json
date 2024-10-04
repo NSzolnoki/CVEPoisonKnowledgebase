@@ -90,7 +90,7 @@
             "file_path": "shell/browser/api/electron_api_web_contents.h"
         }
     },
-    "programming_language": "C++",
+    "programming_language": "c++",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

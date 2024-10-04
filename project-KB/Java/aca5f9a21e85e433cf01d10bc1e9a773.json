@@ -12,7 +12,7 @@
             "file_path": "src/com/mysql/jdbc/ExportControlled.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Other"

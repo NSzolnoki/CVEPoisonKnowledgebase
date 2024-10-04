@@ -12,7 +12,7 @@
             "file_path": "PortletV3AnnotatedDemo/src/main/java/org/apache/portals/samples/MultipartPortlet.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Apache License 2.0"

@@ -12,7 +12,7 @@
             "file_path": "openapi_python_client/templates/async_endpoint_module.pyi"
         }
     },
-    "programming_language": "HTML",
+    "programming_language": "html",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

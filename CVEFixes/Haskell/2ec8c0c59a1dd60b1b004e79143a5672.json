@@ -14,7 +14,7 @@
             "file_path": "src/flex.skl"
         }
     },
-    "programming_language": "Haskell",
+    "programming_language": "haskell",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

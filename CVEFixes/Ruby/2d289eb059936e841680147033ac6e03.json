@@ -57,7 +57,7 @@
             "file_path": "examples/custom_parsers.rb"
         }
     },
-    "programming_language": "Ruby",
+    "programming_language": "ruby",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

@@ -16,7 +16,7 @@
             "file_path": "ldap-git-backup.in"
         }
     },
-    "programming_language": "Perl",
+    "programming_language": "perl",
     "licences": {
         "database": "MIT",
         "affected_repository": "GNU General Public License v3.0"

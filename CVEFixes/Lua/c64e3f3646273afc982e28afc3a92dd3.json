@@ -13,7 +13,7 @@
             "file_path": "production/tanka/grafana-agent/v2/internal/syncer.libsonnet"
         }
     },
-    "programming_language": "Lua",
+    "programming_language": "lua",
     "licences": {
         "database": "MIT",
         "affected_repository": "Apache License 2.0"

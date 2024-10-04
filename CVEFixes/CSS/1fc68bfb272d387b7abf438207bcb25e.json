@@ -31,7 +31,7 @@
             "file_path": "framework/views/errorHandler/exception.php"
         }
     },
-    "programming_language": "CSS",
+    "programming_language": "css",
     "licences": {
         "database": "MIT",
         "affected_repository": "BSD 3-Clause \"New\" or \"Revised\" License"

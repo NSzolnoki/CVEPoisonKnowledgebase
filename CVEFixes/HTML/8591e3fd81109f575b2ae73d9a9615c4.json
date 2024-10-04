@@ -12,7 +12,7 @@
             "file_path": "bigbluebutton-web/grails-app/conf/spring/turn-stun-servers.xml"
         }
     },
-    "programming_language": "HTML",
+    "programming_language": "html",
     "licences": {
         "database": "MIT",
         "affected_repository": "GNU Lesser General Public License v3.0"

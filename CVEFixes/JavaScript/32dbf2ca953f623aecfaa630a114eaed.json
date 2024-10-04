@@ -12,7 +12,7 @@
             "file_path": "share/views/ajax/admintask/userlog.tt"
         }
     },
-    "programming_language": "JavaScript",
+    "programming_language": "javascript",
     "licences": {
         "database": "MIT",
         "affected_repository": "BSD 3-Clause \"New\" or \"Revised\" License"

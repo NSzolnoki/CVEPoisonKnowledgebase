@@ -8,7 +8,7 @@
             "file_path": "src/gd_io_dp.c"
         }
     },
-    "programming_language": "C",
+    "programming_language": "c",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

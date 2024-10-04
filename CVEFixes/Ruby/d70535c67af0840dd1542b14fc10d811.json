@@ -15,7 +15,7 @@
             "file_path": "lib/sinatra/base.rb"
         }
     },
-    "programming_language": "Ruby",
+    "programming_language": "ruby",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

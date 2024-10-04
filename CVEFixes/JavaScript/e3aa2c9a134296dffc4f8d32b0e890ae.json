@@ -108,7 +108,7 @@
             "file_path": "test/tap/config-credentials.js"
         }
     },
-    "programming_language": "JavaScript",
+    "programming_language": "javascript",
     "licences": {
         "database": "MIT",
         "affected_repository": "Unknown"

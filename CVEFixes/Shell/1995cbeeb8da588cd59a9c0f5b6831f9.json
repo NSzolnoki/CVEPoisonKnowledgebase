@@ -45,7 +45,7 @@
             "file_path": "cmake/mysql_version.cmake"
         }
     },
-    "programming_language": "Shell",
+    "programming_language": "shell",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

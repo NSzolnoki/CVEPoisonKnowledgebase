@@ -13,7 +13,7 @@
             "file_path": "docs/getting-started/_index.md"
         }
     },
-    "programming_language": "Markdown",
+    "programming_language": "markdown",
     "licences": {
         "database": "MIT",
         "affected_repository": "Apache License 2.0"

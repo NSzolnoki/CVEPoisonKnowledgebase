@@ -28,7 +28,7 @@
             "file_path": "modules/kafo/manifests/puppet_certs.pp"
         }
     },
-    "programming_language": "Ruby",
+    "programming_language": "ruby",
     "licences": {
         "database": "MIT",
         "affected_repository": "Unknown"

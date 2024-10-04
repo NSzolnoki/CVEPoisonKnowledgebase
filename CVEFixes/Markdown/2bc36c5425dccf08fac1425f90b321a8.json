@@ -12,7 +12,7 @@
             "file_path": "tests/esis_snpa_asan-3.out"
         }
     },
-    "programming_language": "Markdown",
+    "programming_language": "markdown",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

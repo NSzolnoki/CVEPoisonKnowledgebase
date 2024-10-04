@@ -12,7 +12,7 @@
             "file_path": "OctopusDSC/DSCResources/cTentacleAgent/cTentacleAgent.psm1"
         }
     },
-    "programming_language": "PowerShell",
+    "programming_language": "powershell",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

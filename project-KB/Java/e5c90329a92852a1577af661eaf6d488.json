@@ -13,7 +13,7 @@
             "file_path": "prov/src/main/java/org/bouncycastle/jcajce/provider/asymmetric/ec/IESCipher.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "MIT License"

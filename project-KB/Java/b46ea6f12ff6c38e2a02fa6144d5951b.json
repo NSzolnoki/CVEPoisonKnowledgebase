@@ -19,7 +19,7 @@
             "file_path": "ambari-server/src/main/java/org/apache/ambari/server/configuration/Configuration.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Apache License 2.0"

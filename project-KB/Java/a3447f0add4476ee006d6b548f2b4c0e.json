@@ -18,7 +18,7 @@
             "file_path": "tooling/maven/camel-package-maven-plugin/src/test/java/org/apache/camel/maven/packaging/MyConfiguration.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Apache License 2.0"

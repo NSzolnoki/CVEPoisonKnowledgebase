@@ -13,7 +13,7 @@
             "file_path": "google-oauth-client/src/main/java/com/google/api/client/auth/oauth2/AuthorizationCodeRequestUrl.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Apache License 2.0"

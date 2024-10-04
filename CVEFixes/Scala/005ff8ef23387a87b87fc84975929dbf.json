@@ -20,7 +20,7 @@
             "file_path": "modules/apps/journal/journal-taglib/src/main/resources/META-INF/resources/journal_article/page.jsp"
         }
     },
-    "programming_language": "Scala",
+    "programming_language": "scala",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

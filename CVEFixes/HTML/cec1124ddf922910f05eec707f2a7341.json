@@ -12,7 +12,7 @@
             "file_path": "lib/templates/admin/dashboard/audit.html"
         }
     },
-    "programming_language": "HTML",
+    "programming_language": "html",
     "licences": {
         "database": "MIT",
         "affected_repository": "GNU General Public License v2.0"

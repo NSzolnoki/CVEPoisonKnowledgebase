@@ -13,7 +13,7 @@
             "file_path": "api/src/main/java/org/asynchttpclient/AsyncHttpClientConfigBean.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Other"

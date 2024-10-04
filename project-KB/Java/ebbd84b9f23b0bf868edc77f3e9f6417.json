@@ -8,7 +8,7 @@
             "file_path": "web/src/test/java/org/apache/shiro/web/mgt/CookieRememberMeManagerTest.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Apache License 2.0"

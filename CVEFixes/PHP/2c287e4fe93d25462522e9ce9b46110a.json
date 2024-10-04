@@ -20,7 +20,7 @@
             "file_path": "Zend/tests/gc_024.phpt"
         }
     },
-    "programming_language": "PHP",
+    "programming_language": "php",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

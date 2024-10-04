@@ -12,7 +12,7 @@
             "file_path": "server/sonar-server/src/test/java/org/sonar/server/user/ws/SearchActionTest.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "GNU Lesser General Public License v3.0"

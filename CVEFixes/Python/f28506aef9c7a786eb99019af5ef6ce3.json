@@ -12,7 +12,7 @@
             "file_path": "opendiamond/dataretriever/augment_store.py"
         }
     },
-    "programming_language": "Python",
+    "programming_language": "python",
     "licences": {
         "database": "MIT",
         "affected_repository": "Eclipse Public License 1.0"

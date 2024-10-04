@@ -26,7 +26,7 @@
             "file_path": "Projects/VC2017/linkicc/linkicc.vcxproj"
         }
     },
-    "programming_language": "TypeScript",
+    "programming_language": "typescript",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

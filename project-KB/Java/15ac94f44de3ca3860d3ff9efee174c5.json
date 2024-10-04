@@ -13,7 +13,7 @@
             "file_path": "modules/kernel/src/main/java/org/opencastproject/kernel/security/SecurityServiceSpringImpl.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Educational Community License v2.0"

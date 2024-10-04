@@ -13,7 +13,7 @@
             "file_path": "services/idp/src/main/java/org/apache/cxf/fediz/service/idp/metadata/IdpMetadataWriter.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Apache License 2.0"

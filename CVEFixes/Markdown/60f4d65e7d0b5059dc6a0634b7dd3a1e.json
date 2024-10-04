@@ -31,7 +31,7 @@
             "file_path": "manifest.uuid"
         }
     },
-    "programming_language": "Markdown",
+    "programming_language": "markdown",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

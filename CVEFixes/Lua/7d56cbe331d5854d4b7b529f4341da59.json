@@ -25,7 +25,7 @@
             "file_path": "hphp/test/server/fastcgi/tests/disable_ini_zend_compat.php"
         }
     },
-    "programming_language": "Lua",
+    "programming_language": "lua",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

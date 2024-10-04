@@ -12,7 +12,7 @@
             "file_path": "src/templates/login.html"
         }
     },
-    "programming_language": "HTML",
+    "programming_language": "html",
     "licences": {
         "database": "MIT",
         "affected_repository": "GNU Affero General Public License v3.0"

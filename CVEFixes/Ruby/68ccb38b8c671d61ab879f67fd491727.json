@@ -22,7 +22,7 @@
             "file_path": "META.yml"
         }
     },
-    "programming_language": "Ruby",
+    "programming_language": "ruby",
     "licences": {
         "database": "MIT",
         "affected_repository": "Unknown"

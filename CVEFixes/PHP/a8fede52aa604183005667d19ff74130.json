@@ -13,7 +13,7 @@
             "file_path": "bug_change_status_page.php"
         }
     },
-    "programming_language": "PHP",
+    "programming_language": "php",
     "licences": {
         "database": "MIT",
         "affected_repository": "Unknown"

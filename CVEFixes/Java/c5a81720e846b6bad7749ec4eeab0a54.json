@@ -16,7 +16,7 @@
             "file_path": "misc/openapi-ballerina/modules/openapi-to-ballerina-generator/src/main/java/org/ballerinalang/openapi/CodeGenerator.java"
         }
     },
-    "programming_language": "Java",
+    "programming_language": "java",
     "licences": {
         "database": "MIT",
         "affected_repository": "Apache License 2.0"

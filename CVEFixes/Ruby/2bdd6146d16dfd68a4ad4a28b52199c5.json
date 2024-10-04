@@ -16,7 +16,7 @@
             "file_path": "lib/net/ldap/password.rb"
         }
     },
-    "programming_language": "Ruby",
+    "programming_language": "ruby",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

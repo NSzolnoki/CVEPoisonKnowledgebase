@@ -14,7 +14,7 @@
             "file_path": "pgjdbc/src/test/java/org/postgresql/test/ssl/SslTest.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "BSD 2-Clause \"Simplified\" License"

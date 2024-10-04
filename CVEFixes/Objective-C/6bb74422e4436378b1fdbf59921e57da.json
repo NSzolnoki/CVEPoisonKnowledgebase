@@ -41,7 +41,7 @@
             "file_path": "tests/suites/test_suite_x509parse.data"
         }
     },
-    "programming_language": "Objective-C",
+    "programming_language": "objective-c",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

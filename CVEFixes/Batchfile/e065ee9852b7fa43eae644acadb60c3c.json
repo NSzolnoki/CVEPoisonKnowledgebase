@@ -51,7 +51,7 @@
             "file_path": "net/core/Makefile"
         }
     },
-    "programming_language": "Batchfile",
+    "programming_language": "batchfile",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

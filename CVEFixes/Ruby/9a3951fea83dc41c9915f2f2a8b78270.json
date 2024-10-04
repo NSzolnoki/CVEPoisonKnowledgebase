@@ -12,7 +12,7 @@
             "file_path": "lib/paperclip/validators/media_type_spoof_detection_validator.rb"
         }
     },
-    "programming_language": "Ruby",
+    "programming_language": "ruby",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

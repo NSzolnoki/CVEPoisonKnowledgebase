@@ -12,7 +12,7 @@
             "file_path": "pom.xml"
         }
     },
-    "programming_language": "Haskell",
+    "programming_language": "haskell",
     "licences": {
         "database": "MIT",
         "affected_repository": "Educational Community License v2.0"

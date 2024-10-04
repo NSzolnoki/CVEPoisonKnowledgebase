@@ -12,7 +12,7 @@
             "file_path": "pref-shimane-cms/config/initializers/version.rb"
         }
     },
-    "programming_language": "Ruby",
+    "programming_language": "ruby",
     "licences": {
         "database": "MIT",
         "affected_repository": "Unknown"

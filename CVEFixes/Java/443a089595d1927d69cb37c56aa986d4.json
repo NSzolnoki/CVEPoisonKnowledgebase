@@ -13,7 +13,7 @@
             "file_path": "modules/jooby-netty/src/main/java/io/jooby/internal/netty/NettyContext.java"
         }
     },
-    "programming_language": "Java",
+    "programming_language": "java",
     "licences": {
         "database": "MIT",
         "affected_repository": "Apache License 2.0"

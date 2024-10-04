@@ -20,7 +20,7 @@
             "file_path": "apps/files/js/filelist.js"
         }
     },
-    "programming_language": "JavaScript",
+    "programming_language": "javascript",
     "licences": {
         "database": "MIT",
         "affected_repository": "GNU Affero General Public License v3.0"

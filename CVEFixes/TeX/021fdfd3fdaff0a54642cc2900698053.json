@@ -12,7 +12,7 @@
             "file_path": "components/prism-neon.min.js"
         }
     },
-    "programming_language": "TeX",
+    "programming_language": "tex",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

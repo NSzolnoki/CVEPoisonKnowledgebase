@@ -29,7 +29,7 @@
             "file_path": "manage_user_page.php"
         }
     },
-    "programming_language": "PHP",
+    "programming_language": "php",
     "licences": {
         "database": "MIT",
         "affected_repository": "Unknown"

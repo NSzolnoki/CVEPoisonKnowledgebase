@@ -17,7 +17,7 @@
             "file_path": "config/action.d/mail-whois-lines.conf"
         }
     },
-    "programming_language": "Perl",
+    "programming_language": "perl",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

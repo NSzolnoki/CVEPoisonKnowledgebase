@@ -15,7 +15,7 @@
             "file_path": "django_filters/__init__.py"
         }
     },
-    "programming_language": "Python",
+    "programming_language": "python",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

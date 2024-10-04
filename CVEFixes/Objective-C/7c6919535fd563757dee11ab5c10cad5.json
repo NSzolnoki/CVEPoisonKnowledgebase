@@ -26,7 +26,7 @@
             "file_path": "Projects/VC2017/lcms2_DLL/lcms2_DLL.vcxproj"
         }
     },
-    "programming_language": "Objective-C",
+    "programming_language": "objective-c",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

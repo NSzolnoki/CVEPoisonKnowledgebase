@@ -17,7 +17,7 @@
             "file_path": "var/httpd/htdocs/js/Core.Agent.Admin.SupportDataCollector.js"
         }
     },
-    "programming_language": "JavaScript",
+    "programming_language": "javascript",
     "licences": {
         "database": "MIT",
         "affected_repository": "GNU General Public License v3.0"

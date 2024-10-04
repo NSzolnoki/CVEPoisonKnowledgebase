@@ -54,7 +54,7 @@
             "file_path": "rt/transports/http/src/main/java/org/apache/cxf/transport/http/AbstractHTTPDestination.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Apache License 2.0"

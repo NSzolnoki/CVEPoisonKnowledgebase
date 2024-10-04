@@ -14,7 +14,7 @@
             "file_path": "synapse/app/generic_worker.py"
         }
     },
-    "programming_language": "Python",
+    "programming_language": "python",
     "licences": {
         "database": "MIT",
         "affected_repository": "Apache License 2.0"

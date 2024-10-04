@@ -16,7 +16,7 @@
             "file_path": "jbpm-designer-client/src/main/resources/org/jbpm/designer/public/profiles/jbpm.xml"
         }
     },
-    "programming_language": "JavaScript",
+    "programming_language": "javascript",
     "licences": {
         "database": "MIT",
         "affected_repository": "Unknown"

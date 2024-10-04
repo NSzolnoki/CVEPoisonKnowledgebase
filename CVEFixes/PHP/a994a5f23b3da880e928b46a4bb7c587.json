@@ -12,7 +12,7 @@
             "file_path": "fuel/modules/fuel/config/fuel_constants.php"
         }
     },
-    "programming_language": "PHP",
+    "programming_language": "php",
     "licences": {
         "database": "MIT",
         "affected_repository": "Unknown"

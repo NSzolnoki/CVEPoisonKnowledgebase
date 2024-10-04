@@ -21,7 +21,7 @@
             "file_path": "build.xml"
         }
     },
-    "programming_language": "Shell",
+    "programming_language": "shell",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

@@ -8,7 +8,7 @@
             "file_path": "packages/plugin-commands-env/test/env.test.ts"
         }
     },
-    "programming_language": "TypeScript",
+    "programming_language": "typescript",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

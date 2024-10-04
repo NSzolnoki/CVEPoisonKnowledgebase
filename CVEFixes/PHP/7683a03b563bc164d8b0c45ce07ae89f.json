@@ -14,7 +14,7 @@
             "file_path": "plugins/program_management/tests/rest/v1/ProjectResourceTest.php"
         }
     },
-    "programming_language": "PHP",
+    "programming_language": "php",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

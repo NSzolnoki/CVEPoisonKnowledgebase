@@ -8,7 +8,7 @@
             "file_path": "manifest.uuid"
         }
     },
-    "programming_language": "SQL",
+    "programming_language": "sql",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

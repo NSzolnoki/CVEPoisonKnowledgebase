@@ -14,7 +14,7 @@
             "file_path": "typo3/sysext/felogin/Resources/Private/Email/Templates/PasswordRecovery.html"
         }
     },
-    "programming_language": "SQL",
+    "programming_language": "sql",
     "licences": {
         "database": "MIT",
         "affected_repository": "GNU General Public License v2.0"

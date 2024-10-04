@@ -12,7 +12,7 @@
             "file_path": "lib/server-core-ext/src/main/java/org/apache/olingo/server/core/MetadataParser.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Apache License 2.0"

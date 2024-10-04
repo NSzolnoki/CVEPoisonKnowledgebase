@@ -12,7 +12,7 @@
             "file_path": "themes/templates/default.min.css"
         }
     },
-    "programming_language": "CSS",
+    "programming_language": "css",
     "licences": {
         "database": "MIT",
         "affected_repository": "GNU Affero General Public License v3.0"

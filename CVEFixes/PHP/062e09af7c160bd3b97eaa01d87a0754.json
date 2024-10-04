@@ -13,7 +13,7 @@
             "file_path": "pages/run_query.php"
         }
     },
-    "programming_language": "PHP",
+    "programming_language": "php",
     "licences": {
         "database": "MIT",
         "affected_repository": "GNU Affero General Public License v3.0"

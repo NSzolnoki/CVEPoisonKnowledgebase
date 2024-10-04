@@ -12,7 +12,7 @@
             "file_path": "src/helpers/string-encoder.helper.ts"
         }
     },
-    "programming_language": "TypeScript",
+    "programming_language": "typescript",
     "licences": {
         "database": "MIT",
         "affected_repository": "Unknown"

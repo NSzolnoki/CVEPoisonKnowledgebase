@@ -13,7 +13,7 @@
             "file_path": "src/test/java/org/olat/modules/wiki/WikiManagerTest.java"
         }
     },
-    "programming_language": "Java",
+    "programming_language": "java",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

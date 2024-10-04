@@ -14,7 +14,7 @@
             "file_path": "tensorflow/core/grappler/costs/op_level_cost_estimator.h"
         }
     },
-    "programming_language": "Objective-C",
+    "programming_language": "objective-c",
     "licences": {
         "database": "MIT",
         "affected_repository": "Apache License 2.0"

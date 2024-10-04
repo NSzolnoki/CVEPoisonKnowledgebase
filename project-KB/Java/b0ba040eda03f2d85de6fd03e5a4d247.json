@@ -69,7 +69,7 @@
             "file_path": "components/camel-jetty9/src/test/java/org/apache/camel/component/jetty/javabody/HttpJavaBodyTest.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Apache License 2.0"

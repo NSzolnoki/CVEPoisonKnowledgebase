@@ -8,7 +8,7 @@
             "file_path": "forms/src/main/java/com/itextpdf/forms/xfa/XfaForm.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Other"

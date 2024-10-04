@@ -15,7 +15,7 @@
             "file_path": ""
         }
     },
-    "programming_language": "Unknown",
+    "programming_language": "unknown",
     "licences": {
         "database": "MIT",
         "affected_repository": "Unknown"

@@ -19,7 +19,7 @@
             "file_path": "src/cryptography/hazmat/primitives/kdf/hkdf.py"
         }
     },
-    "programming_language": "Python",
+    "programming_language": "python",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

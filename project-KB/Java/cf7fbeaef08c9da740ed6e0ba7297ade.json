@@ -12,7 +12,7 @@
             "file_path": "core/src/test/java/org/bouncycastle/math/ec/custom/sec/test/SecP384R1FieldTest.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "MIT License"

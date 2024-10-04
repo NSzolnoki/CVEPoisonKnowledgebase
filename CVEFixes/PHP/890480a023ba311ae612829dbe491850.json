@@ -12,7 +12,7 @@
             "file_path": "core/admin/auto-modules/forms/_locked.php"
         }
     },
-    "programming_language": "PHP",
+    "programming_language": "php",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

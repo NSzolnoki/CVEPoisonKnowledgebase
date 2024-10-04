@@ -13,7 +13,7 @@
             "file_path": "t/Unicode.t"
         }
     },
-    "programming_language": "Perl",
+    "programming_language": "perl",
     "licences": {
         "database": "MIT",
         "affected_repository": "Unknown"

@@ -17,7 +17,7 @@
             "file_path": "doc/api/appweb.tags"
         }
     },
-    "programming_language": "HTML",
+    "programming_language": "html",
     "licences": {
         "database": "MIT",
         "affected_repository": "Unknown"

@@ -12,7 +12,7 @@
             "file_path": "ethereum/api/src/test/java/org/hyperledger/besu/ethereum/api/jsonrpc/internal/methods/NetListeningTest.java"
         }
     },
-    "programming_language": "Java",
+    "programming_language": "java",
     "licences": {
         "database": "MIT",
         "affected_repository": "Apache License 2.0"

@@ -23,7 +23,7 @@
             "file_path": "drivers/infiniband/hw/mlx5/qp.c"
         }
     },
-    "programming_language": "C",
+    "programming_language": "c",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

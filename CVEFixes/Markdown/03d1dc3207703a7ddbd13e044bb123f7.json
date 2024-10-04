@@ -12,7 +12,7 @@
             "file_path": "gitit.cabal"
         }
     },
-    "programming_language": "Markdown",
+    "programming_language": "markdown",
     "licences": {
         "database": "MIT",
         "affected_repository": "GNU General Public License v2.0"

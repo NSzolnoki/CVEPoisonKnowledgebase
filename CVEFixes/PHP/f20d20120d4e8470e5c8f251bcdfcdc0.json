@@ -20,7 +20,7 @@
             "file_path": "core/admin/modules/developer/modules/views/add.php"
         }
     },
-    "programming_language": "PHP",
+    "programming_language": "php",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

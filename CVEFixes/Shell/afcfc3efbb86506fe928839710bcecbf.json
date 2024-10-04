@@ -17,7 +17,7 @@
             "file_path": "ssh_filter_btrbk.sh"
         }
     },
-    "programming_language": "Shell",
+    "programming_language": "shell",
     "licences": {
         "database": "MIT",
         "affected_repository": "GNU General Public License v3.0"

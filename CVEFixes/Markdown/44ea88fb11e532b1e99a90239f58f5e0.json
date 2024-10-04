@@ -8,7 +8,7 @@
             "file_path": "docs/ir/ir-breaking-changes.rst"
         }
     },
-    "programming_language": "Markdown",
+    "programming_language": "markdown",
     "licences": {
         "database": "MIT",
         "affected_repository": "GNU General Public License v3.0"

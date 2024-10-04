@@ -34,7 +34,7 @@
             "file_path": "src/lxml/__init__.py"
         }
     },
-    "programming_language": "Python",
+    "programming_language": "python",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

@@ -14,7 +14,7 @@
             "file_path": "IbaTools/FastFabric/opatest.sh"
         }
     },
-    "programming_language": "Shell",
+    "programming_language": "shell",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

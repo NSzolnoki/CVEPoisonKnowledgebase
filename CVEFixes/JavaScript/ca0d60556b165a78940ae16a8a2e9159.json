@@ -12,7 +12,7 @@
             "file_path": "assets/js/plugins/summernote-ext-genixcms.js"
         }
     },
-    "programming_language": "JavaScript",
+    "programming_language": "javascript",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

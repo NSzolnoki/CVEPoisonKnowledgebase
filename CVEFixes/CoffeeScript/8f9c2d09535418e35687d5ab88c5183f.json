@@ -12,7 +12,7 @@
             "file_path": "openshift-enterprise/heat/neutron/highly-available/ose_node_stack.yaml"
         }
     },
-    "programming_language": "CoffeeScript",
+    "programming_language": "coffeescript",
     "licences": {
         "database": "MIT",
         "affected_repository": "Apache License 2.0"

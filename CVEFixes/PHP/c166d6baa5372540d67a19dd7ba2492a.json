@@ -14,7 +14,7 @@
             "file_path": "xwiki-platform-core/xwiki-platform-flamingo/xwiki-platform-flamingo-theme/xwiki-platform-flamingo-theme-ui/src/main/resources/FlamingoThemesCode/WebHomeSheet.xml"
         }
     },
-    "programming_language": "PHP",
+    "programming_language": "php",
     "licences": {
         "database": "MIT",
         "affected_repository": "GNU Lesser General Public License v2.1"

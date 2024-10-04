@@ -12,7 +12,7 @@
             "file_path": "tests/unit/src/com/unboundid/ldap/sdk/SimpleBindRequestTestCase.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Other"

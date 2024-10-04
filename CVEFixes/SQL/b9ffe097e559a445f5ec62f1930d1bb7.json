@@ -12,7 +12,7 @@
             "file_path": "tests/templates/test_component_kwargs.html"
         }
     },
-    "programming_language": "SQL",
+    "programming_language": "sql",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

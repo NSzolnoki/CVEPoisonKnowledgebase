@@ -12,7 +12,7 @@
             "file_path": "connector/src/main/java/org/geysermc/connector/network/translators/bedrock/world/BedrockLevelSoundEventTranslator.java"
         }
     },
-    "programming_language": "Scala",
+    "programming_language": "scala",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

@@ -12,7 +12,7 @@
             "file_path": "components/prism-tap.min.js"
         }
     },
-    "programming_language": "Batchfile",
+    "programming_language": "batchfile",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

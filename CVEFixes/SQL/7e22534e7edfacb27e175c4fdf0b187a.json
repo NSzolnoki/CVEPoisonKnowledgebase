@@ -12,7 +12,7 @@
             "file_path": "publify_core/app/views/articles/view_page.html.erb"
         }
     },
-    "programming_language": "SQL",
+    "programming_language": "sql",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

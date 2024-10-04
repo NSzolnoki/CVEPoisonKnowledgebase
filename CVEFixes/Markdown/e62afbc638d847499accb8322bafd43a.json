@@ -90,7 +90,7 @@
             "file_path": "docs/api/web-contents.md"
         }
     },
-    "programming_language": "Markdown",
+    "programming_language": "markdown",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

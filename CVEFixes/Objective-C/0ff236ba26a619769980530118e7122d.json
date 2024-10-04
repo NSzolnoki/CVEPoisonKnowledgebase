@@ -24,7 +24,7 @@
             "file_path": "coders/meta.c"
         }
     },
-    "programming_language": "Objective-C",
+    "programming_language": "objective-c",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

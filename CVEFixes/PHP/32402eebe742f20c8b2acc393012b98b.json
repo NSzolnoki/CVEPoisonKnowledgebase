@@ -25,7 +25,7 @@
             "file_path": "ext/wddx/tests/bug72790.phpt"
         }
     },
-    "programming_language": "PHP",
+    "programming_language": "php",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

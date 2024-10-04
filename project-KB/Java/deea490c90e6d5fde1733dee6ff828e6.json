@@ -8,7 +8,7 @@
             "file_path": "src/main/java/org/owasp/esapi/reference/crypto/JavaEncryptor.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Other"

@@ -12,7 +12,7 @@
             "file_path": "package.json"
         }
     },
-    "programming_language": "JavaScript",
+    "programming_language": "javascript",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

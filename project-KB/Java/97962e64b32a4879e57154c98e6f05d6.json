@@ -20,7 +20,7 @@
             "file_path": "solr/core/src/test/org/apache/solr/security/hadoop/TestZkAclsWithHadoopAuth.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Apache License 2.0"

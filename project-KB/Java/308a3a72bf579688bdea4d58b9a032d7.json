@@ -22,7 +22,7 @@
             "file_path": "tika-parsers/src/main/java/org/apache/tika/parser/mp4/MP4Parser.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Apache License 2.0"

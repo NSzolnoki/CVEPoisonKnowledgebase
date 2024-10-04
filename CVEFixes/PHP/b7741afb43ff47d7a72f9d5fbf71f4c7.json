@@ -18,7 +18,7 @@
             "file_path": "framework/Core/lib/Horde/Core/Ui/VarRenderer/Html.php"
         }
     },
-    "programming_language": "PHP",
+    "programming_language": "php",
     "licences": {
         "database": "MIT",
         "affected_repository": "Unknown"

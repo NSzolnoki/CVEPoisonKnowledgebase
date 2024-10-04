@@ -43,7 +43,7 @@
             "file_path": "imp/js/compose-dimp.js"
         }
     },
-    "programming_language": "JavaScript",
+    "programming_language": "javascript",
     "licences": {
         "database": "MIT",
         "affected_repository": "Unknown"

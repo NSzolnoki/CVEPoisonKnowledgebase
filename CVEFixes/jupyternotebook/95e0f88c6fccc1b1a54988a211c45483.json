@@ -2,23 +2,23 @@
     "original_source": {
         "database(url)": "https://github.com/secureIT-project/CVEfixes",
         "software_system(CPE)": [],
-        "fix_commit": "https://github.com/pnpm/pnpm/commit/04b7f60861ddee8331e50d70e193d1e701abeefb",
+        "fix_commit": "https://github.com/cure53/DOMPurify/commit/4e8af7b2c4a159b683d317e02c5cbddb86dc4a0e",
         "version_end_excluding": {},
         "path": {
-            "file_path": "packages/filter-workspace-packages/package.json"
+            "file_path": "dist/purify.cjs.js.map"
         }
     },
-    "programming_language": "Jupyter Notebook",
+    "programming_language": "jupyter notebook",
     "licences": {
         "database": "MIT",
-        "affected_repository": "MIT License"
+        "affected_repository": "Other"
     },
     "related_vulnerability_entry": {
         "CVE": [
-            "CVE-2022-26183"
+            "CVE-2019-20374"
         ],
         "CWE": [
-            "CWE-426"
+            "CWE-79"
         ]
     }
 }

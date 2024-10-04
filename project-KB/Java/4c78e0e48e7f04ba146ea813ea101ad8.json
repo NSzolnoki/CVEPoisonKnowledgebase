@@ -20,7 +20,7 @@
             "file_path": "jetty-http/src/main/java/org/eclipse/jetty/http/HttpParser.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Other"

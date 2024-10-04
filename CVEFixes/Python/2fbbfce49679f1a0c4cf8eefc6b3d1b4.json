@@ -20,7 +20,7 @@
             "file_path": "askbot/views/commands.py"
         }
     },
-    "programming_language": "Python",
+    "programming_language": "python",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

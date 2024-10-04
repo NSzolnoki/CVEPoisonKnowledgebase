@@ -13,7 +13,7 @@
             "file_path": "production/kubernetes/build/lib/version.libsonnet"
         }
     },
-    "programming_language": "SQL",
+    "programming_language": "sql",
     "licences": {
         "database": "MIT",
         "affected_repository": "Apache License 2.0"

@@ -12,7 +12,7 @@
             "file_path": "src/Whoops/Util/TemplateHelper.php"
         }
     },
-    "programming_language": "PHP",
+    "programming_language": "php",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

@@ -76,7 +76,7 @@
             "file_path": "src/testcases/org/apache/poi/ss/usermodel/BaseTestCell.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Unknown"

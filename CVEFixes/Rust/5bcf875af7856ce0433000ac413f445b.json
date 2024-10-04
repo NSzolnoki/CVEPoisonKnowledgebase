@@ -13,7 +13,7 @@
             "file_path": "src/jit.rs"
         }
     },
-    "programming_language": "Rust",
+    "programming_language": "rust",
     "licences": {
         "database": "MIT",
         "affected_repository": "Apache License 2.0"

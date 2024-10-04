@@ -346,7 +346,7 @@
             "file_path": "jetty-servlet/src/test/java/org/eclipse/jetty/servlet/DefaultHandlerTest.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Other"

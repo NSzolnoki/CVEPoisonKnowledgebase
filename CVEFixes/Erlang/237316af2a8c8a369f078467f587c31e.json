@@ -12,7 +12,7 @@
             "file_path": "mix.lock"
         }
     },
-    "programming_language": "Erlang",
+    "programming_language": "erlang",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

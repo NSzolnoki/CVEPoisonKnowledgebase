@@ -12,7 +12,7 @@
             "file_path": ".eslintignore"
         }
     },
-    "programming_language": "SQL",
+    "programming_language": "sql",
     "licences": {
         "database": "MIT",
         "affected_repository": "The Unlicense"

@@ -13,7 +13,7 @@
             "file_path": "vertx-web/src/test/java/io/vertx/ext/web/handler/StaticHandlerTest.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Apache License 2.0"

@@ -12,7 +12,7 @@
             "file_path": "bundles/AdminBundle/Resources/public/js/pimcore/helpers/generic-grid.js"
         }
     },
-    "programming_language": "JavaScript",
+    "programming_language": "javascript",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

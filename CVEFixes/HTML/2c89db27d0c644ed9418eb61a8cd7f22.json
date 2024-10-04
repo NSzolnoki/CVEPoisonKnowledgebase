@@ -16,7 +16,7 @@
             "file_path": "jbpm-designer-client/pom.xml"
         }
     },
-    "programming_language": "HTML",
+    "programming_language": "html",
     "licences": {
         "database": "MIT",
         "affected_repository": "Unknown"

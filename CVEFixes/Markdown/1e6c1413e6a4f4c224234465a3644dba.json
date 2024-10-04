@@ -12,7 +12,7 @@
             "file_path": "server-plugin/server-plugin-authenticator-ldap/pom.xml"
         }
     },
-    "programming_language": "Markdown",
+    "programming_language": "markdown",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

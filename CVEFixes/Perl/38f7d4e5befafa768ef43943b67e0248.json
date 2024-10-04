@@ -19,7 +19,7 @@
             "file_path": "lib/Image/ExifTool/MacOS.pm"
         }
     },
-    "programming_language": "Perl",
+    "programming_language": "perl",
     "licences": {
         "database": "MIT",
         "affected_repository": "GNU General Public License v3.0"

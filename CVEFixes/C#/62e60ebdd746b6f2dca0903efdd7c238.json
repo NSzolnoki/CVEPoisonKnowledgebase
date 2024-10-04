@@ -13,7 +13,7 @@
             "file_path": "RemoteTaskServer/Api/Network/Models/SystemInformation.cs"
         }
     },
-    "programming_language": "C#",
+    "programming_language": "c#",
     "licences": {
         "database": "MIT",
         "affected_repository": "Mozilla Public License 2.0"

@@ -12,7 +12,7 @@
             "file_path": ""
         }
     },
-    "programming_language": "JSON",
+    "programming_language": "json",
     "licences": {
         "database": "MIT",
         "affected_repository": "Unknown"

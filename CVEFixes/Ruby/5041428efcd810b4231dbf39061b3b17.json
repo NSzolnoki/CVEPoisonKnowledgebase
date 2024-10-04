@@ -71,7 +71,7 @@
             "file_path": "actionpack/lib/action_controller/vendor/html-scanner/html/node.rb"
         }
     },
-    "programming_language": "Ruby",
+    "programming_language": "ruby",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

@@ -8,7 +8,7 @@
             "file_path": "log4j-core/src/main/java/org/apache/logging/log4j/core/net/server/AbstractSocketServer.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Apache License 2.0"

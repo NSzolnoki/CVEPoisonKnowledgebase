@@ -13,7 +13,7 @@
             "file_path": "xwiki-platform-core/xwiki-platform-url/xwiki-platform-url-schemes/xwiki-platform-url-scheme-filesystem/pom.xml"
         }
     },
-    "programming_language": "HTML",
+    "programming_language": "html",
     "licences": {
         "database": "MIT",
         "affected_repository": "GNU Lesser General Public License v2.1"

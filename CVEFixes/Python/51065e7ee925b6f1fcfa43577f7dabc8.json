@@ -60,7 +60,7 @@
             "file_path": "src/lib/Server/Plugins/Hg.py"
         }
     },
-    "programming_language": "Python",
+    "programming_language": "python",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

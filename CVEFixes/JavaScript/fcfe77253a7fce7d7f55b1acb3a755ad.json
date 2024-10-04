@@ -12,7 +12,7 @@
             "file_path": "src/OrchardCore.Modules/OrchardCore.AdminDashboard/Views/Dashboard/Manage.cshtml"
         }
     },
-    "programming_language": "JavaScript",
+    "programming_language": "javascript",
     "licences": {
         "database": "MIT",
         "affected_repository": "BSD 3-Clause \"New\" or \"Revised\" License"

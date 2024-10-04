@@ -16,7 +16,7 @@
             "file_path": "spring-core/src/main/java/org/springframework/util/SimpleIdGenerator.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Apache License 2.0"

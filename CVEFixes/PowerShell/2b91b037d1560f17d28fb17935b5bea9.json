@@ -12,7 +12,7 @@
             "file_path": "build.proj"
         }
     },
-    "programming_language": "PowerShell",
+    "programming_language": "powershell",
     "licences": {
         "database": "MIT",
         "affected_repository": "Microsoft Public License"

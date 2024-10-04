@@ -12,7 +12,7 @@
             "file_path": "requirements.txt"
         }
     },
-    "programming_language": "Batchfile",
+    "programming_language": "batchfile",
     "licences": {
         "database": "MIT",
         "affected_repository": "Apache License 2.0"

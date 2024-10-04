@@ -28,7 +28,7 @@
             "file_path": "modules/kafo/manifests/foreman_certs.pp"
         }
     },
-    "programming_language": "Perl",
+    "programming_language": "perl",
     "licences": {
         "database": "MIT",
         "affected_repository": "Unknown"

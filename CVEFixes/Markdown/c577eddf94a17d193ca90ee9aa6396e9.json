@@ -16,7 +16,7 @@
             "file_path": "VERSION"
         }
     },
-    "programming_language": "Markdown",
+    "programming_language": "markdown",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

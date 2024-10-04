@@ -26,7 +26,7 @@
             "file_path": "include/git/blob/BlobLoad_Base.class.php"
         }
     },
-    "programming_language": "PHP",
+    "programming_language": "php",
     "licences": {
         "database": "MIT",
         "affected_repository": "Unknown"

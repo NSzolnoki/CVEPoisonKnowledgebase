@@ -106,7 +106,7 @@
             "file_path": "lib/rubygems/config_file.rb"
         }
     },
-    "programming_language": "Ruby",
+    "programming_language": "ruby",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

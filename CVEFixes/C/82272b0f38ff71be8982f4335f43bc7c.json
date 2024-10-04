@@ -13,7 +13,7 @@
             "file_path": "Unicode/Unicode.xs"
         }
     },
-    "programming_language": "C",
+    "programming_language": "c",
     "licences": {
         "database": "MIT",
         "affected_repository": "Unknown"

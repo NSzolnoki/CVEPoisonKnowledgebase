@@ -12,7 +12,7 @@
             "file_path": "server-core/src/main/java/io/onedev/server/model/support/inputspec/InputSpec.java"
         }
     },
-    "programming_language": "Java",
+    "programming_language": "java",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"

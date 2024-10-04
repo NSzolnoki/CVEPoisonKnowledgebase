@@ -13,7 +13,7 @@
             "file_path": "drivers/hid/hid-kye.c"
         }
     },
-    "programming_language": "Java",
+    "programming_language": "java",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

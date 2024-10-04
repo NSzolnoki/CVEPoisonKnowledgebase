@@ -20,7 +20,7 @@
             "file_path": "tensorflow/python/kernel_tests/sparse_ops/sparse_ops_test.py"
         }
     },
-    "programming_language": "Python",
+    "programming_language": "python",
     "licences": {
         "database": "MIT",
         "affected_repository": "Apache License 2.0"

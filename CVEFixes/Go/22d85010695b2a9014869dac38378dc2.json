@@ -14,7 +14,7 @@
             "file_path": "eventcontent.go"
         }
     },
-    "programming_language": "Go",
+    "programming_language": "go",
     "licences": {
         "database": "MIT",
         "affected_repository": "Apache License 2.0"

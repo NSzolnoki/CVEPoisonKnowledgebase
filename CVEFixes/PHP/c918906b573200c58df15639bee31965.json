@@ -12,7 +12,7 @@
             "file_path": "server/Application/Api/Model/AttachmentModel.class.php"
         }
     },
-    "programming_language": "PHP",
+    "programming_language": "php",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

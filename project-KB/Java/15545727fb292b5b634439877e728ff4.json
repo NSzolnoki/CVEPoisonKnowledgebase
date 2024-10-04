@@ -13,7 +13,7 @@
             "file_path": "src/main/java/org/owasp/esapi/crypto/CipherText.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Other"

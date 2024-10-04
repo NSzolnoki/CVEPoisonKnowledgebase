@@ -13,7 +13,7 @@
             "file_path": "Directory.Build.props"
         }
     },
-    "programming_language": "PowerShell",
+    "programming_language": "powershell",
     "licences": {
         "database": "MIT",
         "affected_repository": "Apache License 2.0"

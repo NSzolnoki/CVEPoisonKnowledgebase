@@ -14,7 +14,7 @@
             "file_path": "tika-core/src/main/java/org/apache/tika/utils/XMLReaderUtils.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Apache License 2.0"

@@ -12,7 +12,7 @@
             "file_path": "nifi-commons/nifi-web-utils/src/main/java/org/apache/nifi/web/util/WebUtils.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Apache License 2.0"

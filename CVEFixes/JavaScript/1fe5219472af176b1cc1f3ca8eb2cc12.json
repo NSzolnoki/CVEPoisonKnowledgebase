@@ -12,7 +12,7 @@
             "file_path": "src/main/webapp/js/grapheditor/Graph.js"
         }
     },
-    "programming_language": "JavaScript",
+    "programming_language": "javascript",
     "licences": {
         "database": "MIT",
         "affected_repository": "Apache License 2.0"

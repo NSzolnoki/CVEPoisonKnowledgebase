@@ -18,7 +18,7 @@
             "file_path": "sysutils/pfSense-pkg-apcupsd/Makefile"
         }
     },
-    "programming_language": "Shell",
+    "programming_language": "shell",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

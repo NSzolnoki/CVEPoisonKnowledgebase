@@ -93,7 +93,7 @@
             "file_path": "lib/Mojolicious.pm"
         }
     },
-    "programming_language": "Perl",
+    "programming_language": "perl",
     "licences": {
         "database": "MIT",
         "affected_repository": "Artistic License 2.0"

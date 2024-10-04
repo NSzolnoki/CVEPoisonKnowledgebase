@@ -12,7 +12,7 @@
             "file_path": "app/webroot/js/misp.js"
         }
     },
-    "programming_language": "JavaScript",
+    "programming_language": "javascript",
     "licences": {
         "database": "MIT",
         "affected_repository": "GNU Affero General Public License v3.0"

@@ -14,7 +14,7 @@
             "file_path": "omeroweb/webclient/static/webclient/javascript/ome.right_panel_comments_pane.js"
         }
     },
-    "programming_language": "JavaScript",
+    "programming_language": "javascript",
     "licences": {
         "database": "MIT",
         "affected_repository": "Unknown"

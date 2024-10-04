@@ -14,7 +14,7 @@
             "file_path": "config/routes.rb"
         }
     },
-    "programming_language": "Ruby",
+    "programming_language": "ruby",
     "licences": {
         "database": "MIT",
         "affected_repository": "GNU General Public License v2.0"

@@ -12,7 +12,7 @@
             "file_path": "src/OrchardCore.Modules/OrchardCore.Contents/Views/ContentsAdminListCreate.cshtml"
         }
     },
-    "programming_language": "CoffeeScript",
+    "programming_language": "coffeescript",
     "licences": {
         "database": "MIT",
         "affected_repository": "BSD 3-Clause \"New\" or \"Revised\" License"

@@ -8,7 +8,7 @@
             "file_path": "src/main/java/org/java_websocket/client/WebSocketClient.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "MIT License"

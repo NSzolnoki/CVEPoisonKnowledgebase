@@ -37,7 +37,7 @@
             "file_path": "framework/Image/lib/Horde/Image/Im.php"
         }
     },
-    "programming_language": "PHP",
+    "programming_language": "php",
     "licences": {
         "database": "MIT",
         "affected_repository": "Unknown"

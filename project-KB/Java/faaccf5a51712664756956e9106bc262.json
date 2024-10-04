@@ -13,7 +13,7 @@
             "file_path": "tika-parsers/src/test/java/org/apache/tika/parser/microsoft/xml/XML2003ParserTest.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Apache License 2.0"

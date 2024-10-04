@@ -44,7 +44,7 @@
             "file_path": "main/src/com/google/refine/importing/ImportingUtilities.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "BSD 3-Clause \"New\" or \"Revised\" License"

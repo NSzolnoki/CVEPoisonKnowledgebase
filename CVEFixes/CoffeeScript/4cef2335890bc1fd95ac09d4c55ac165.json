@@ -14,7 +14,7 @@
             "file_path": "java/code/webapp/WEB-INF/pages/common/fragments/manage/managers.jspf"
         }
     },
-    "programming_language": "CoffeeScript",
+    "programming_language": "coffeescript",
     "licences": {
         "database": "MIT",
         "affected_repository": "GNU General Public License v2.0"

@@ -32,7 +32,7 @@
             "file_path": "lib/thin/connection.rb"
         }
     },
-    "programming_language": "Ruby",
+    "programming_language": "ruby",
     "licences": {
         "database": "MIT",
         "affected_repository": "Unknown"

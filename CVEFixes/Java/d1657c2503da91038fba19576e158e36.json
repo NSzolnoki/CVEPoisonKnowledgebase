@@ -8,7 +8,7 @@
             "file_path": "core/src/main/java/io/undertow/protocols/http2/HpackEncoder.java"
         }
     },
-    "programming_language": "Java",
+    "programming_language": "java",
     "licences": {
         "database": "MIT",
         "affected_repository": "Apache License 2.0"

@@ -13,7 +13,7 @@
             "file_path": "features/step_definitions/download_steps.rb"
         }
     },
-    "programming_language": "Ruby",
+    "programming_language": "ruby",
     "licences": {
         "database": "MIT",
         "affected_repository": "Unknown"

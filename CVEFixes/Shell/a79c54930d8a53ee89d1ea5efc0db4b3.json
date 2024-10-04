@@ -12,7 +12,7 @@
             "file_path": ".github/actions/reusable-prepare-peertube-run/action.yml"
         }
     },
-    "programming_language": "Shell",
+    "programming_language": "shell",
     "licences": {
         "database": "MIT",
         "affected_repository": "GNU Affero General Public License v3.0"

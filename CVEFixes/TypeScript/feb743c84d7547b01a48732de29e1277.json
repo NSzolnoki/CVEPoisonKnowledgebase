@@ -12,7 +12,7 @@
             "file_path": "crud-file-server.js"
         }
     },
-    "programming_language": "TypeScript",
+    "programming_language": "typescript",
     "licences": {
         "database": "MIT",
         "affected_repository": "The Unlicense"

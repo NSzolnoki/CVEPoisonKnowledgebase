@@ -18,7 +18,7 @@
             "file_path": "plugins/rest/src/main/java/org/apache/struts2/rest/RestActionMapper.java"
         }
     },
-    "programming_language": "JAVA",
+    "programming_language": "java",
     "licences": {
         "database": "Apache",
         "affected_repository": "Apache License 2.0"

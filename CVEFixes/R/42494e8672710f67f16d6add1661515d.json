@@ -15,7 +15,7 @@
             "file_path": "tensorflow/python/dlpack/BUILD"
         }
     },
-    "programming_language": "R",
+    "programming_language": "r",
     "licences": {
         "database": "MIT",
         "affected_repository": "Apache License 2.0"

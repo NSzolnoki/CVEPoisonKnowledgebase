@@ -16,7 +16,7 @@
             "file_path": "packages/apputils/src/sanitizer.ts"
         }
     },
-    "programming_language": "JavaScript",
+    "programming_language": "javascript",
     "licences": {
         "database": "MIT",
         "affected_repository": "Other"

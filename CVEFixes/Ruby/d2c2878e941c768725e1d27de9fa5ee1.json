@@ -12,7 +12,7 @@
             "file_path": "publify_core/app/models/article.rb"
         }
     },
-    "programming_language": "Ruby",
+    "programming_language": "ruby",
     "licences": {
         "database": "MIT",
         "affected_repository": "MIT License"
