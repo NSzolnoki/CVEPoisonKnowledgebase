@@ -48,7 +48,7 @@
             "file_path": ""
         }
     },
-    "programming_language": "asp.net",
+    "programming_language": "asp_net",
     "licences": {
         "database": "MIT",
         "affected_repository": "Unknown"
